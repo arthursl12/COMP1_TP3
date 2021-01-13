@@ -1,8 +1,8 @@
 all:
-	lex myscanner.l
-	gcc myscanner.c lex.yy.c -o myscanner 
-	./myscanner < config.in
-	
+	yacc -d calc.y
+	lex calc.l
+	gcc -g lex.yy.c y.tab.c -o calc
+	./calc
+
 clean:
-	rm myscanner
-	rm lex.yy.c
+	rm -rf lex.yy.c y.tab.c y.tab.h calc calc.dSYM
