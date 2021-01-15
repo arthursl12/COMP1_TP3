@@ -1,8 +1,8 @@
 all:
-	lex echo.l
-	gcc lex.yy.c -o myscanner 
-	./myscanner < config.in
+	lex p_lex.l
+	gcc lex.yy.c -o p_lex 
+	./p_lex < config.in
 	
 clean:
-	rm myscanner
+	rm p_lex
 	rm lex.yy.c
