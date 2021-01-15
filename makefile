@@ -1,6 +1,6 @@
 all:
 	lex p_lex.l
-	gcc lex.yy.c -o p_lex 
+	gcc scanner.c lex.yy.c -o p_lex 
 	./p_lex < config.in
 	
 clean:

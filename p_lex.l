@@ -1,7 +1,8 @@
 %{
-    #include "myscanner.h"
+    #include "tokens.h"
 %}
-%option nounput yylineno
+/* Para usar o 'yylineno' (número da linha) */
+%option nounput yylineno   
 
 %%
 
@@ -18,17 +19,4 @@
 
 
 %%
-int yywrap (void){
-    return 1;
-}     
-
-int main (void){
-    int ntoken, vtoken;
-
-    ntoken = yylex();
-    while (ntoken){
-        // printf("%d\n", ntoken);
-        ntoken = yylex();
-    }
-    return 0;
-} 
+/* Funções auxiliares no 'scanner.c' */

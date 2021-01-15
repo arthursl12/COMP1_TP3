@@ -405,9 +405,10 @@ char *yytext;
 #line 1 "p_lex.l"
 #define INITIAL 0
 #line 2 "p_lex.l"
-    #include "myscanner.h"
+    #include "tokens.h"
+/* Para usar o 'yylineno' (número da linha) */
 #define YY_NO_UNPUT 1
-#line 411 "lex.yy.c"
+#line 412 "lex.yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -569,10 +570,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 6 "p_lex.l"
+#line 7 "p_lex.l"
 
 
-#line 576 "lex.yy.c"
+#line 577 "lex.yy.c"
 
 	if ( yy_init )
 		{
@@ -665,55 +666,55 @@ do_action:	/* This label is used only to access EOF actions. */
 	{ /* beginning of action switch */
 case 1:
 YY_RULE_SETUP
-#line 8 "p_lex.l"
+#line 9 "p_lex.l"
 { printf("[%4d] COLON: \t%s\n", yylineno, yytext); return COLON; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 9 "p_lex.l"
+#line 10 "p_lex.l"
 return TYPE;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 10 "p_lex.l"
+#line 11 "p_lex.l"
 return NAME;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 11 "p_lex.l"
+#line 12 "p_lex.l"
 return TABLE_PREFIX;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 12 "p_lex.l"
+#line 13 "p_lex.l"
 return PORT;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 14 "p_lex.l"
+#line 15 "p_lex.l"
 return IDENTIFIER;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 15 "p_lex.l"
+#line 16 "p_lex.l"
 return INTEGER;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 16 "p_lex.l"
+#line 17 "p_lex.l"
 ;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 17 "p_lex.l"
+#line 18 "p_lex.l"
 printf("Unexpected character\n");
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 20 "p_lex.l"
+#line 21 "p_lex.l"
 ECHO;
 	YY_BREAK
-#line 717 "lex.yy.c"
+#line 718 "lex.yy.c"
 			case YY_STATE_EOF(INITIAL):
 				yyterminate();
 
@@ -1601,19 +1602,6 @@ int main()
 	return 0;
 	}
 #endif
-#line 20 "p_lex.l"
+#line 21 "p_lex.l"
 
-int yywrap (void){
-    return 1;
-}     
-
-int main (void){
-    int ntoken, vtoken;
-
-    ntoken = yylex();
-    while (ntoken){
-        // printf("%d\n", ntoken);
-        ntoken = yylex();
-    }
-    return 0;
-} 
+/* Funções auxiliares no 'scanner.c' */
