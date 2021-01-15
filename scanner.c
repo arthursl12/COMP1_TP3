@@ -1,16 +1,8 @@
 #include <stdio.h>
 #include "tokens.h"
-
-extern int yylex();
-extern int yylineno;
-extern char* yytext;
-
-char* names[] = {NULL, "db_type", "db_name", "db_table_prefix", "db_port"};
+#include "aux.h"
 
 
-int yywrap (void){
-    return 1;
-}     
 
 int main (int argc, char* argv[]){
     int ntoken, vtoken;

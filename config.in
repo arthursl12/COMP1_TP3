@@ -1,3 +1,9 @@
+1.1
+10
+793.003E-0053
+793.003E+0053
+' '
+'a'
 db_type :  mysql
 db_name : testdata
 db_table_prefix : test_
