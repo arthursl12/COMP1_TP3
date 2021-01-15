@@ -10,6 +10,10 @@ trueaaaa
 tttfalse
 false
 falseaaa
+12 >= 32E+2
+31.01 != 12.001E-5
+32 + 31
+32 div 32
 db_type :  mysql
 db_name : testdata
 db_table_prefix : test_

@@ -22,15 +22,37 @@ id {letter}({letter}| {digit})*
 number {digit}+(\.{digit}+)?(E[+-]?{digit}+)?
 
 %%
-
+    /* Delimitadores e Espaços */
 {ws}                ;
+    /* Constantes */
 {uint}              { printf("[%4d] Integer: \t%s\n", yylineno, yytext); return INT_CONSTANT; }
 {ureal}             { printf("[%4d] Real: \t%s\n", yylineno, yytext); return REAL_CONSTANT; }
 {char}              { printf("[%4d] Char: \t%s\n", yylineno, yytext); return CHAR_CONSTANT; }
+    /* Constantes Booleanas */
 "true"              { printf("[%4d] Bool: \t%s\n", yylineno, yytext); return BOOL_CONSTANT; }
 "false"             { printf("[%4d] Bool: \t%s\n", yylineno, yytext); return BOOL_CONSTANT; }
 
-:                   { printf("[%4d] COLON: \t%s\n", yylineno, yytext); return COLON; }
+    /* RELOP */ 
+">"                 { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+">="                { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+"<"                 { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+"<="                { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+"="                 { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+"!="                { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+"NOT"               { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+    /* ADDOP */
+"+"                 { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
+"-"                 { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
+"or"                { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
+    /* MULOP */
+"*"                 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
+"/"                 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
+"div"               { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
+"mod"               { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
+"and"               { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
+
+
+:                   return COLON;
 "db_type"           return TYPE;
 "db_name"           return NAME;
 "db_table_prefix"   return TABLE_PREFIX;
