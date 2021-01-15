@@ -17,9 +17,9 @@ scale_factor    E{sign}{uint}
 ureal           {uint}(\.{digit}*)?({scale_factor})?
 char            \'[\x00-\x7F]\'
 
-letter [A-Za-z] 
-id {letter}({letter}| {digit})* 
-number {digit}+(\.{digit}+)?(E[+-]?{digit}+)?
+/* Identificadores */
+letter          [A-Za-z] 
+id              {letter}({letter}|{digit})* 
 
 %%
     /* Delimitadores e Espaços */
@@ -51,15 +51,8 @@ number {digit}+(\.{digit}+)?(E[+-]?{digit}+)?
 "mod"               { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 "and"               { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 
-
+{id}                { return tokenId(); }
 :                   return COLON;
-"db_type"           return TYPE;
-"db_name"           return NAME;
-"db_table_prefix"   return TABLE_PREFIX;
-"db_port"           return PORT;
-
-[a-zA-z][_a-zA-Z0-9]*       return IDENTIFIER;
-[1-9][0-9]*                 return INTEGER;
 
 .                           printf("Unexpected character\n");
 

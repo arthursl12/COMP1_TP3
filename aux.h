@@ -9,36 +9,56 @@ extern int yylineno;
 extern char* yytext;
 
 char* names[] = {NULL, "db_type", "db_name", "db_table_prefix", "db_port"};
-char* reserved[] = {"program",
+char* reserved[] = {NULL, "program",
                     "integer","real", "boolean","char",
                     "begin","end",
-                    "if","then","else"
+                    "if","then","else",
                     "do","while",
                     "until","end",
                     "read","write","goto"};
-#define reservedSize 16
+#define reservedSize 18
+
+char* functs[] = {NULL, "sin", "log", "cos", 
+                  "ord", "chr", 
+                  "abs", "sqrt", "exp", 
+                  "eof", "eoln"};
+#define functsSize 11
 
 int yywrap (void){
     return 1;
 }
 
 /* 
-Retorna -1 se 'str' NÃO é uma palavra reservada. Retorna o índice da palavra
-no vetor, se for uma palavra reservada
+Retorna -1 se 'str' NÃO é está na lista 'list' de tamanho 'size. 
+Retorna o índice da palavra no vetor, se ela for encontrada ali.
 */
-int resWord(char* str){
-    int i = 0;
-    for(i = 0; i < reservedSize; i++){
-        if(strcmp(str,reserved[i]) == 0){
+int resWord(char* str, char* list[], int size){
+    int i = 1;
+    for(i = 1; i < size; i++){
+        if(strcmp(str,list[i]) == 0){
             return i;
         }
     }
     return -1;
 }
 
-int findId(char* str){
-    if (resWord(str) != 0){
-        return resWord(str);
+/*
+Retorna o token relativo ao identificador 'yytext' lido. Se for alguma palavra
+reservada ou função definida, será retornado um token apropriado.
+*/
+int tokenId(){
+    if (resWord(yytext, reserved, reservedSize) != -1){
+        // Palavra reservada
+        printf("[%4d] Reserved: \t%s\n", yylineno, yytext);
+        return resWord(yytext, reserved, reservedSize);
+    }else if(resWord(yytext, functs, functsSize) != -1){
+        // Nome de função
+        printf("[%4d] Function: \t%s\n", yylineno, yytext);
+        return resWord(yytext, functs, functsSize);
+    }else{
+        // Identificador
+        printf("[%4d] Identifier: \t%s\n", yylineno, yytext);
+        return IDENTIFIER;
     }
 }
 
