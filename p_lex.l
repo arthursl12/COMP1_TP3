@@ -17,7 +17,6 @@ scale_factor    E{sign}{uint}
 ureal           {uint}(\.{digit}*)?({scale_factor})?
 char            \'[\x00-\x7F]\'
 
-
 letter [A-Za-z] 
 id {letter}({letter}| {digit})* 
 number {digit}+(\.{digit}+)?(E[+-]?{digit}+)?
@@ -28,6 +27,9 @@ number {digit}+(\.{digit}+)?(E[+-]?{digit}+)?
 {uint}              { printf("[%4d] Integer: \t%s\n", yylineno, yytext); return INT_CONSTANT; }
 {ureal}             { printf("[%4d] Real: \t%s\n", yylineno, yytext); return REAL_CONSTANT; }
 {char}              { printf("[%4d] Char: \t%s\n", yylineno, yytext); return CHAR_CONSTANT; }
+"true"              { printf("[%4d] Bool: \t%s\n", yylineno, yytext); return BOOL_CONSTANT; }
+"false"             { printf("[%4d] Bool: \t%s\n", yylineno, yytext); return BOOL_CONSTANT; }
+
 :                   { printf("[%4d] COLON: \t%s\n", yylineno, yytext); return COLON; }
 "db_type"           return TYPE;
 "db_name"           return NAME;

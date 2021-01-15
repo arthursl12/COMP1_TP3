@@ -15,9 +15,8 @@ char* reserved[] = {"program",
                     "if","then","else"
                     "do","while",
                     "until","end",
-                    "read","write","goto",
-                    "false","true"};
-#define reservedSize 18
+                    "read","write","goto"};
+#define reservedSize 16
 
 int yywrap (void){
     return 1;
