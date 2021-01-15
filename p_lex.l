@@ -1,5 +1,6 @@
 %{
     #include "tokens.h"
+    #include "aux.h"
 %}
 /* Para usar o 'yylineno' (número da linha) */
 %option nounput yylineno   
@@ -25,7 +26,7 @@ id              {letter}({letter}|{digit})*
     /* Delimitadores e Espaços */
 {ws}                ;
     /* Constantes */
-{uint}              { printf("[%4d] Integer: \t%s\n", yylineno, yytext); return INT_CONSTANT; }
+{uint}              { printToken("Integer"); return INT_CONSTANT; }
 {ureal}             { printf("[%4d] Real: \t%s\n", yylineno, yytext); return REAL_CONSTANT; }
 {char}              { printf("[%4d] Char: \t%s\n", yylineno, yytext); return CHAR_CONSTANT; }
     /* Constantes Booleanas */
@@ -52,9 +53,8 @@ id              {letter}({letter}|{digit})*
 "and"               { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 
 {id}                { return tokenId(); }
-:                   return COLON;
 
-.                           printf("Unexpected character\n");
+.                   printf("Unexpected character\n");
 
 
 %%
