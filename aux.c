@@ -1,5 +1,5 @@
 #include "aux.h"
-#include "tokens.h"
+#include "y.tab.h"
 #include <stdio.h>
 
 char* names[] = {NULL, "db_type", "db_name", "db_table_prefix", "db_port"};
@@ -41,7 +41,7 @@ Retorna o token relativo ao identificador 'yytext' lido. Se for alguma palavra
 reservada ou função definida, será retornado um token apropriado.
 */
 int tokenId(){
-    yylval.identifier = *yytext;
+    yylval.identifier = strdup(yytext);
     if (resWord(yytext, reserved, reservedSize) != -1){
         // Palavra reservada
         printf("[%4d] Reserved: \t%s\n", yylineno, yytext);

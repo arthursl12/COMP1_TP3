@@ -3,6 +3,7 @@
     #include "aux.h"
     #include "y.tab.h"
     #include <stdlib.h>
+    #include <stdbool.h>
     void yyerror (char *s);
 %}
 /* Para usar o 'yylineno' (número da linha) */
@@ -30,11 +31,11 @@ id              {letter}({letter}|{digit})*
 {ws}                ;
     /* Constantes */
 {uint}              { printToken("Integer"); yylval.integer = atoi(yytext); return INT_CONSTANT; }
-{ureal}             { printf("[%4d] Real: \t%s\n", yylineno, yytext); return REAL_CONSTANT; }
-{char}              { printf("[%4d] Char: \t%s\n", yylineno, yytext); return CHAR_CONSTANT; }
+{ureal}             { printf("[%4d] Real: \t%s\n", yylineno, yytext); yylval.real = atof(yytext); return REAL_CONSTANT; }
+{char}              { printf("[%4d] Char: \t%s\n", yylineno, yytext); yylval.character = *yytext; return CHAR_CONSTANT; }
     /* Constantes Booleanas */
-"true"              { printf("[%4d] Bool: \t%s\n", yylineno, yytext); return BOOL_CONSTANT; }
-"false"             { printf("[%4d] Bool: \t%s\n", yylineno, yytext); return BOOL_CONSTANT; }
+"true"              { printf("[%4d] Bool: \t%s\n", yylineno, yytext); yylval.boolean = 1; return BOOL_CONSTANT; }
+"false"             { printf("[%4d] Bool: \t%s\n", yylineno, yytext); yylval.boolean = 0; return BOOL_CONSTANT; }
 
     /* RELOP */ 
 ">"                 { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }

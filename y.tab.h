@@ -13,7 +13,7 @@
 
  #line 8 "/usr/share/bison++/bison.h"
 
-#line 12 "p_sint.y"
+#line 14 "p_sint.y"
 typedef union {int integer; float real; int boolean; char character; char* identifier;} yy_parse_stype;
 #define YY_parse_STYPE yy_parse_stype
 #ifndef YY_USE_CLASS

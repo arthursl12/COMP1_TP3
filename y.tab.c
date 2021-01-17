@@ -109,7 +109,9 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
     int symbolVal(char symbol);
     void updateSymbolVal(char symbol, int val);
 
-#line 12 "p_sint.y"
+    #define YYDEBUG 0
+
+#line 14 "p_sint.y"
 typedef union {int integer; float real; int boolean; char character; char* identifier;} yy_parse_stype;
 #define YY_parse_STYPE yy_parse_stype
 #ifndef YY_USE_CLASS
@@ -461,11 +463,11 @@ YY_parse_CONSTRUCTOR_CODE;
  #line 352 "/usr/share/bison++/bison.cc"
 
 
-#define	YYFINAL		5
+#define	YYFINAL		11
 #define	YYFLAG		-32768
 #define	YYNTBASE	13
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 267 ? yytranslate[x] : 14)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 267 ? yytranslate[x] : 16)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -499,58 +501,63 @@ static const char yytranslate[] = {     0,
 
 #if YY_parse_DEBUG != 0
 static const short yyprhs[] = {     0,
-     0,     2
+     0,     3,     5,     7,     9,    11,    13,    15
 };
 
-static const short yyrhs[] = {     8,
-     0,    11,     0
+static const short yyrhs[] = {    14,
+    13,     0,    14,     0,    11,     0,    15,     0,     8,     0,
+     9,     0,    12,     0,    10,     0
 };
 
 #endif
 
 #if (YY_parse_DEBUG != 0) || defined(YY_parse_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-    35,    36
+    35,    36,    38,    39,    41,    42,    43,    44
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","print","exit_command",
 "ADDOP","RELOP","MULOP","INT_CONSTANT","REAL_CONSTANT","BOOL_CONSTANT","IDENTIFIER",
-"CHAR_CONSTANT","term",""
+"CHAR_CONSTANT","expr","factor","constant",""
 };
 #endif
 
 static const short yyr1[] = {     0,
-    13,    13
+    13,    13,    14,    14,    15,    15,    15,    15
 };
 
 static const short yyr2[] = {     0,
-     1,     1
+     2,     1,     1,     1,     1,     1,     1,     1
 };
 
 static const short yydefact[] = {     0,
-     1,     2,     0,     0,     0
+     5,     6,     8,     3,     7,     2,     4,     1,     0,     0,
+     0
 };
 
-static const short yydefgoto[] = {     3
+static const short yydefgoto[] = {     8,
+     6,     7
 };
 
 static const short yypact[] = {    -8,
--32768,-32768,     1,     2,-32768
+-32768,-32768,-32768,-32768,-32768,    -8,-32768,-32768,     5,     6,
+-32768
 };
 
-static const short yypgoto[] = {-32768
+static const short yypgoto[] = {     7,
+-32768,-32768
 };
 
 
-#define	YYLAST		3
+#define	YYLAST		7
 
 
 static const short yytable[] = {     1,
-     4,     5,     2
+     2,     3,     4,     5,    10,    11,     9
 };
 
 static const short yycheck[] = {     8,
-     0,     0,    11
+     9,    10,    11,    12,     0,     0,     0
 };
 
 #line 352 "/usr/share/bison++/bison.cc"
@@ -1250,7 +1257,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "/usr/share/bison++/bison.cc"
-#line 39 "p_sint.y"
+#line 48 "p_sint.y"
                      /* C code */
 
 int computeSymbolIndex(char token)
@@ -1279,13 +1286,22 @@ void updateSymbolVal(char symbol, int val)
 }
 
 int main (void) {
+    #if YYDEBUG
+        yydebug = 1;     
+    #endif 
 	/* init symbol table */
 	int i;
 	for(i=0; i<52; i++) {
 		symbols[i] = 0;
 	}
 
-	return yyparse ( );
+    if (yyparse() == 0){
+        printf("Parse sucessful\n");
+        return 0;
+    }else{
+        return 1;
+    }
+	
 }
 
 void yyerror (char *s) {fprintf (stderr, "%s\n", s);} 

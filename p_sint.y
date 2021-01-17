@@ -7,6 +7,8 @@
     int symbols[52];
     int symbolVal(char symbol);
     void updateSymbolVal(char symbol, int val);
+
+    #define YYDEBUG 0
 %}
 
 %union {int integer; float real; int boolean; char character; char* identifier;}         /* Yacc definitions */
@@ -22,8 +24,7 @@
 %token <identifier> IDENTIFIER
 %token <character> CHAR_CONSTANT
 
-
-%start term
+%start expr
 // %type 
 // %type <num> line exp term 
 // %type <id> assignment
@@ -31,10 +32,18 @@
 %%
 
 /* descriptions of expected inputs     corresponding actions (in C) */
+expr        :   factor expr
+            |   factor
+            ;
+factor      :   IDENTIFIER
+            |   constant
+            ;
+constant    :   INT_CONSTANT        
+            |   REAL_CONSTANT
+            |   CHAR_CONSTANT
+            |   BOOL_CONSTANT   
+            ;
 
-term   	: INT_CONSTANT          
-		| IDENTIFIER			
-        ;
 
 %%                     /* C code */
 
@@ -64,13 +73,22 @@ void updateSymbolVal(char symbol, int val)
 }
 
 int main (void) {
+    #if YYDEBUG
+        yydebug = 1;     
+    #endif 
 	/* init symbol table */
 	int i;
 	for(i=0; i<52; i++) {
 		symbols[i] = 0;
 	}
 
-	return yyparse ( );
+    if (yyparse() == 0){
+        printf("Parse sucessful\n");
+        return 0;
+    }else{
+        return 1;
+    }
+	
 }
 
 void yyerror (char *s) {fprintf (stderr, "%s\n", s);} 

@@ -7,14 +7,18 @@ Terminals which are not used:
    ADDOP
    RELOP
    MULOP
-   REAL_CONSTANT
-   BOOL_CONSTANT
 
 
 
 Grammar
-rule 1    term -> INT_CONSTANT
-rule 2    term -> IDENTIFIER
+rule 1    expr -> factor expr
+rule 2    expr -> factor
+rule 3    factor -> IDENTIFIER
+rule 4    factor -> constant
+rule 5    constant -> INT_CONSTANT
+rule 6    constant -> REAL_CONSTANT
+rule 7    constant -> CHAR_CONSTANT
+rule 8    constant -> BOOL_CONSTANT
 
 Terminals, with rules where they appear
 
@@ -25,54 +29,123 @@ exit_command (259)
 ADDOP (260)
 RELOP (261)
 MULOP (262)
-INT_CONSTANT (263) 1
-REAL_CONSTANT (264)
-BOOL_CONSTANT (265)
-IDENTIFIER (266) 2
+INT_CONSTANT (263) 5
+REAL_CONSTANT (264) 6
+BOOL_CONSTANT (265) 8
+IDENTIFIER (266) 3
+CHAR_CONSTANT (267) 7
 
 Nonterminals, with rules where they appear
 
-term (12)
-    on left: 1 2
+expr (13)
+    on left: 1 2, on right: 1
+factor (14)
+    on left: 3 4, on right: 1 2
+constant (15)
+    on left: 5 6 7 8, on right: 4
 
 
 state 0
 
     INT_CONSTANT	shift, and go to state 1
-    IDENTIFIER	shift, and go to state 2
+    REAL_CONSTANT	shift, and go to state 2
+    BOOL_CONSTANT	shift, and go to state 3
+    IDENTIFIER	shift, and go to state 4
+    CHAR_CONSTANT	shift, and go to state 5
 
-    term	go to state 3
+    expr	go to state 9
+    factor	go to state 6
+    constant	go to state 7
 
 
 
 state 1
 
-    term  ->  INT_CONSTANT .   (rule 1)
+    constant  ->  INT_CONSTANT .   (rule 5)
 
-    $default	reduce using rule 1 (term)
+    $default	reduce using rule 5 (constant)
 
 
 
 state 2
 
-    term  ->  IDENTIFIER .   (rule 2)
+    constant  ->  REAL_CONSTANT .   (rule 6)
 
-    $default	reduce using rule 2 (term)
+    $default	reduce using rule 6 (constant)
 
 
 
 state 3
 
-    $   	go to state 4
+    constant  ->  BOOL_CONSTANT .   (rule 8)
+
+    $default	reduce using rule 8 (constant)
 
 
 
 state 4
 
-    $   	go to state 5
+    factor  ->  IDENTIFIER .   (rule 3)
+
+    $default	reduce using rule 3 (factor)
 
 
 
 state 5
+
+    constant  ->  CHAR_CONSTANT .   (rule 7)
+
+    $default	reduce using rule 7 (constant)
+
+
+
+state 6
+
+    expr  ->  factor . expr   (rule 1)
+    expr  ->  factor .   (rule 2)
+
+    INT_CONSTANT	shift, and go to state 1
+    REAL_CONSTANT	shift, and go to state 2
+    BOOL_CONSTANT	shift, and go to state 3
+    IDENTIFIER	shift, and go to state 4
+    CHAR_CONSTANT	shift, and go to state 5
+
+    $default	reduce using rule 2 (expr)
+
+    expr	go to state 8
+    factor	go to state 6
+    constant	go to state 7
+
+
+
+state 7
+
+    factor  ->  constant .   (rule 4)
+
+    $default	reduce using rule 4 (factor)
+
+
+
+state 8
+
+    expr  ->  factor expr .   (rule 1)
+
+    $default	reduce using rule 1 (expr)
+
+
+
+state 9
+
+    $   	go to state 10
+
+
+
+state 10
+
+    $   	go to state 11
+
+
+
+state 11
 
     $default	accept
