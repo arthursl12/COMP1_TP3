@@ -7,6 +7,7 @@
 extern int yylex();
 extern int yylineno;
 extern char* yytext;
+// extern YYSTYPE yylval; 
 
 int yywrap (void);
 int resWord(char* str, char* list[], int size);

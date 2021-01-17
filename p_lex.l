@@ -1,6 +1,9 @@
 %{
-    #include "tokens.h"
+    // #include "tokens.h"
     #include "aux.h"
+    #include "y.tab.h"
+    #include <stdlib.h>
+    void yyerror (char *s);
 %}
 /* Para usar o 'yylineno' (número da linha) */
 %option nounput yylineno   
@@ -26,7 +29,7 @@ id              {letter}({letter}|{digit})*
     /* Delimitadores e Espaços */
 {ws}                ;
     /* Constantes */
-{uint}              { printToken("Integer"); return INT_CONSTANT; }
+{uint}              { printToken("Integer"); yylval.integer = atoi(yytext); return INT_CONSTANT; }
 {ureal}             { printf("[%4d] Real: \t%s\n", yylineno, yytext); return REAL_CONSTANT; }
 {char}              { printf("[%4d] Char: \t%s\n", yylineno, yytext); return CHAR_CONSTANT; }
     /* Constantes Booleanas */

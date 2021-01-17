@@ -41,6 +41,7 @@ Retorna o token relativo ao identificador 'yytext' lido. Se for alguma palavra
 reservada ou função definida, será retornado um token apropriado.
 */
 int tokenId(){
+    yylval.identifier = *yytext;
     if (resWord(yytext, reserved, reservedSize) != -1){
         // Palavra reservada
         printf("[%4d] Reserved: \t%s\n", yylineno, yytext);

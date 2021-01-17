@@ -1,19 +1,19 @@
 #include <stdio.h>
-#include "tokens.h"
+// #include "tokens.h"
 #include "aux.h"
 
 
 
-int main (int argc, char* argv[]){
-    int ntoken, vtoken;
+// int main (int argc, char* argv[]){
+//     int ntoken, vtoken;
 
-    ntoken = yylex();
-    while (ntoken){
-        // printf("%d\n", ntoken);
-        ntoken = yylex();
-    }
-    return 0;
-} 
+//     ntoken = yylex();
+//     while (ntoken){
+//         // printf("%d\n", ntoken);
+//         ntoken = yylex();
+//     }
+//     return 0;
+// } 
 
 // int main(int argc, char* argv[]){
 //     int ntoken, vtoken;
