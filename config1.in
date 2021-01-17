@@ -1,23 +1,23 @@
-false
+false,
 
-1.1
-10
-793.003E-0053
-793.003E+0053
-' '
-'a'
-ttttrue
-trueaaaa
+1.1,
+10,
+793.003E-0053,
+793.003E+0053,
+' ',
+'a',
+ttttrue,
+trueaaaa,
 
-true
-trueaaaa
-tttfalse
+true,
+trueaaaa,
+tttfalse,
 
-falseaaa
-12 >= 32E+2
-31.01 != 12.001E-5
-32 + 31
-32 div 32
+falseaaa,
+12 >= 32E+2,
+31.01 != 12.001E-5,
+32 + 31,
+32 div 32,
 if then else
 cos
 program

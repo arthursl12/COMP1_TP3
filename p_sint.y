@@ -8,7 +8,7 @@
     int symbolVal(char symbol);
     void updateSymbolVal(char symbol, int val);
 
-    #define YYDEBUG 0
+    #define YYDEBUG 1
 %}
 
 %union {int integer; float real; int boolean; char character; char* identifier;}         /* Yacc definitions */
@@ -24,7 +24,7 @@
 %token <identifier> IDENTIFIER
 %token <character> CHAR_CONSTANT
 
-%start expr
+%start expr_list
 // %type 
 // %type <num> line exp term 
 // %type <id> assignment
@@ -32,8 +32,17 @@
 %%
 
 /* descriptions of expected inputs     corresponding actions (in C) */
-expr        :   factor expr
-            |   factor
+expr_list   :   expr
+            |   expr_list ',' expr
+            ;
+expr        :   simple_expr
+            |   simple_expr RELOP simple_expr
+            ;
+simple_expr :   term
+            |   simple_expr ADDOP term
+            ;
+term        :   factor
+            |   term MULOP factor
             ;
 factor      :   IDENTIFIER
             |   constant

@@ -58,6 +58,7 @@ id              {letter}({letter}|{digit})*
 
 {id}                { return tokenId(); }
 
+","                 { return *yytext; }
 .                   printf("Unexpected character\n");
 
 
