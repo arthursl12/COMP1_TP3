@@ -45,6 +45,7 @@ id              {letter}({letter}|{digit})*
 "="                 { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
 "!="                { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
 "NOT"               { printf("[%4d] NOT: \t%s\n", yylineno, yytext); return NOT; }
+
     /* ADDOP */
 "+"                 { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
 "or"                { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
@@ -57,14 +58,22 @@ id              {letter}({letter}|{digit})*
 "div"               { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 "mod"               { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 "and"               { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
+    /* ASSIGN */
+":="                { printf("[%4d] Assign: \t%s\n", yylineno, yytext); return ASSIGN; }
+
     /* Identificadores e Palavras Reservadas */
 {id}                { return tokenId(); }
 
+    /* Símbolos especiais */
+":"                 { return *yytext; }
+";"                 { return *yytext; }
 ","                 { return *yytext; }
 ")"                 { return *yytext; }
 "("                 { return *yytext; }
+
+    /* Qualquer outro deve ser ignorado */
 .                   printf("Unexpected character\n");
 
 
 %%
-/* Funções auxiliares no 'scanner.c' */
+/* Funções auxiliares no 'aux.c' */

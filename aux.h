@@ -7,9 +7,9 @@
 extern int yylex();
 extern int yylineno;
 extern char* yytext;
-// extern YYSTYPE yylval; 
 
 int yywrap (void);
+int resWordId(char* str);
 int resWord(char* str, char* list[], int size);
 int tokenId();
 void printToken(char* tokenName);

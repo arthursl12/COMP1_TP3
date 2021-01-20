@@ -193,12 +193,29 @@ typedef
 #define	RELOP	261
 #define	MULOP	262
 #define	NOT	263
-#define	INT_CONSTANT	264
-#define	REAL_CONSTANT	265
-#define	BOOL_CONSTANT	266
-#define	IDENTIFIER	267
-#define	CHAR_CONSTANT	268
-#define	UMINUS	269
+#define	ASSIGN	264
+#define	INT_CONSTANT	265
+#define	REAL_CONSTANT	266
+#define	BOOL_CONSTANT	267
+#define	IDENTIFIER	268
+#define	CHAR_CONSTANT	269
+#define	PROGRAM	270
+#define	INTEGER	271
+#define	REAL	272
+#define	BOOLEAN	273
+#define	CHAR	274
+#define	BEGIN_STMT	275
+#define	END	276
+#define	IF	277
+#define	THEN	278
+#define	ELSE	279
+#define	DO	280
+#define	WHILE	281
+#define	UNTIL	282
+#define	READ	283
+#define	WRITE	284
+#define	GOTO	285
+#define	UMINUS	286
 
 
 #line 169 "/usr/share/bison++/bison.h"
@@ -253,11 +270,28 @@ static const int ADDOP;
 static const int RELOP;
 static const int MULOP;
 static const int NOT;
+static const int ASSIGN;
 static const int INT_CONSTANT;
 static const int REAL_CONSTANT;
 static const int BOOL_CONSTANT;
 static const int IDENTIFIER;
 static const int CHAR_CONSTANT;
+static const int PROGRAM;
+static const int INTEGER;
+static const int REAL;
+static const int BOOLEAN;
+static const int CHAR;
+static const int BEGIN_STMT;
+static const int END;
+static const int IF;
+static const int THEN;
+static const int ELSE;
+static const int DO;
+static const int WHILE;
+static const int UNTIL;
+static const int READ;
+static const int WRITE;
+static const int GOTO;
 static const int UMINUS;
 
 
@@ -273,12 +307,29 @@ static const int UMINUS;
 	,RELOP=261
 	,MULOP=262
 	,NOT=263
-	,INT_CONSTANT=264
-	,REAL_CONSTANT=265
-	,BOOL_CONSTANT=266
-	,IDENTIFIER=267
-	,CHAR_CONSTANT=268
-	,UMINUS=269
+	,ASSIGN=264
+	,INT_CONSTANT=265
+	,REAL_CONSTANT=266
+	,BOOL_CONSTANT=267
+	,IDENTIFIER=268
+	,CHAR_CONSTANT=269
+	,PROGRAM=270
+	,INTEGER=271
+	,REAL=272
+	,BOOLEAN=273
+	,CHAR=274
+	,BEGIN_STMT=275
+	,END=276
+	,IF=277
+	,THEN=278
+	,ELSE=279
+	,DO=280
+	,WHILE=281
+	,UNTIL=282
+	,READ=283
+	,WRITE=284
+	,GOTO=285
+	,UMINUS=286
 
 
 #line 215 "/usr/share/bison++/bison.h"

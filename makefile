@@ -6,7 +6,9 @@ all: aux.o
 	# ./p_lex < config0.in
 	# ./p_lex < config1.in
 	# ./p_lex < config2.in
-	./p_lex < config3.in
+	# ./p_lex < config3.in
+	./p_lex < config4.in
+
 
 
 

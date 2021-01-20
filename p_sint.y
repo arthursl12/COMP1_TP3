@@ -15,21 +15,37 @@
 
 %token print
 %token exit_command
+
+/* Tokens */
 %token ADDOP
 %token RELOP
 %token MULOP
 %token NOT
+%token ASSIGN
 %token <integer> INT_CONSTANT
 %token <real> REAL_CONSTANT
 %token <boolean> BOOL_CONSTANT
 %token <identifier> IDENTIFIER
 %token <character> CHAR_CONSTANT
 
-%start expr_list
+/* Tokens de Palavras Reservadas */
+%token PROGRAM
+%token INTEGER REAL BOOLEAN CHAR
+%token BEGIN_STMT END
+%token IF THEN ELSE
+%token DO WHILE
+%token UNTIL END
+%token READ WRITE GOTO
 
+/* Símbolo de partida */
+%start compound_stmt
+
+/* Associatividade e Precedência */
 %left ADDOP MULOP
 %right UMINUS
 %nonassoc RELOP
+%nonassoc THEN
+%nonassoc ELSE
 // %type 
 // %type <num> line exp term 
 // %type <id> assignment
@@ -37,6 +53,26 @@
 %%
 
 /* descriptions of expected inputs     corresponding actions (in C) */
+compound_stmt           :   BEGIN_STMT stmt_list END
+                        ;
+stmt_list               :   stmt_list ';' stmt
+                        |   stmt
+                        ;
+stmt                    :   label ':' unlabelled_stmt
+                        |   unlabelled_stmt
+                        ;
+label                   :   IDENTIFIER
+                        ;
+unlabelled_stmt         :   assign_stmt
+                        |   if_stmt
+                        ;
+cond                    :   expr
+                        ;
+assign_stmt             :   IDENTIFIER ASSIGN expr
+                        ;
+if_stmt                 :   IF cond THEN stmt   %prec THEN
+                        |   IF cond THEN stmt ELSE stmt
+                        ;
 expr_list               :   expr
                         |   expr_list ',' expr
                         ;
