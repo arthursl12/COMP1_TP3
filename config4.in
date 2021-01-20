@@ -1,6 +1,12 @@
 begin
     if true then
-        a + b    
+        c := a + b    
     else
-        a - b
+        d := a - b;
+    if true then
+        c := a + b    
+    else
+        d := a - b;
+    var12 := 35 + d;
+    var12 := var12 + var12
 end

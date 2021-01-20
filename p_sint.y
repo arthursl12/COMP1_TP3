@@ -46,6 +46,7 @@
 %nonassoc RELOP
 %nonassoc THEN
 %nonassoc ELSE
+%nonassoc IDX
 // %type 
 // %type <num> line exp term 
 // %type <id> assignment
@@ -61,10 +62,11 @@ stmt_list               :   stmt_list ';' stmt
 stmt                    :   label ':' unlabelled_stmt
                         |   unlabelled_stmt
                         ;
-label                   :   IDENTIFIER
+label                   :   IDENTIFIER 
                         ;
 unlabelled_stmt         :   assign_stmt
                         |   if_stmt
+                        |   compound_stmt
                         ;
 cond                    :   expr
                         ;
@@ -86,8 +88,7 @@ simple_expr             :   term
 term                    :   factor_a
                         |   term MULOP factor_a
                         ;
-function_ref            :   IDENTIFIER
-                        |   function_ref_par
+function_ref            :   function_ref_par
                         ;
 function_ref_par        :   variable '(' expr_list ')'
                         ;
@@ -99,7 +100,7 @@ simple_variable_or_proc :   IDENTIFIER
 factor_a                :   '-'factor %prec UMINUS
                         |   factor
                         ;
-factor                  :   IDENTIFIER
+factor                  :   IDENTIFIER  %prec IDX
                         |   constant
                         |   '(' expr ')'
                         |   function_ref

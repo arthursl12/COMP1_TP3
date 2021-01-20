@@ -216,6 +216,7 @@ typedef
 #define	WRITE	284
 #define	GOTO	285
 #define	UMINUS	286
+#define	IDX	287
 
 
 #line 169 "/usr/share/bison++/bison.h"
@@ -293,6 +294,7 @@ static const int READ;
 static const int WRITE;
 static const int GOTO;
 static const int UMINUS;
+static const int IDX;
 
 
 #line 212 "/usr/share/bison++/bison.h"
@@ -330,6 +332,7 @@ static const int UMINUS;
 	,WRITE=284
 	,GOTO=285
 	,UMINUS=286
+	,IDX=287
 
 
 #line 215 "/usr/share/bison++/bison.h"
