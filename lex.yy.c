@@ -295,12 +295,12 @@ static yyconst short int yy_acclist[100] =
     {   0,
        26,   24,   25,    1,   24,   25,    1,   25,   24,   25,
        24,   25,   17,   24,   25,   14,   24,   25,   23,   24,
-       25,   15,   24,   25,   18,   24,   25,    2,    3,   24,
+       25,   16,   24,   25,   18,   24,   25,    2,    3,   24,
        25,    9,   24,   25,   11,   24,   25,    7,   24,   25,
        22,   24,   25,   22,   24,   25,   22,   24,   25,   22,
        24,   25,   22,   24,   25,   22,   24,   25,   22,   24,
        25,   22,   24,   25,    1,   12,    3,    2,    3,   10,
-        8,   22,   22,   22,   22,   22,   22,   16,   22,   22,
+        8,   22,   22,   22,   22,   22,   22,   15,   22,   22,
         4,    3,    3,   13,   22,   21,   22,   19,   22,   22,
        20,   22,   22,    3,   22,    5,   22,    6,   22
 
@@ -774,58 +774,60 @@ YY_RULE_SETUP
 #line 50 "p_lex.l"
 { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
 	YY_BREAK
+/* Minus: special case */
 case 16:
 YY_RULE_SETUP
-#line 51 "p_lex.l"
-{ printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
+#line 52 "p_lex.l"
+{ printf("[%4d] Minus: \t%s\n", yylineno, yytext); return *yytext; }
 	YY_BREAK
 /* MULOP */
 case 17:
 YY_RULE_SETUP
-#line 53 "p_lex.l"
+#line 55 "p_lex.l"
 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 54 "p_lex.l"
+#line 56 "p_lex.l"
 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 55 "p_lex.l"
+#line 57 "p_lex.l"
 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 56 "p_lex.l"
+#line 58 "p_lex.l"
 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 57 "p_lex.l"
+#line 59 "p_lex.l"
 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 	YY_BREAK
+/* Identificadores e Palavras Reservadas */
 case 22:
 YY_RULE_SETUP
-#line 59 "p_lex.l"
+#line 61 "p_lex.l"
 { return tokenId(); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 61 "p_lex.l"
+#line 63 "p_lex.l"
 { return *yytext; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 62 "p_lex.l"
+#line 64 "p_lex.l"
 printf("Unexpected character\n");
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 65 "p_lex.l"
+#line 67 "p_lex.l"
 ECHO;
 	YY_BREAK
-#line 829 "lex.yy.c"
+#line 831 "lex.yy.c"
 			case YY_STATE_EOF(INITIAL):
 				yyterminate();
 
@@ -1713,6 +1715,6 @@ int main()
 	return 0;
 	}
 #endif
-#line 65 "p_lex.l"
+#line 67 "p_lex.l"
 
 /* Funções auxiliares no 'scanner.c' */

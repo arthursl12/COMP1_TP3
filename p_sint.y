@@ -25,6 +25,10 @@
 %token <character> CHAR_CONSTANT
 
 %start expr_list
+
+%left ADDOP MULOP
+%right UMINUS
+%nonassoc RELOP
 // %type 
 // %type <num> line exp term 
 // %type <id> assignment
@@ -40,9 +44,13 @@ expr        :   simple_expr
             ;
 simple_expr :   term
             |   simple_expr ADDOP term
+            |   simple_expr '-' term
             ;
-term        :   factor
-            |   term MULOP factor
+term        :   factor_a
+            |   term MULOP factor_a
+            ;
+factor_a    :   '-'factor %prec UMINUS
+            |   factor
             ;
 factor      :   IDENTIFIER
             |   constant

@@ -197,6 +197,7 @@ typedef
 #define	BOOL_CONSTANT	265
 #define	IDENTIFIER	266
 #define	CHAR_CONSTANT	267
+#define	UMINUS	268
 
 
 #line 169 "/usr/share/bison++/bison.h"
@@ -255,6 +256,7 @@ static const int REAL_CONSTANT;
 static const int BOOL_CONSTANT;
 static const int IDENTIFIER;
 static const int CHAR_CONSTANT;
+static const int UMINUS;
 
 
 #line 212 "/usr/share/bison++/bison.h"
@@ -273,6 +275,7 @@ static const int CHAR_CONSTANT;
 	,BOOL_CONSTANT=265
 	,IDENTIFIER=266
 	,CHAR_CONSTANT=267
+	,UMINUS=268
 
 
 #line 215 "/usr/share/bison++/bison.h"

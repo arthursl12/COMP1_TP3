@@ -47,15 +47,17 @@ id              {letter}({letter}|{digit})*
 "NOT"               { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
     /* ADDOP */
 "+"                 { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
-"-"                 { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
 "or"                { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
+    /* Minus: special case */
+"-"                 { printf("[%4d] Minus: \t%s\n", yylineno, yytext); return *yytext; }
+
     /* MULOP */
 "*"                 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 "/"                 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 "div"               { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 "mod"               { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 "and"               { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
-
+    /* Identificadores e Palavras Reservadas */
 {id}                { return tokenId(); }
 
 ","                 { return *yytext; }
