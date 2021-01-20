@@ -5,7 +5,9 @@ all: aux.o
 	gcc aux.o scanner.c lex.yy.c  y.tab.c -o p_lex 
 	# ./p_lex < config0.in
 	# ./p_lex < config1.in
-	./p_lex < config2.in
+	# ./p_lex < config2.in
+	./p_lex < config3.in
+
 
 
 aux.o:
