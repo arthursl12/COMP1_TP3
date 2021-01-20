@@ -44,7 +44,7 @@ id              {letter}({letter}|{digit})*
 "<="                { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
 "="                 { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
 "!="                { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
-"NOT"               { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+"NOT"               { printf("[%4d] NOT: \t%s\n", yylineno, yytext); return NOT; }
     /* ADDOP */
 "+"                 { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
 "or"                { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }

@@ -18,6 +18,7 @@
 %token ADDOP
 %token RELOP
 %token MULOP
+%token NOT
 %token <integer> INT_CONSTANT
 %token <real> REAL_CONSTANT
 %token <boolean> BOOL_CONSTANT
@@ -36,30 +37,35 @@
 %%
 
 /* descriptions of expected inputs     corresponding actions (in C) */
-expr_list   :   expr
-            |   expr_list ',' expr
-            ;
-expr        :   simple_expr
-            |   simple_expr RELOP simple_expr
-            ;
-simple_expr :   term
-            |   simple_expr ADDOP term
-            |   simple_expr '-' term
-            ;
-term        :   factor_a
-            |   term MULOP factor_a
-            ;
-factor_a    :   '-'factor %prec UMINUS
-            |   factor
-            ;
-factor      :   IDENTIFIER
-            |   constant
-            ;
-constant    :   INT_CONSTANT        
-            |   REAL_CONSTANT
-            |   CHAR_CONSTANT
-            |   BOOL_CONSTANT   
-            ;
+expr_list       :   expr
+                |   expr_list ',' expr
+                ;
+expr            :   simple_expr
+                |   simple_expr RELOP simple_expr
+                ;
+simple_expr     :   term
+                |   simple_expr ADDOP term
+                |   simple_expr '-' term
+                ;
+term            :   factor_a
+                |   term MULOP factor_a
+                ;
+function_ref    :   IDENTIFIER
+                ;
+factor_a        :   '-'factor %prec UMINUS
+                |   factor
+                ;
+factor          :   IDENTIFIER
+                |   constant
+                |   '(' expr ')'
+                |   function_ref
+                |   NOT factor
+                ;
+constant        :   INT_CONSTANT        
+                |   REAL_CONSTANT
+                |   CHAR_CONSTANT
+                |   BOOL_CONSTANT   
+                ;
 
 
 %%                     /* C code */

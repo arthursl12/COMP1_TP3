@@ -761,7 +761,7 @@ YY_RULE_SETUP
 case 13:
 YY_RULE_SETUP
 #line 47 "p_lex.l"
-{ printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+{ printf("[%4d] NOT: \t%s\n", yylineno, yytext); return NOT; }
 	YY_BREAK
 /* ADDOP */
 case 14:

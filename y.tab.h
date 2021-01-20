@@ -192,12 +192,13 @@ typedef
 #define	ADDOP	260
 #define	RELOP	261
 #define	MULOP	262
-#define	INT_CONSTANT	263
-#define	REAL_CONSTANT	264
-#define	BOOL_CONSTANT	265
-#define	IDENTIFIER	266
-#define	CHAR_CONSTANT	267
-#define	UMINUS	268
+#define	NOT	263
+#define	INT_CONSTANT	264
+#define	REAL_CONSTANT	265
+#define	BOOL_CONSTANT	266
+#define	IDENTIFIER	267
+#define	CHAR_CONSTANT	268
+#define	UMINUS	269
 
 
 #line 169 "/usr/share/bison++/bison.h"
@@ -251,6 +252,7 @@ static const int exit_command;
 static const int ADDOP;
 static const int RELOP;
 static const int MULOP;
+static const int NOT;
 static const int INT_CONSTANT;
 static const int REAL_CONSTANT;
 static const int BOOL_CONSTANT;
@@ -270,12 +272,13 @@ static const int UMINUS;
 	,ADDOP=260
 	,RELOP=261
 	,MULOP=262
-	,INT_CONSTANT=263
-	,REAL_CONSTANT=264
-	,BOOL_CONSTANT=265
-	,IDENTIFIER=266
-	,CHAR_CONSTANT=267
-	,UMINUS=268
+	,NOT=263
+	,INT_CONSTANT=264
+	,REAL_CONSTANT=265
+	,BOOL_CONSTANT=266
+	,IDENTIFIER=267
+	,CHAR_CONSTANT=268
+	,UMINUS=269
 
 
 #line 215 "/usr/share/bison++/bison.h"

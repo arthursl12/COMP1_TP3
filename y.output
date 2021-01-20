@@ -6,6 +6,7 @@ Terminals which are not used:
    exit_command
 
 
+State 5 contains 7 reduce/reduce conflicts.
 
 Grammar
 rule 1    expr_list -> expr
@@ -17,135 +18,206 @@ rule 6    simple_expr -> simple_expr ADDOP term
 rule 7    simple_expr -> simple_expr '-' term
 rule 8    term -> factor_a
 rule 9    term -> term MULOP factor_a
-rule 10   factor_a -> '-' factor
-rule 11   factor_a -> factor
-rule 12   factor -> IDENTIFIER
-rule 13   factor -> constant
-rule 14   constant -> INT_CONSTANT
-rule 15   constant -> REAL_CONSTANT
-rule 16   constant -> CHAR_CONSTANT
-rule 17   constant -> BOOL_CONSTANT
+rule 10   function_ref -> IDENTIFIER
+rule 11   factor_a -> '-' factor
+rule 12   factor_a -> factor
+rule 13   factor -> IDENTIFIER
+rule 14   factor -> constant
+rule 15   factor -> '(' expr ')'
+rule 16   factor -> function_ref
+rule 17   factor -> NOT factor
+rule 18   constant -> INT_CONSTANT
+rule 19   constant -> REAL_CONSTANT
+rule 20   constant -> CHAR_CONSTANT
+rule 21   constant -> BOOL_CONSTANT
 
 Terminals, with rules where they appear
 
 $ (-1)
+'(' (40) 15
+')' (41) 15
 ',' (44) 2
-'-' (45) 7 10
+'-' (45) 7 11
 error (256)
 print (258)
 exit_command (259)
 ADDOP (260) 6
 RELOP (261) 4
 MULOP (262) 9
-INT_CONSTANT (263) 14
-REAL_CONSTANT (264) 15
-BOOL_CONSTANT (265) 17
-IDENTIFIER (266) 12
-CHAR_CONSTANT (267) 16
-UMINUS (268)
+NOT (263) 17
+INT_CONSTANT (264) 18
+REAL_CONSTANT (265) 19
+BOOL_CONSTANT (266) 21
+IDENTIFIER (267) 10 13
+CHAR_CONSTANT (268) 20
+UMINUS (269)
 
 Nonterminals, with rules where they appear
 
-expr_list (16)
+expr_list (19)
     on left: 1 2, on right: 2
-expr (17)
-    on left: 3 4, on right: 1 2
-simple_expr (18)
+expr (20)
+    on left: 3 4, on right: 1 2 15
+simple_expr (21)
     on left: 5 6 7, on right: 3 4 6 7
-term (19)
+term (22)
     on left: 8 9, on right: 5 6 7 9
-factor_a (20)
-    on left: 10 11, on right: 8 9
-factor (21)
-    on left: 12 13, on right: 10 11
-constant (22)
-    on left: 14 15 16 17, on right: 13
+function_ref (23)
+    on left: 10, on right: 16
+factor_a (24)
+    on left: 11 12, on right: 8 9
+factor (25)
+    on left: 13 14 15 16 17, on right: 11 12 17
+constant (26)
+    on left: 18 19 20 21, on right: 14
 
 
 state 0
 
-    INT_CONSTANT	shift, and go to state 1
-    REAL_CONSTANT	shift, and go to state 2
-    BOOL_CONSTANT	shift, and go to state 3
-    IDENTIFIER	shift, and go to state 4
-    CHAR_CONSTANT	shift, and go to state 5
-    '-' 	shift, and go to state 6
+    NOT 	shift, and go to state 1
+    INT_CONSTANT	shift, and go to state 2
+    REAL_CONSTANT	shift, and go to state 3
+    BOOL_CONSTANT	shift, and go to state 4
+    IDENTIFIER	shift, and go to state 5
+    CHAR_CONSTANT	shift, and go to state 6
+    '-' 	shift, and go to state 7
+    '(' 	shift, and go to state 8
 
-    expr_list	go to state 7
-    expr	go to state 8
-    simple_expr	go to state 9
-    term	go to state 10
-    factor_a	go to state 11
-    factor	go to state 12
-    constant	go to state 13
+    expr_list	go to state 9
+    expr	go to state 10
+    simple_expr	go to state 11
+    term	go to state 12
+    function_ref	go to state 13
+    factor_a	go to state 14
+    factor	go to state 15
+    constant	go to state 16
 
 
 
 state 1
 
-    constant  ->  INT_CONSTANT .   (rule 14)
+    factor  ->  NOT . factor   (rule 17)
 
-    $default	reduce using rule 14 (constant)
+    NOT 	shift, and go to state 1
+    INT_CONSTANT	shift, and go to state 2
+    REAL_CONSTANT	shift, and go to state 3
+    BOOL_CONSTANT	shift, and go to state 4
+    IDENTIFIER	shift, and go to state 5
+    CHAR_CONSTANT	shift, and go to state 6
+    '(' 	shift, and go to state 8
+
+    function_ref	go to state 13
+    factor	go to state 17
+    constant	go to state 16
 
 
 
 state 2
 
-    constant  ->  REAL_CONSTANT .   (rule 15)
+    constant  ->  INT_CONSTANT .   (rule 18)
 
-    $default	reduce using rule 15 (constant)
+    $default	reduce using rule 18 (constant)
 
 
 
 state 3
 
-    constant  ->  BOOL_CONSTANT .   (rule 17)
+    constant  ->  REAL_CONSTANT .   (rule 19)
 
-    $default	reduce using rule 17 (constant)
+    $default	reduce using rule 19 (constant)
 
 
 
 state 4
 
-    factor  ->  IDENTIFIER .   (rule 12)
+    constant  ->  BOOL_CONSTANT .   (rule 21)
 
-    $default	reduce using rule 12 (factor)
+    $default	reduce using rule 21 (constant)
 
 
 
 state 5
 
-    constant  ->  CHAR_CONSTANT .   (rule 16)
+    function_ref  ->  IDENTIFIER .   (rule 10)
+    factor  ->  IDENTIFIER .   (rule 13)
 
-    $default	reduce using rule 16 (constant)
+    $   	reduce using rule 10 (function_ref)
+    $   	[reduce using rule 13 (factor)]
+    ADDOP	reduce using rule 10 (function_ref)
+    ADDOP	[reduce using rule 13 (factor)]
+    RELOP	reduce using rule 10 (function_ref)
+    RELOP	[reduce using rule 13 (factor)]
+    MULOP	reduce using rule 10 (function_ref)
+    MULOP	[reduce using rule 13 (factor)]
+    ',' 	reduce using rule 10 (function_ref)
+    ',' 	[reduce using rule 13 (factor)]
+    '-' 	reduce using rule 10 (function_ref)
+    '-' 	[reduce using rule 13 (factor)]
+    ')' 	reduce using rule 10 (function_ref)
+    ')' 	[reduce using rule 13 (factor)]
+    $default	reduce using rule 10 (function_ref)
 
 
 
 state 6
 
-    factor_a  ->  '-' . factor   (rule 10)
+    constant  ->  CHAR_CONSTANT .   (rule 20)
 
-    INT_CONSTANT	shift, and go to state 1
-    REAL_CONSTANT	shift, and go to state 2
-    BOOL_CONSTANT	shift, and go to state 3
-    IDENTIFIER	shift, and go to state 4
-    CHAR_CONSTANT	shift, and go to state 5
-
-    factor	go to state 14
-    constant	go to state 13
+    $default	reduce using rule 20 (constant)
 
 
 
 state 7
 
-    expr_list  ->  expr_list . ',' expr   (rule 2)
+    factor_a  ->  '-' . factor   (rule 11)
 
-    $   	go to state 25
-    ',' 	shift, and go to state 15
+    NOT 	shift, and go to state 1
+    INT_CONSTANT	shift, and go to state 2
+    REAL_CONSTANT	shift, and go to state 3
+    BOOL_CONSTANT	shift, and go to state 4
+    IDENTIFIER	shift, and go to state 5
+    CHAR_CONSTANT	shift, and go to state 6
+    '(' 	shift, and go to state 8
+
+    function_ref	go to state 13
+    factor	go to state 18
+    constant	go to state 16
 
 
 
 state 8
+
+    factor  ->  '(' . expr ')'   (rule 15)
+
+    NOT 	shift, and go to state 1
+    INT_CONSTANT	shift, and go to state 2
+    REAL_CONSTANT	shift, and go to state 3
+    BOOL_CONSTANT	shift, and go to state 4
+    IDENTIFIER	shift, and go to state 5
+    CHAR_CONSTANT	shift, and go to state 6
+    '-' 	shift, and go to state 7
+    '(' 	shift, and go to state 8
+
+    expr	go to state 19
+    simple_expr	go to state 11
+    term	go to state 12
+    function_ref	go to state 13
+    factor_a	go to state 14
+    factor	go to state 15
+    constant	go to state 16
+
+
+
+state 9
+
+    expr_list  ->  expr_list . ',' expr   (rule 2)
+
+    $   	go to state 31
+    ',' 	shift, and go to state 20
+
+
+
+state 10
 
     expr_list  ->  expr .   (rule 1)
 
@@ -153,33 +225,41 @@ state 8
 
 
 
-state 9
+state 11
 
     expr  ->  simple_expr .   (rule 3)
     expr  ->  simple_expr . RELOP simple_expr   (rule 4)
     simple_expr  ->  simple_expr . ADDOP term   (rule 6)
     simple_expr  ->  simple_expr . '-' term   (rule 7)
 
-    ADDOP	shift, and go to state 16
-    RELOP	shift, and go to state 17
-    '-' 	shift, and go to state 18
+    ADDOP	shift, and go to state 21
+    RELOP	shift, and go to state 22
+    '-' 	shift, and go to state 23
 
     $default	reduce using rule 3 (expr)
 
 
 
-state 10
+state 12
 
     simple_expr  ->  term .   (rule 5)
     term  ->  term . MULOP factor_a   (rule 9)
 
-    MULOP	shift, and go to state 19
+    MULOP	shift, and go to state 24
 
     $default	reduce using rule 5 (simple_expr)
 
 
 
-state 11
+state 13
+
+    factor  ->  function_ref .   (rule 16)
+
+    $default	reduce using rule 16 (factor)
+
+
+
+state 14
 
     term  ->  factor_a .   (rule 8)
 
@@ -187,123 +267,162 @@ state 11
 
 
 
-state 12
-
-    factor_a  ->  factor .   (rule 11)
-
-    $default	reduce using rule 11 (factor_a)
-
-
-
-state 13
-
-    factor  ->  constant .   (rule 13)
-
-    $default	reduce using rule 13 (factor)
-
-
-
-state 14
-
-    factor_a  ->  '-' factor .   (rule 10)
-
-    $default	reduce using rule 10 (factor_a)
-
-
-
 state 15
 
-    expr_list  ->  expr_list ',' . expr   (rule 2)
+    factor_a  ->  factor .   (rule 12)
 
-    INT_CONSTANT	shift, and go to state 1
-    REAL_CONSTANT	shift, and go to state 2
-    BOOL_CONSTANT	shift, and go to state 3
-    IDENTIFIER	shift, and go to state 4
-    CHAR_CONSTANT	shift, and go to state 5
-    '-' 	shift, and go to state 6
-
-    expr	go to state 20
-    simple_expr	go to state 9
-    term	go to state 10
-    factor_a	go to state 11
-    factor	go to state 12
-    constant	go to state 13
+    $default	reduce using rule 12 (factor_a)
 
 
 
 state 16
 
-    simple_expr  ->  simple_expr ADDOP . term   (rule 6)
+    factor  ->  constant .   (rule 14)
 
-    INT_CONSTANT	shift, and go to state 1
-    REAL_CONSTANT	shift, and go to state 2
-    BOOL_CONSTANT	shift, and go to state 3
-    IDENTIFIER	shift, and go to state 4
-    CHAR_CONSTANT	shift, and go to state 5
-    '-' 	shift, and go to state 6
-
-    term	go to state 21
-    factor_a	go to state 11
-    factor	go to state 12
-    constant	go to state 13
+    $default	reduce using rule 14 (factor)
 
 
 
 state 17
 
-    expr  ->  simple_expr RELOP . simple_expr   (rule 4)
+    factor  ->  NOT factor .   (rule 17)
 
-    INT_CONSTANT	shift, and go to state 1
-    REAL_CONSTANT	shift, and go to state 2
-    BOOL_CONSTANT	shift, and go to state 3
-    IDENTIFIER	shift, and go to state 4
-    CHAR_CONSTANT	shift, and go to state 5
-    '-' 	shift, and go to state 6
-
-    simple_expr	go to state 22
-    term	go to state 10
-    factor_a	go to state 11
-    factor	go to state 12
-    constant	go to state 13
+    $default	reduce using rule 17 (factor)
 
 
 
 state 18
 
-    simple_expr  ->  simple_expr '-' . term   (rule 7)
+    factor_a  ->  '-' factor .   (rule 11)
 
-    INT_CONSTANT	shift, and go to state 1
-    REAL_CONSTANT	shift, and go to state 2
-    BOOL_CONSTANT	shift, and go to state 3
-    IDENTIFIER	shift, and go to state 4
-    CHAR_CONSTANT	shift, and go to state 5
-    '-' 	shift, and go to state 6
-
-    term	go to state 23
-    factor_a	go to state 11
-    factor	go to state 12
-    constant	go to state 13
+    $default	reduce using rule 11 (factor_a)
 
 
 
 state 19
 
-    term  ->  term MULOP . factor_a   (rule 9)
+    factor  ->  '(' expr . ')'   (rule 15)
 
-    INT_CONSTANT	shift, and go to state 1
-    REAL_CONSTANT	shift, and go to state 2
-    BOOL_CONSTANT	shift, and go to state 3
-    IDENTIFIER	shift, and go to state 4
-    CHAR_CONSTANT	shift, and go to state 5
-    '-' 	shift, and go to state 6
-
-    factor_a	go to state 24
-    factor	go to state 12
-    constant	go to state 13
+    ')' 	shift, and go to state 25
 
 
 
 state 20
+
+    expr_list  ->  expr_list ',' . expr   (rule 2)
+
+    NOT 	shift, and go to state 1
+    INT_CONSTANT	shift, and go to state 2
+    REAL_CONSTANT	shift, and go to state 3
+    BOOL_CONSTANT	shift, and go to state 4
+    IDENTIFIER	shift, and go to state 5
+    CHAR_CONSTANT	shift, and go to state 6
+    '-' 	shift, and go to state 7
+    '(' 	shift, and go to state 8
+
+    expr	go to state 26
+    simple_expr	go to state 11
+    term	go to state 12
+    function_ref	go to state 13
+    factor_a	go to state 14
+    factor	go to state 15
+    constant	go to state 16
+
+
+
+state 21
+
+    simple_expr  ->  simple_expr ADDOP . term   (rule 6)
+
+    NOT 	shift, and go to state 1
+    INT_CONSTANT	shift, and go to state 2
+    REAL_CONSTANT	shift, and go to state 3
+    BOOL_CONSTANT	shift, and go to state 4
+    IDENTIFIER	shift, and go to state 5
+    CHAR_CONSTANT	shift, and go to state 6
+    '-' 	shift, and go to state 7
+    '(' 	shift, and go to state 8
+
+    term	go to state 27
+    function_ref	go to state 13
+    factor_a	go to state 14
+    factor	go to state 15
+    constant	go to state 16
+
+
+
+state 22
+
+    expr  ->  simple_expr RELOP . simple_expr   (rule 4)
+
+    NOT 	shift, and go to state 1
+    INT_CONSTANT	shift, and go to state 2
+    REAL_CONSTANT	shift, and go to state 3
+    BOOL_CONSTANT	shift, and go to state 4
+    IDENTIFIER	shift, and go to state 5
+    CHAR_CONSTANT	shift, and go to state 6
+    '-' 	shift, and go to state 7
+    '(' 	shift, and go to state 8
+
+    simple_expr	go to state 28
+    term	go to state 12
+    function_ref	go to state 13
+    factor_a	go to state 14
+    factor	go to state 15
+    constant	go to state 16
+
+
+
+state 23
+
+    simple_expr  ->  simple_expr '-' . term   (rule 7)
+
+    NOT 	shift, and go to state 1
+    INT_CONSTANT	shift, and go to state 2
+    REAL_CONSTANT	shift, and go to state 3
+    BOOL_CONSTANT	shift, and go to state 4
+    IDENTIFIER	shift, and go to state 5
+    CHAR_CONSTANT	shift, and go to state 6
+    '-' 	shift, and go to state 7
+    '(' 	shift, and go to state 8
+
+    term	go to state 29
+    function_ref	go to state 13
+    factor_a	go to state 14
+    factor	go to state 15
+    constant	go to state 16
+
+
+
+state 24
+
+    term  ->  term MULOP . factor_a   (rule 9)
+
+    NOT 	shift, and go to state 1
+    INT_CONSTANT	shift, and go to state 2
+    REAL_CONSTANT	shift, and go to state 3
+    BOOL_CONSTANT	shift, and go to state 4
+    IDENTIFIER	shift, and go to state 5
+    CHAR_CONSTANT	shift, and go to state 6
+    '-' 	shift, and go to state 7
+    '(' 	shift, and go to state 8
+
+    function_ref	go to state 13
+    factor_a	go to state 30
+    factor	go to state 15
+    constant	go to state 16
+
+
+
+state 25
+
+    factor  ->  '(' expr ')' .   (rule 15)
+
+    $default	reduce using rule 15 (factor)
+
+
+
+state 26
 
     expr_list  ->  expr_list ',' expr .   (rule 2)
 
@@ -311,42 +430,42 @@ state 20
 
 
 
-state 21
+state 27
 
     simple_expr  ->  simple_expr ADDOP term .   (rule 6)
     term  ->  term . MULOP factor_a   (rule 9)
 
-    MULOP	shift, and go to state 19
+    MULOP	shift, and go to state 24
 
     $default	reduce using rule 6 (simple_expr)
 
 
 
-state 22
+state 28
 
     expr  ->  simple_expr RELOP simple_expr .   (rule 4)
     simple_expr  ->  simple_expr . ADDOP term   (rule 6)
     simple_expr  ->  simple_expr . '-' term   (rule 7)
 
-    ADDOP	shift, and go to state 16
-    '-' 	shift, and go to state 18
+    ADDOP	shift, and go to state 21
+    '-' 	shift, and go to state 23
 
     $default	reduce using rule 4 (expr)
 
 
 
-state 23
+state 29
 
     simple_expr  ->  simple_expr '-' term .   (rule 7)
     term  ->  term . MULOP factor_a   (rule 9)
 
-    MULOP	shift, and go to state 19
+    MULOP	shift, and go to state 24
 
     $default	reduce using rule 7 (simple_expr)
 
 
 
-state 24
+state 30
 
     term  ->  term MULOP factor_a .   (rule 9)
 
@@ -354,12 +473,12 @@ state 24
 
 
 
-state 25
+state 31
 
-    $   	go to state 26
+    $   	go to state 32
 
 
 
-state 26
+state 32
 
     $default	accept
