@@ -76,17 +76,26 @@ label                   :   IDENTIFIER
                         ;
 unlabelled_stmt         :   assign_stmt
                         |   if_stmt
+                        |   loop_stmt
                         |   read_stmt
                         |   write_stmt
                         |   goto_stmt
                         |   compound_stmt
                         ;
-cond                    :   expr
-                        ;
 assign_stmt             :   IDENTIFIER ASSIGN expr
+                        ;
+cond                    :   expr
                         ;
 if_stmt                 :   IF cond THEN stmt   %prec THEN
                         |   IF cond THEN stmt ELSE stmt
+                        ;
+loop_stmt               :   stmt_prefix DO stmt_list stmt_suffix
+                        ;
+stmt_prefix             :   WHILE cond
+                        |   /* vazio */
+                        ;
+stmt_suffix             :   UNTIL cond
+                        |   END
                         ;
 read_stmt               :   READ '(' ident_list ')'
                         ;

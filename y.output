@@ -9,9 +9,6 @@ Terminals which are not used:
    REAL
    BOOLEAN
    CHAR
-   DO
-   WHILE
-   UNTIL
    SIN
    LOG
    COS
@@ -23,7 +20,7 @@ Terminals which are not used:
    EOF_TOKEN
 
 
-Conflict in state 62 between rule 17 and token ELSE resolved as shift.
+Conflict in state 68 between rule 18 and token ELSE resolved as shift.
 
 Grammar
 rule 1    ident_list -> ident_list ',' IDENTIFIER
@@ -36,82 +33,88 @@ rule 7    stmt -> unlabelled_stmt
 rule 8    label -> IDENTIFIER
 rule 9    unlabelled_stmt -> assign_stmt
 rule 10   unlabelled_stmt -> if_stmt
-rule 11   unlabelled_stmt -> read_stmt
-rule 12   unlabelled_stmt -> write_stmt
-rule 13   unlabelled_stmt -> goto_stmt
-rule 14   unlabelled_stmt -> compound_stmt
-rule 15   cond -> expr
+rule 11   unlabelled_stmt -> loop_stmt
+rule 12   unlabelled_stmt -> read_stmt
+rule 13   unlabelled_stmt -> write_stmt
+rule 14   unlabelled_stmt -> goto_stmt
+rule 15   unlabelled_stmt -> compound_stmt
 rule 16   assign_stmt -> IDENTIFIER ASSIGN expr
-rule 17   if_stmt -> IF cond THEN stmt
-rule 18   if_stmt -> IF cond THEN stmt ELSE stmt
-rule 19   read_stmt -> READ '(' ident_list ')'
-rule 20   write_stmt -> WRITE '(' expr_list ')'
-rule 21   goto_stmt -> GOTO IDENTIFIER
-rule 22   expr_list -> expr
-rule 23   expr_list -> expr_list ',' expr
-rule 24   expr -> simple_expr
-rule 25   expr -> simple_expr RELOP simple_expr
-rule 26   simple_expr -> term
-rule 27   simple_expr -> simple_expr ADDOP term
-rule 28   simple_expr -> simple_expr '-' term
-rule 29   term -> factor_a
-rule 30   term -> term MULOP factor_a
-rule 31   function_ref -> EOLN
-rule 32   function_ref -> function_ref_par
-rule 33   function_ref_par -> variable '(' expr_list ')'
-rule 34   variable -> simple_variable_or_proc
-rule 35   variable -> function_ref_par
-rule 36   simple_variable_or_proc -> IDENTIFIER
-rule 37   factor_a -> '-' factor
-rule 38   factor_a -> factor
-rule 39   factor -> IDENTIFIER
-rule 40   factor -> constant
-rule 41   factor -> '(' expr ')'
-rule 42   factor -> function_ref
-rule 43   factor -> NOT factor
-rule 44   constant -> INT_CONSTANT
-rule 45   constant -> REAL_CONSTANT
-rule 46   constant -> CHAR_CONSTANT
-rule 47   constant -> BOOL_CONSTANT
+rule 17   cond -> expr
+rule 18   if_stmt -> IF cond THEN stmt
+rule 19   if_stmt -> IF cond THEN stmt ELSE stmt
+rule 20   loop_stmt -> stmt_prefix DO stmt_list stmt_suffix
+rule 21   stmt_prefix -> WHILE cond
+rule 22   stmt_prefix ->		/* empty */
+rule 23   stmt_suffix -> UNTIL cond
+rule 24   stmt_suffix -> END
+rule 25   read_stmt -> READ '(' ident_list ')'
+rule 26   write_stmt -> WRITE '(' expr_list ')'
+rule 27   goto_stmt -> GOTO IDENTIFIER
+rule 28   expr_list -> expr
+rule 29   expr_list -> expr_list ',' expr
+rule 30   expr -> simple_expr
+rule 31   expr -> simple_expr RELOP simple_expr
+rule 32   simple_expr -> term
+rule 33   simple_expr -> simple_expr ADDOP term
+rule 34   simple_expr -> simple_expr '-' term
+rule 35   term -> factor_a
+rule 36   term -> term MULOP factor_a
+rule 37   function_ref -> EOLN
+rule 38   function_ref -> function_ref_par
+rule 39   function_ref_par -> variable '(' expr_list ')'
+rule 40   variable -> simple_variable_or_proc
+rule 41   variable -> function_ref_par
+rule 42   simple_variable_or_proc -> IDENTIFIER
+rule 43   factor_a -> '-' factor
+rule 44   factor_a -> factor
+rule 45   factor -> IDENTIFIER
+rule 46   factor -> constant
+rule 47   factor -> '(' expr ')'
+rule 48   factor -> function_ref
+rule 49   factor -> NOT factor
+rule 50   constant -> INT_CONSTANT
+rule 51   constant -> REAL_CONSTANT
+rule 52   constant -> CHAR_CONSTANT
+rule 53   constant -> BOOL_CONSTANT
 
 Terminals, with rules where they appear
 
 $ (-1)
-'(' (40) 19 20 33 41
-')' (41) 19 20 33 41
-',' (44) 1 23
-'-' (45) 28 37
+'(' (40) 25 26 39 47
+')' (41) 25 26 39 47
+',' (44) 1 29
+'-' (45) 34 43
 ':' (58) 6
 ';' (59) 4
 error (256)
 print (258)
 exit_command (259)
-ADDOP (260) 27
-RELOP (261) 25
-MULOP (262) 30
-NOT (263) 43
+ADDOP (260) 33
+RELOP (261) 31
+MULOP (262) 36
+NOT (263) 49
 ASSIGN (264) 16
-INT_CONSTANT (265) 44
-REAL_CONSTANT (266) 45
-BOOL_CONSTANT (267) 47
-IDENTIFIER (268) 1 2 8 16 21 36 39
-CHAR_CONSTANT (269) 46
+INT_CONSTANT (265) 50
+REAL_CONSTANT (266) 51
+BOOL_CONSTANT (267) 53
+IDENTIFIER (268) 1 2 8 16 27 42 45
+CHAR_CONSTANT (269) 52
 PROGRAM (270)
 INTEGER (271)
 REAL (272)
 BOOLEAN (273)
 CHAR (274)
 BEGIN_STMT (275) 3
-END (276) 3
-IF (277) 17 18
-THEN (278) 17 18
-ELSE (279) 18
-DO (280)
-WHILE (281)
-UNTIL (282)
-READ (283) 19
-WRITE (284) 20
-GOTO (285) 21
+END (276) 3 24
+IF (277) 18 19
+THEN (278) 18 19
+ELSE (279) 19
+DO (280) 20
+WHILE (281) 21
+UNTIL (282) 23
+READ (283) 25
+WRITE (284) 26
+GOTO (285) 27
 SIN (286)
 LOG (287)
 COS (288)
@@ -121,65 +124,71 @@ ABS (291)
 SQRT (292)
 EXP (293)
 EOF_TOKEN (294)
-EOLN (295) 31
+EOLN (295) 37
 UMINUS (296)
 IDX (297)
 
 Nonterminals, with rules where they appear
 
 ident_list (49)
-    on left: 1 2, on right: 1 19
+    on left: 1 2, on right: 1 25
 compound_stmt (50)
-    on left: 3, on right: 14
+    on left: 3, on right: 15
 stmt_list (51)
-    on left: 4 5, on right: 3 4
+    on left: 4 5, on right: 3 4 20
 stmt (52)
-    on left: 6 7, on right: 4 5 17 18
+    on left: 6 7, on right: 4 5 18 19
 label (53)
     on left: 8, on right: 6
 unlabelled_stmt (54)
-    on left: 9 10 11 12 13 14, on right: 6 7
-cond (55)
-    on left: 15, on right: 17 18
-assign_stmt (56)
+    on left: 9 10 11 12 13 14 15, on right: 6 7
+assign_stmt (55)
     on left: 16, on right: 9
+cond (56)
+    on left: 17, on right: 18 19 21 23
 if_stmt (57)
-    on left: 17 18, on right: 10
-read_stmt (58)
-    on left: 19, on right: 11
-write_stmt (59)
-    on left: 20, on right: 12
-goto_stmt (60)
-    on left: 21, on right: 13
-expr_list (61)
-    on left: 22 23, on right: 20 23 33
-expr (62)
-    on left: 24 25, on right: 15 16 22 23 41
-simple_expr (63)
-    on left: 26 27 28, on right: 24 25 27 28
-term (64)
-    on left: 29 30, on right: 26 27 28 30
-function_ref (65)
-    on left: 31 32, on right: 42
-function_ref_par (66)
-    on left: 33, on right: 32 35
-variable (67)
-    on left: 34 35, on right: 33
-simple_variable_or_proc (68)
-    on left: 36, on right: 34
-factor_a (69)
-    on left: 37 38, on right: 29 30
-factor (70)
-    on left: 39 40 41 42 43, on right: 37 38 43
-constant (71)
-    on left: 44 45 46 47, on right: 40
+    on left: 18 19, on right: 10
+loop_stmt (58)
+    on left: 20, on right: 11
+stmt_prefix (59)
+    on left: 21 22, on right: 20
+stmt_suffix (60)
+    on left: 23 24, on right: 20
+read_stmt (61)
+    on left: 25, on right: 12
+write_stmt (62)
+    on left: 26, on right: 13
+goto_stmt (63)
+    on left: 27, on right: 14
+expr_list (64)
+    on left: 28 29, on right: 26 29 39
+expr (65)
+    on left: 30 31, on right: 16 17 28 29 47
+simple_expr (66)
+    on left: 32 33 34, on right: 30 31 33 34
+term (67)
+    on left: 35 36, on right: 32 33 34 36
+function_ref (68)
+    on left: 37 38, on right: 48
+function_ref_par (69)
+    on left: 39, on right: 38 41
+variable (70)
+    on left: 40 41, on right: 39
+simple_variable_or_proc (71)
+    on left: 42, on right: 40
+factor_a (72)
+    on left: 43 44, on right: 35 36
+factor (73)
+    on left: 45 46 47 48 49, on right: 43 44 49
+constant (74)
+    on left: 50 51 52 53, on right: 46
 
 
 state 0
 
     BEGIN_STMT	shift, and go to state 1
 
-    compound_stmt	go to state 77
+    compound_stmt	go to state 87
 
 
 
@@ -190,20 +199,25 @@ state 1
     IDENTIFIER	shift, and go to state 2
     BEGIN_STMT	shift, and go to state 1
     IF  	shift, and go to state 3
-    READ	shift, and go to state 4
-    WRITE	shift, and go to state 5
-    GOTO	shift, and go to state 6
+    WHILE	shift, and go to state 4
+    READ	shift, and go to state 5
+    WRITE	shift, and go to state 6
+    GOTO	shift, and go to state 7
 
-    compound_stmt	go to state 7
-    stmt_list	go to state 8
-    stmt	go to state 9
-    label	go to state 10
-    unlabelled_stmt	go to state 11
-    assign_stmt	go to state 12
-    if_stmt	go to state 13
-    read_stmt	go to state 14
-    write_stmt	go to state 15
-    goto_stmt	go to state 16
+    $default	reduce using rule 22 (stmt_prefix)
+
+    compound_stmt	go to state 8
+    stmt_list	go to state 9
+    stmt	go to state 10
+    label	go to state 11
+    unlabelled_stmt	go to state 12
+    assign_stmt	go to state 13
+    if_stmt	go to state 14
+    loop_stmt	go to state 15
+    stmt_prefix	go to state 16
+    read_stmt	go to state 17
+    write_stmt	go to state 18
+    goto_stmt	go to state 19
 
 
 
@@ -212,7 +226,7 @@ state 2
     label  ->  IDENTIFIER .   (rule 8)
     assign_stmt  ->  IDENTIFIER . ASSIGN expr   (rule 16)
 
-    ASSIGN	shift, and go to state 17
+    ASSIGN	shift, and go to state 20
 
     $default	reduce using rule 8 (label)
 
@@ -220,76 +234,104 @@ state 2
 
 state 3
 
-    if_stmt  ->  IF . cond THEN stmt   (rule 17)
-    if_stmt  ->  IF . cond THEN stmt ELSE stmt   (rule 18)
+    if_stmt  ->  IF . cond THEN stmt   (rule 18)
+    if_stmt  ->  IF . cond THEN stmt ELSE stmt   (rule 19)
 
-    NOT 	shift, and go to state 18
-    INT_CONSTANT	shift, and go to state 19
-    REAL_CONSTANT	shift, and go to state 20
-    BOOL_CONSTANT	shift, and go to state 21
-    IDENTIFIER	shift, and go to state 22
-    CHAR_CONSTANT	shift, and go to state 23
-    EOLN	shift, and go to state 24
-    '(' 	shift, and go to state 25
-    '-' 	shift, and go to state 26
+    NOT 	shift, and go to state 21
+    INT_CONSTANT	shift, and go to state 22
+    REAL_CONSTANT	shift, and go to state 23
+    BOOL_CONSTANT	shift, and go to state 24
+    IDENTIFIER	shift, and go to state 25
+    CHAR_CONSTANT	shift, and go to state 26
+    EOLN	shift, and go to state 27
+    '(' 	shift, and go to state 28
+    '-' 	shift, and go to state 29
 
-    cond	go to state 27
-    expr	go to state 28
-    simple_expr	go to state 29
-    term	go to state 30
-    function_ref	go to state 31
-    function_ref_par	go to state 32
-    variable	go to state 33
-    simple_variable_or_proc	go to state 34
-    factor_a	go to state 35
-    factor	go to state 36
-    constant	go to state 37
+    cond	go to state 30
+    expr	go to state 31
+    simple_expr	go to state 32
+    term	go to state 33
+    function_ref	go to state 34
+    function_ref_par	go to state 35
+    variable	go to state 36
+    simple_variable_or_proc	go to state 37
+    factor_a	go to state 38
+    factor	go to state 39
+    constant	go to state 40
 
 
 
 state 4
 
-    read_stmt  ->  READ . '(' ident_list ')'   (rule 19)
+    stmt_prefix  ->  WHILE . cond   (rule 21)
 
-    '(' 	shift, and go to state 38
+    NOT 	shift, and go to state 21
+    INT_CONSTANT	shift, and go to state 22
+    REAL_CONSTANT	shift, and go to state 23
+    BOOL_CONSTANT	shift, and go to state 24
+    IDENTIFIER	shift, and go to state 25
+    CHAR_CONSTANT	shift, and go to state 26
+    EOLN	shift, and go to state 27
+    '(' 	shift, and go to state 28
+    '-' 	shift, and go to state 29
+
+    cond	go to state 41
+    expr	go to state 31
+    simple_expr	go to state 32
+    term	go to state 33
+    function_ref	go to state 34
+    function_ref_par	go to state 35
+    variable	go to state 36
+    simple_variable_or_proc	go to state 37
+    factor_a	go to state 38
+    factor	go to state 39
+    constant	go to state 40
 
 
 
 state 5
 
-    write_stmt  ->  WRITE . '(' expr_list ')'   (rule 20)
+    read_stmt  ->  READ . '(' ident_list ')'   (rule 25)
 
-    '(' 	shift, and go to state 39
+    '(' 	shift, and go to state 42
 
 
 
 state 6
 
-    goto_stmt  ->  GOTO . IDENTIFIER   (rule 21)
+    write_stmt  ->  WRITE . '(' expr_list ')'   (rule 26)
 
-    IDENTIFIER	shift, and go to state 40
+    '(' 	shift, and go to state 43
 
 
 
 state 7
 
-    unlabelled_stmt  ->  compound_stmt .   (rule 14)
+    goto_stmt  ->  GOTO . IDENTIFIER   (rule 27)
 
-    $default	reduce using rule 14 (unlabelled_stmt)
+    IDENTIFIER	shift, and go to state 44
 
 
 
 state 8
 
-    compound_stmt  ->  BEGIN_STMT stmt_list . END   (rule 3)
-    stmt_list  ->  stmt_list . ';' stmt   (rule 4)
+    unlabelled_stmt  ->  compound_stmt .   (rule 15)
 
-    END 	shift, and go to state 41
-    ';' 	shift, and go to state 42
+    $default	reduce using rule 15 (unlabelled_stmt)
 
 
 
 state 9
+
+    compound_stmt  ->  BEGIN_STMT stmt_list . END   (rule 3)
+    stmt_list  ->  stmt_list . ';' stmt   (rule 4)
+
+    END 	shift, and go to state 45
+    ';' 	shift, and go to state 46
+
+
+
+state 10
 
     stmt_list  ->  stmt .   (rule 5)
 
@@ -297,15 +339,15 @@ state 9
 
 
 
-state 10
+state 11
 
     stmt  ->  label . ':' unlabelled_stmt   (rule 6)
 
-    ':' 	shift, and go to state 43
+    ':' 	shift, and go to state 47
 
 
 
-state 11
+state 12
 
     stmt  ->  unlabelled_stmt .   (rule 7)
 
@@ -313,7 +355,7 @@ state 11
 
 
 
-state 12
+state 13
 
     unlabelled_stmt  ->  assign_stmt .   (rule 9)
 
@@ -321,7 +363,7 @@ state 12
 
 
 
-state 13
+state 14
 
     unlabelled_stmt  ->  if_stmt .   (rule 10)
 
@@ -329,324 +371,348 @@ state 13
 
 
 
-state 14
+state 15
 
-    unlabelled_stmt  ->  read_stmt .   (rule 11)
+    unlabelled_stmt  ->  loop_stmt .   (rule 11)
 
     $default	reduce using rule 11 (unlabelled_stmt)
 
 
 
-state 15
-
-    unlabelled_stmt  ->  write_stmt .   (rule 12)
-
-    $default	reduce using rule 12 (unlabelled_stmt)
-
-
-
 state 16
 
-    unlabelled_stmt  ->  goto_stmt .   (rule 13)
+    loop_stmt  ->  stmt_prefix . DO stmt_list stmt_suffix   (rule 20)
 
-    $default	reduce using rule 13 (unlabelled_stmt)
+    DO  	shift, and go to state 48
 
 
 
 state 17
 
-    assign_stmt  ->  IDENTIFIER ASSIGN . expr   (rule 16)
+    unlabelled_stmt  ->  read_stmt .   (rule 12)
 
-    NOT 	shift, and go to state 18
-    INT_CONSTANT	shift, and go to state 19
-    REAL_CONSTANT	shift, and go to state 20
-    BOOL_CONSTANT	shift, and go to state 21
-    IDENTIFIER	shift, and go to state 22
-    CHAR_CONSTANT	shift, and go to state 23
-    EOLN	shift, and go to state 24
-    '(' 	shift, and go to state 25
-    '-' 	shift, and go to state 26
-
-    expr	go to state 44
-    simple_expr	go to state 29
-    term	go to state 30
-    function_ref	go to state 31
-    function_ref_par	go to state 32
-    variable	go to state 33
-    simple_variable_or_proc	go to state 34
-    factor_a	go to state 35
-    factor	go to state 36
-    constant	go to state 37
+    $default	reduce using rule 12 (unlabelled_stmt)
 
 
 
 state 18
 
-    factor  ->  NOT . factor   (rule 43)
+    unlabelled_stmt  ->  write_stmt .   (rule 13)
 
-    NOT 	shift, and go to state 18
-    INT_CONSTANT	shift, and go to state 19
-    REAL_CONSTANT	shift, and go to state 20
-    BOOL_CONSTANT	shift, and go to state 21
-    IDENTIFIER	shift, and go to state 22
-    CHAR_CONSTANT	shift, and go to state 23
-    EOLN	shift, and go to state 24
-    '(' 	shift, and go to state 25
-
-    function_ref	go to state 31
-    function_ref_par	go to state 32
-    variable	go to state 33
-    simple_variable_or_proc	go to state 34
-    factor	go to state 45
-    constant	go to state 37
+    $default	reduce using rule 13 (unlabelled_stmt)
 
 
 
 state 19
 
-    constant  ->  INT_CONSTANT .   (rule 44)
+    unlabelled_stmt  ->  goto_stmt .   (rule 14)
 
-    $default	reduce using rule 44 (constant)
+    $default	reduce using rule 14 (unlabelled_stmt)
 
 
 
 state 20
 
-    constant  ->  REAL_CONSTANT .   (rule 45)
+    assign_stmt  ->  IDENTIFIER ASSIGN . expr   (rule 16)
 
-    $default	reduce using rule 45 (constant)
+    NOT 	shift, and go to state 21
+    INT_CONSTANT	shift, and go to state 22
+    REAL_CONSTANT	shift, and go to state 23
+    BOOL_CONSTANT	shift, and go to state 24
+    IDENTIFIER	shift, and go to state 25
+    CHAR_CONSTANT	shift, and go to state 26
+    EOLN	shift, and go to state 27
+    '(' 	shift, and go to state 28
+    '-' 	shift, and go to state 29
+
+    expr	go to state 49
+    simple_expr	go to state 32
+    term	go to state 33
+    function_ref	go to state 34
+    function_ref_par	go to state 35
+    variable	go to state 36
+    simple_variable_or_proc	go to state 37
+    factor_a	go to state 38
+    factor	go to state 39
+    constant	go to state 40
 
 
 
 state 21
 
-    constant  ->  BOOL_CONSTANT .   (rule 47)
+    factor  ->  NOT . factor   (rule 49)
 
-    $default	reduce using rule 47 (constant)
+    NOT 	shift, and go to state 21
+    INT_CONSTANT	shift, and go to state 22
+    REAL_CONSTANT	shift, and go to state 23
+    BOOL_CONSTANT	shift, and go to state 24
+    IDENTIFIER	shift, and go to state 25
+    CHAR_CONSTANT	shift, and go to state 26
+    EOLN	shift, and go to state 27
+    '(' 	shift, and go to state 28
+
+    function_ref	go to state 34
+    function_ref_par	go to state 35
+    variable	go to state 36
+    simple_variable_or_proc	go to state 37
+    factor	go to state 50
+    constant	go to state 40
 
 
 
 state 22
 
-    simple_variable_or_proc  ->  IDENTIFIER .   (rule 36)
-    factor  ->  IDENTIFIER .   (rule 39)
+    constant  ->  INT_CONSTANT .   (rule 50)
 
-    $default	reduce using rule 39 (factor)
+    $default	reduce using rule 50 (constant)
 
 
 
 state 23
 
-    constant  ->  CHAR_CONSTANT .   (rule 46)
+    constant  ->  REAL_CONSTANT .   (rule 51)
 
-    $default	reduce using rule 46 (constant)
+    $default	reduce using rule 51 (constant)
 
 
 
 state 24
 
-    function_ref  ->  EOLN .   (rule 31)
+    constant  ->  BOOL_CONSTANT .   (rule 53)
 
-    $default	reduce using rule 31 (function_ref)
+    $default	reduce using rule 53 (constant)
 
 
 
 state 25
 
-    factor  ->  '(' . expr ')'   (rule 41)
+    simple_variable_or_proc  ->  IDENTIFIER .   (rule 42)
+    factor  ->  IDENTIFIER .   (rule 45)
 
-    NOT 	shift, and go to state 18
-    INT_CONSTANT	shift, and go to state 19
-    REAL_CONSTANT	shift, and go to state 20
-    BOOL_CONSTANT	shift, and go to state 21
-    IDENTIFIER	shift, and go to state 22
-    CHAR_CONSTANT	shift, and go to state 23
-    EOLN	shift, and go to state 24
-    '(' 	shift, and go to state 25
-    '-' 	shift, and go to state 26
-
-    expr	go to state 46
-    simple_expr	go to state 29
-    term	go to state 30
-    function_ref	go to state 31
-    function_ref_par	go to state 32
-    variable	go to state 33
-    simple_variable_or_proc	go to state 34
-    factor_a	go to state 35
-    factor	go to state 36
-    constant	go to state 37
+    $default	reduce using rule 45 (factor)
 
 
 
 state 26
 
-    factor_a  ->  '-' . factor   (rule 37)
+    constant  ->  CHAR_CONSTANT .   (rule 52)
 
-    NOT 	shift, and go to state 18
-    INT_CONSTANT	shift, and go to state 19
-    REAL_CONSTANT	shift, and go to state 20
-    BOOL_CONSTANT	shift, and go to state 21
-    IDENTIFIER	shift, and go to state 22
-    CHAR_CONSTANT	shift, and go to state 23
-    EOLN	shift, and go to state 24
-    '(' 	shift, and go to state 25
-
-    function_ref	go to state 31
-    function_ref_par	go to state 32
-    variable	go to state 33
-    simple_variable_or_proc	go to state 34
-    factor	go to state 47
-    constant	go to state 37
+    $default	reduce using rule 52 (constant)
 
 
 
 state 27
 
-    if_stmt  ->  IF cond . THEN stmt   (rule 17)
-    if_stmt  ->  IF cond . THEN stmt ELSE stmt   (rule 18)
+    function_ref  ->  EOLN .   (rule 37)
 
-    THEN	shift, and go to state 48
+    $default	reduce using rule 37 (function_ref)
 
 
 
 state 28
 
-    cond  ->  expr .   (rule 15)
+    factor  ->  '(' . expr ')'   (rule 47)
 
-    $default	reduce using rule 15 (cond)
+    NOT 	shift, and go to state 21
+    INT_CONSTANT	shift, and go to state 22
+    REAL_CONSTANT	shift, and go to state 23
+    BOOL_CONSTANT	shift, and go to state 24
+    IDENTIFIER	shift, and go to state 25
+    CHAR_CONSTANT	shift, and go to state 26
+    EOLN	shift, and go to state 27
+    '(' 	shift, and go to state 28
+    '-' 	shift, and go to state 29
+
+    expr	go to state 51
+    simple_expr	go to state 32
+    term	go to state 33
+    function_ref	go to state 34
+    function_ref_par	go to state 35
+    variable	go to state 36
+    simple_variable_or_proc	go to state 37
+    factor_a	go to state 38
+    factor	go to state 39
+    constant	go to state 40
 
 
 
 state 29
 
-    expr  ->  simple_expr .   (rule 24)
-    expr  ->  simple_expr . RELOP simple_expr   (rule 25)
-    simple_expr  ->  simple_expr . ADDOP term   (rule 27)
-    simple_expr  ->  simple_expr . '-' term   (rule 28)
+    factor_a  ->  '-' . factor   (rule 43)
 
-    ADDOP	shift, and go to state 49
-    RELOP	shift, and go to state 50
-    '-' 	shift, and go to state 51
+    NOT 	shift, and go to state 21
+    INT_CONSTANT	shift, and go to state 22
+    REAL_CONSTANT	shift, and go to state 23
+    BOOL_CONSTANT	shift, and go to state 24
+    IDENTIFIER	shift, and go to state 25
+    CHAR_CONSTANT	shift, and go to state 26
+    EOLN	shift, and go to state 27
+    '(' 	shift, and go to state 28
 
-    $default	reduce using rule 24 (expr)
+    function_ref	go to state 34
+    function_ref_par	go to state 35
+    variable	go to state 36
+    simple_variable_or_proc	go to state 37
+    factor	go to state 52
+    constant	go to state 40
 
 
 
 state 30
 
-    simple_expr  ->  term .   (rule 26)
-    term  ->  term . MULOP factor_a   (rule 30)
+    if_stmt  ->  IF cond . THEN stmt   (rule 18)
+    if_stmt  ->  IF cond . THEN stmt ELSE stmt   (rule 19)
 
-    MULOP	shift, and go to state 52
-
-    $default	reduce using rule 26 (simple_expr)
+    THEN	shift, and go to state 53
 
 
 
 state 31
 
-    factor  ->  function_ref .   (rule 42)
+    cond  ->  expr .   (rule 17)
 
-    $default	reduce using rule 42 (factor)
+    $default	reduce using rule 17 (cond)
 
 
 
 state 32
 
-    function_ref  ->  function_ref_par .   (rule 32)
-    variable  ->  function_ref_par .   (rule 35)
+    expr  ->  simple_expr .   (rule 30)
+    expr  ->  simple_expr . RELOP simple_expr   (rule 31)
+    simple_expr  ->  simple_expr . ADDOP term   (rule 33)
+    simple_expr  ->  simple_expr . '-' term   (rule 34)
 
-    $default	reduce using rule 32 (function_ref)
+    ADDOP	shift, and go to state 54
+    RELOP	shift, and go to state 55
+    '-' 	shift, and go to state 56
+
+    $default	reduce using rule 30 (expr)
 
 
 
 state 33
 
-    function_ref_par  ->  variable . '(' expr_list ')'   (rule 33)
+    simple_expr  ->  term .   (rule 32)
+    term  ->  term . MULOP factor_a   (rule 36)
 
-    '(' 	shift, and go to state 53
+    MULOP	shift, and go to state 57
+
+    $default	reduce using rule 32 (simple_expr)
 
 
 
 state 34
 
-    variable  ->  simple_variable_or_proc .   (rule 34)
+    factor  ->  function_ref .   (rule 48)
 
-    $default	reduce using rule 34 (variable)
+    $default	reduce using rule 48 (factor)
 
 
 
 state 35
 
-    term  ->  factor_a .   (rule 29)
+    function_ref  ->  function_ref_par .   (rule 38)
+    variable  ->  function_ref_par .   (rule 41)
 
-    $default	reduce using rule 29 (term)
+    $default	reduce using rule 38 (function_ref)
 
 
 
 state 36
 
-    factor_a  ->  factor .   (rule 38)
+    function_ref_par  ->  variable . '(' expr_list ')'   (rule 39)
 
-    $default	reduce using rule 38 (factor_a)
+    '(' 	shift, and go to state 58
 
 
 
 state 37
 
-    factor  ->  constant .   (rule 40)
+    variable  ->  simple_variable_or_proc .   (rule 40)
 
-    $default	reduce using rule 40 (factor)
+    $default	reduce using rule 40 (variable)
 
 
 
 state 38
 
-    read_stmt  ->  READ '(' . ident_list ')'   (rule 19)
+    term  ->  factor_a .   (rule 35)
 
-    IDENTIFIER	shift, and go to state 54
-
-    ident_list	go to state 55
+    $default	reduce using rule 35 (term)
 
 
 
 state 39
 
-    write_stmt  ->  WRITE '(' . expr_list ')'   (rule 20)
+    factor_a  ->  factor .   (rule 44)
 
-    NOT 	shift, and go to state 18
-    INT_CONSTANT	shift, and go to state 19
-    REAL_CONSTANT	shift, and go to state 20
-    BOOL_CONSTANT	shift, and go to state 21
-    IDENTIFIER	shift, and go to state 22
-    CHAR_CONSTANT	shift, and go to state 23
-    EOLN	shift, and go to state 24
-    '(' 	shift, and go to state 25
-    '-' 	shift, and go to state 26
-
-    expr_list	go to state 56
-    expr	go to state 57
-    simple_expr	go to state 29
-    term	go to state 30
-    function_ref	go to state 31
-    function_ref_par	go to state 32
-    variable	go to state 33
-    simple_variable_or_proc	go to state 34
-    factor_a	go to state 35
-    factor	go to state 36
-    constant	go to state 37
+    $default	reduce using rule 44 (factor_a)
 
 
 
 state 40
 
-    goto_stmt  ->  GOTO IDENTIFIER .   (rule 21)
+    factor  ->  constant .   (rule 46)
 
-    $default	reduce using rule 21 (goto_stmt)
+    $default	reduce using rule 46 (factor)
 
 
 
 state 41
+
+    stmt_prefix  ->  WHILE cond .   (rule 21)
+
+    $default	reduce using rule 21 (stmt_prefix)
+
+
+
+state 42
+
+    read_stmt  ->  READ '(' . ident_list ')'   (rule 25)
+
+    IDENTIFIER	shift, and go to state 59
+
+    ident_list	go to state 60
+
+
+
+state 43
+
+    write_stmt  ->  WRITE '(' . expr_list ')'   (rule 26)
+
+    NOT 	shift, and go to state 21
+    INT_CONSTANT	shift, and go to state 22
+    REAL_CONSTANT	shift, and go to state 23
+    BOOL_CONSTANT	shift, and go to state 24
+    IDENTIFIER	shift, and go to state 25
+    CHAR_CONSTANT	shift, and go to state 26
+    EOLN	shift, and go to state 27
+    '(' 	shift, and go to state 28
+    '-' 	shift, and go to state 29
+
+    expr_list	go to state 61
+    expr	go to state 62
+    simple_expr	go to state 32
+    term	go to state 33
+    function_ref	go to state 34
+    function_ref_par	go to state 35
+    variable	go to state 36
+    simple_variable_or_proc	go to state 37
+    factor_a	go to state 38
+    factor	go to state 39
+    constant	go to state 40
+
+
+
+state 44
+
+    goto_stmt  ->  GOTO IDENTIFIER .   (rule 27)
+
+    $default	reduce using rule 27 (goto_stmt)
+
+
+
+state 45
 
     compound_stmt  ->  BEGIN_STMT stmt_list END .   (rule 3)
 
@@ -654,51 +720,90 @@ state 41
 
 
 
-state 42
+state 46
 
     stmt_list  ->  stmt_list ';' . stmt   (rule 4)
 
     IDENTIFIER	shift, and go to state 2
     BEGIN_STMT	shift, and go to state 1
     IF  	shift, and go to state 3
-    READ	shift, and go to state 4
-    WRITE	shift, and go to state 5
-    GOTO	shift, and go to state 6
+    WHILE	shift, and go to state 4
+    READ	shift, and go to state 5
+    WRITE	shift, and go to state 6
+    GOTO	shift, and go to state 7
 
-    compound_stmt	go to state 7
-    stmt	go to state 58
-    label	go to state 10
-    unlabelled_stmt	go to state 11
-    assign_stmt	go to state 12
-    if_stmt	go to state 13
-    read_stmt	go to state 14
-    write_stmt	go to state 15
-    goto_stmt	go to state 16
+    $default	reduce using rule 22 (stmt_prefix)
+
+    compound_stmt	go to state 8
+    stmt	go to state 63
+    label	go to state 11
+    unlabelled_stmt	go to state 12
+    assign_stmt	go to state 13
+    if_stmt	go to state 14
+    loop_stmt	go to state 15
+    stmt_prefix	go to state 16
+    read_stmt	go to state 17
+    write_stmt	go to state 18
+    goto_stmt	go to state 19
 
 
 
-state 43
+state 47
 
     stmt  ->  label ':' . unlabelled_stmt   (rule 6)
 
-    IDENTIFIER	shift, and go to state 59
+    IDENTIFIER	shift, and go to state 64
     BEGIN_STMT	shift, and go to state 1
     IF  	shift, and go to state 3
-    READ	shift, and go to state 4
-    WRITE	shift, and go to state 5
-    GOTO	shift, and go to state 6
+    WHILE	shift, and go to state 4
+    READ	shift, and go to state 5
+    WRITE	shift, and go to state 6
+    GOTO	shift, and go to state 7
 
-    compound_stmt	go to state 7
-    unlabelled_stmt	go to state 60
-    assign_stmt	go to state 12
-    if_stmt	go to state 13
-    read_stmt	go to state 14
-    write_stmt	go to state 15
-    goto_stmt	go to state 16
+    $default	reduce using rule 22 (stmt_prefix)
+
+    compound_stmt	go to state 8
+    unlabelled_stmt	go to state 65
+    assign_stmt	go to state 13
+    if_stmt	go to state 14
+    loop_stmt	go to state 15
+    stmt_prefix	go to state 16
+    read_stmt	go to state 17
+    write_stmt	go to state 18
+    goto_stmt	go to state 19
 
 
 
-state 44
+state 48
+
+    loop_stmt  ->  stmt_prefix DO . stmt_list stmt_suffix   (rule 20)
+
+    IDENTIFIER	shift, and go to state 2
+    BEGIN_STMT	shift, and go to state 1
+    IF  	shift, and go to state 3
+    WHILE	shift, and go to state 4
+    READ	shift, and go to state 5
+    WRITE	shift, and go to state 6
+    GOTO	shift, and go to state 7
+
+    $default	reduce using rule 22 (stmt_prefix)
+
+    compound_stmt	go to state 8
+    stmt_list	go to state 66
+    stmt	go to state 10
+    label	go to state 11
+    unlabelled_stmt	go to state 12
+    assign_stmt	go to state 13
+    if_stmt	go to state 14
+    loop_stmt	go to state 15
+    stmt_prefix	go to state 16
+    read_stmt	go to state 17
+    write_stmt	go to state 18
+    goto_stmt	go to state 19
+
+
+
+state 49
 
     assign_stmt  ->  IDENTIFIER ASSIGN expr .   (rule 16)
 
@@ -706,183 +811,188 @@ state 44
 
 
 
-state 45
-
-    factor  ->  NOT factor .   (rule 43)
-
-    $default	reduce using rule 43 (factor)
-
-
-
-state 46
-
-    factor  ->  '(' expr . ')'   (rule 41)
-
-    ')' 	shift, and go to state 61
-
-
-
-state 47
-
-    factor_a  ->  '-' factor .   (rule 37)
-
-    $default	reduce using rule 37 (factor_a)
-
-
-
-state 48
-
-    if_stmt  ->  IF cond THEN . stmt   (rule 17)
-    if_stmt  ->  IF cond THEN . stmt ELSE stmt   (rule 18)
-
-    IDENTIFIER	shift, and go to state 2
-    BEGIN_STMT	shift, and go to state 1
-    IF  	shift, and go to state 3
-    READ	shift, and go to state 4
-    WRITE	shift, and go to state 5
-    GOTO	shift, and go to state 6
-
-    compound_stmt	go to state 7
-    stmt	go to state 62
-    label	go to state 10
-    unlabelled_stmt	go to state 11
-    assign_stmt	go to state 12
-    if_stmt	go to state 13
-    read_stmt	go to state 14
-    write_stmt	go to state 15
-    goto_stmt	go to state 16
-
-
-
-state 49
-
-    simple_expr  ->  simple_expr ADDOP . term   (rule 27)
-
-    NOT 	shift, and go to state 18
-    INT_CONSTANT	shift, and go to state 19
-    REAL_CONSTANT	shift, and go to state 20
-    BOOL_CONSTANT	shift, and go to state 21
-    IDENTIFIER	shift, and go to state 22
-    CHAR_CONSTANT	shift, and go to state 23
-    EOLN	shift, and go to state 24
-    '(' 	shift, and go to state 25
-    '-' 	shift, and go to state 26
-
-    term	go to state 63
-    function_ref	go to state 31
-    function_ref_par	go to state 32
-    variable	go to state 33
-    simple_variable_or_proc	go to state 34
-    factor_a	go to state 35
-    factor	go to state 36
-    constant	go to state 37
-
-
-
 state 50
 
-    expr  ->  simple_expr RELOP . simple_expr   (rule 25)
+    factor  ->  NOT factor .   (rule 49)
 
-    NOT 	shift, and go to state 18
-    INT_CONSTANT	shift, and go to state 19
-    REAL_CONSTANT	shift, and go to state 20
-    BOOL_CONSTANT	shift, and go to state 21
-    IDENTIFIER	shift, and go to state 22
-    CHAR_CONSTANT	shift, and go to state 23
-    EOLN	shift, and go to state 24
-    '(' 	shift, and go to state 25
-    '-' 	shift, and go to state 26
-
-    simple_expr	go to state 64
-    term	go to state 30
-    function_ref	go to state 31
-    function_ref_par	go to state 32
-    variable	go to state 33
-    simple_variable_or_proc	go to state 34
-    factor_a	go to state 35
-    factor	go to state 36
-    constant	go to state 37
+    $default	reduce using rule 49 (factor)
 
 
 
 state 51
 
-    simple_expr  ->  simple_expr '-' . term   (rule 28)
+    factor  ->  '(' expr . ')'   (rule 47)
 
-    NOT 	shift, and go to state 18
-    INT_CONSTANT	shift, and go to state 19
-    REAL_CONSTANT	shift, and go to state 20
-    BOOL_CONSTANT	shift, and go to state 21
-    IDENTIFIER	shift, and go to state 22
-    CHAR_CONSTANT	shift, and go to state 23
-    EOLN	shift, and go to state 24
-    '(' 	shift, and go to state 25
-    '-' 	shift, and go to state 26
-
-    term	go to state 65
-    function_ref	go to state 31
-    function_ref_par	go to state 32
-    variable	go to state 33
-    simple_variable_or_proc	go to state 34
-    factor_a	go to state 35
-    factor	go to state 36
-    constant	go to state 37
+    ')' 	shift, and go to state 67
 
 
 
 state 52
 
-    term  ->  term MULOP . factor_a   (rule 30)
+    factor_a  ->  '-' factor .   (rule 43)
 
-    NOT 	shift, and go to state 18
-    INT_CONSTANT	shift, and go to state 19
-    REAL_CONSTANT	shift, and go to state 20
-    BOOL_CONSTANT	shift, and go to state 21
-    IDENTIFIER	shift, and go to state 22
-    CHAR_CONSTANT	shift, and go to state 23
-    EOLN	shift, and go to state 24
-    '(' 	shift, and go to state 25
-    '-' 	shift, and go to state 26
-
-    function_ref	go to state 31
-    function_ref_par	go to state 32
-    variable	go to state 33
-    simple_variable_or_proc	go to state 34
-    factor_a	go to state 66
-    factor	go to state 36
-    constant	go to state 37
+    $default	reduce using rule 43 (factor_a)
 
 
 
 state 53
 
-    function_ref_par  ->  variable '(' . expr_list ')'   (rule 33)
+    if_stmt  ->  IF cond THEN . stmt   (rule 18)
+    if_stmt  ->  IF cond THEN . stmt ELSE stmt   (rule 19)
 
-    NOT 	shift, and go to state 18
-    INT_CONSTANT	shift, and go to state 19
-    REAL_CONSTANT	shift, and go to state 20
-    BOOL_CONSTANT	shift, and go to state 21
-    IDENTIFIER	shift, and go to state 22
-    CHAR_CONSTANT	shift, and go to state 23
-    EOLN	shift, and go to state 24
-    '(' 	shift, and go to state 25
-    '-' 	shift, and go to state 26
+    IDENTIFIER	shift, and go to state 2
+    BEGIN_STMT	shift, and go to state 1
+    IF  	shift, and go to state 3
+    WHILE	shift, and go to state 4
+    READ	shift, and go to state 5
+    WRITE	shift, and go to state 6
+    GOTO	shift, and go to state 7
 
-    expr_list	go to state 67
-    expr	go to state 57
-    simple_expr	go to state 29
-    term	go to state 30
-    function_ref	go to state 31
-    function_ref_par	go to state 32
-    variable	go to state 33
-    simple_variable_or_proc	go to state 34
-    factor_a	go to state 35
-    factor	go to state 36
-    constant	go to state 37
+    $default	reduce using rule 22 (stmt_prefix)
+
+    compound_stmt	go to state 8
+    stmt	go to state 68
+    label	go to state 11
+    unlabelled_stmt	go to state 12
+    assign_stmt	go to state 13
+    if_stmt	go to state 14
+    loop_stmt	go to state 15
+    stmt_prefix	go to state 16
+    read_stmt	go to state 17
+    write_stmt	go to state 18
+    goto_stmt	go to state 19
 
 
 
 state 54
+
+    simple_expr  ->  simple_expr ADDOP . term   (rule 33)
+
+    NOT 	shift, and go to state 21
+    INT_CONSTANT	shift, and go to state 22
+    REAL_CONSTANT	shift, and go to state 23
+    BOOL_CONSTANT	shift, and go to state 24
+    IDENTIFIER	shift, and go to state 25
+    CHAR_CONSTANT	shift, and go to state 26
+    EOLN	shift, and go to state 27
+    '(' 	shift, and go to state 28
+    '-' 	shift, and go to state 29
+
+    term	go to state 69
+    function_ref	go to state 34
+    function_ref_par	go to state 35
+    variable	go to state 36
+    simple_variable_or_proc	go to state 37
+    factor_a	go to state 38
+    factor	go to state 39
+    constant	go to state 40
+
+
+
+state 55
+
+    expr  ->  simple_expr RELOP . simple_expr   (rule 31)
+
+    NOT 	shift, and go to state 21
+    INT_CONSTANT	shift, and go to state 22
+    REAL_CONSTANT	shift, and go to state 23
+    BOOL_CONSTANT	shift, and go to state 24
+    IDENTIFIER	shift, and go to state 25
+    CHAR_CONSTANT	shift, and go to state 26
+    EOLN	shift, and go to state 27
+    '(' 	shift, and go to state 28
+    '-' 	shift, and go to state 29
+
+    simple_expr	go to state 70
+    term	go to state 33
+    function_ref	go to state 34
+    function_ref_par	go to state 35
+    variable	go to state 36
+    simple_variable_or_proc	go to state 37
+    factor_a	go to state 38
+    factor	go to state 39
+    constant	go to state 40
+
+
+
+state 56
+
+    simple_expr  ->  simple_expr '-' . term   (rule 34)
+
+    NOT 	shift, and go to state 21
+    INT_CONSTANT	shift, and go to state 22
+    REAL_CONSTANT	shift, and go to state 23
+    BOOL_CONSTANT	shift, and go to state 24
+    IDENTIFIER	shift, and go to state 25
+    CHAR_CONSTANT	shift, and go to state 26
+    EOLN	shift, and go to state 27
+    '(' 	shift, and go to state 28
+    '-' 	shift, and go to state 29
+
+    term	go to state 71
+    function_ref	go to state 34
+    function_ref_par	go to state 35
+    variable	go to state 36
+    simple_variable_or_proc	go to state 37
+    factor_a	go to state 38
+    factor	go to state 39
+    constant	go to state 40
+
+
+
+state 57
+
+    term  ->  term MULOP . factor_a   (rule 36)
+
+    NOT 	shift, and go to state 21
+    INT_CONSTANT	shift, and go to state 22
+    REAL_CONSTANT	shift, and go to state 23
+    BOOL_CONSTANT	shift, and go to state 24
+    IDENTIFIER	shift, and go to state 25
+    CHAR_CONSTANT	shift, and go to state 26
+    EOLN	shift, and go to state 27
+    '(' 	shift, and go to state 28
+    '-' 	shift, and go to state 29
+
+    function_ref	go to state 34
+    function_ref_par	go to state 35
+    variable	go to state 36
+    simple_variable_or_proc	go to state 37
+    factor_a	go to state 72
+    factor	go to state 39
+    constant	go to state 40
+
+
+
+state 58
+
+    function_ref_par  ->  variable '(' . expr_list ')'   (rule 39)
+
+    NOT 	shift, and go to state 21
+    INT_CONSTANT	shift, and go to state 22
+    REAL_CONSTANT	shift, and go to state 23
+    BOOL_CONSTANT	shift, and go to state 24
+    IDENTIFIER	shift, and go to state 25
+    CHAR_CONSTANT	shift, and go to state 26
+    EOLN	shift, and go to state 27
+    '(' 	shift, and go to state 28
+    '-' 	shift, and go to state 29
+
+    expr_list	go to state 73
+    expr	go to state 62
+    simple_expr	go to state 32
+    term	go to state 33
+    function_ref	go to state 34
+    function_ref_par	go to state 35
+    variable	go to state 36
+    simple_variable_or_proc	go to state 37
+    factor_a	go to state 38
+    factor	go to state 39
+    constant	go to state 40
+
+
+
+state 59
 
     ident_list  ->  IDENTIFIER .   (rule 2)
 
@@ -890,35 +1000,35 @@ state 54
 
 
 
-state 55
+state 60
 
     ident_list  ->  ident_list . ',' IDENTIFIER   (rule 1)
-    read_stmt  ->  READ '(' ident_list . ')'   (rule 19)
+    read_stmt  ->  READ '(' ident_list . ')'   (rule 25)
 
-    ',' 	shift, and go to state 68
-    ')' 	shift, and go to state 69
-
-
-
-state 56
-
-    write_stmt  ->  WRITE '(' expr_list . ')'   (rule 20)
-    expr_list  ->  expr_list . ',' expr   (rule 23)
-
-    ',' 	shift, and go to state 70
-    ')' 	shift, and go to state 71
+    ',' 	shift, and go to state 74
+    ')' 	shift, and go to state 75
 
 
 
-state 57
+state 61
 
-    expr_list  ->  expr .   (rule 22)
+    write_stmt  ->  WRITE '(' expr_list . ')'   (rule 26)
+    expr_list  ->  expr_list . ',' expr   (rule 29)
 
-    $default	reduce using rule 22 (expr_list)
+    ',' 	shift, and go to state 76
+    ')' 	shift, and go to state 77
 
 
 
-state 58
+state 62
+
+    expr_list  ->  expr .   (rule 28)
+
+    $default	reduce using rule 28 (expr_list)
+
+
+
+state 63
 
     stmt_list  ->  stmt_list ';' stmt .   (rule 4)
 
@@ -926,15 +1036,15 @@ state 58
 
 
 
-state 59
+state 64
 
     assign_stmt  ->  IDENTIFIER . ASSIGN expr   (rule 16)
 
-    ASSIGN	shift, and go to state 17
+    ASSIGN	shift, and go to state 20
 
 
 
-state 60
+state 65
 
     stmt  ->  label ':' unlabelled_stmt .   (rule 6)
 
@@ -942,161 +1052,223 @@ state 60
 
 
 
-state 61
-
-    factor  ->  '(' expr ')' .   (rule 41)
-
-    $default	reduce using rule 41 (factor)
-
-
-
-state 62
-
-    if_stmt  ->  IF cond THEN stmt .   (rule 17)
-    if_stmt  ->  IF cond THEN stmt . ELSE stmt   (rule 18)
-
-    ELSE	shift, and go to state 72
-
-    $default	reduce using rule 17 (if_stmt)
-
-
-
-state 63
-
-    simple_expr  ->  simple_expr ADDOP term .   (rule 27)
-    term  ->  term . MULOP factor_a   (rule 30)
-
-    MULOP	shift, and go to state 52
-
-    $default	reduce using rule 27 (simple_expr)
-
-
-
-state 64
-
-    expr  ->  simple_expr RELOP simple_expr .   (rule 25)
-    simple_expr  ->  simple_expr . ADDOP term   (rule 27)
-    simple_expr  ->  simple_expr . '-' term   (rule 28)
-
-    ADDOP	shift, and go to state 49
-    '-' 	shift, and go to state 51
-
-    $default	reduce using rule 25 (expr)
-
-
-
-state 65
-
-    simple_expr  ->  simple_expr '-' term .   (rule 28)
-    term  ->  term . MULOP factor_a   (rule 30)
-
-    MULOP	shift, and go to state 52
-
-    $default	reduce using rule 28 (simple_expr)
-
-
-
 state 66
 
-    term  ->  term MULOP factor_a .   (rule 30)
+    stmt_list  ->  stmt_list . ';' stmt   (rule 4)
+    loop_stmt  ->  stmt_prefix DO stmt_list . stmt_suffix   (rule 20)
 
-    $default	reduce using rule 30 (term)
+    END 	shift, and go to state 78
+    UNTIL	shift, and go to state 79
+    ';' 	shift, and go to state 46
+
+    stmt_suffix	go to state 80
 
 
 
 state 67
 
-    expr_list  ->  expr_list . ',' expr   (rule 23)
-    function_ref_par  ->  variable '(' expr_list . ')'   (rule 33)
+    factor  ->  '(' expr ')' .   (rule 47)
 
-    ',' 	shift, and go to state 70
-    ')' 	shift, and go to state 73
+    $default	reduce using rule 47 (factor)
 
 
 
 state 68
 
-    ident_list  ->  ident_list ',' . IDENTIFIER   (rule 1)
+    if_stmt  ->  IF cond THEN stmt .   (rule 18)
+    if_stmt  ->  IF cond THEN stmt . ELSE stmt   (rule 19)
 
-    IDENTIFIER	shift, and go to state 74
+    ELSE	shift, and go to state 81
+
+    $default	reduce using rule 18 (if_stmt)
 
 
 
 state 69
 
-    read_stmt  ->  READ '(' ident_list ')' .   (rule 19)
+    simple_expr  ->  simple_expr ADDOP term .   (rule 33)
+    term  ->  term . MULOP factor_a   (rule 36)
 
-    $default	reduce using rule 19 (read_stmt)
+    MULOP	shift, and go to state 57
+
+    $default	reduce using rule 33 (simple_expr)
 
 
 
 state 70
 
-    expr_list  ->  expr_list ',' . expr   (rule 23)
+    expr  ->  simple_expr RELOP simple_expr .   (rule 31)
+    simple_expr  ->  simple_expr . ADDOP term   (rule 33)
+    simple_expr  ->  simple_expr . '-' term   (rule 34)
 
-    NOT 	shift, and go to state 18
-    INT_CONSTANT	shift, and go to state 19
-    REAL_CONSTANT	shift, and go to state 20
-    BOOL_CONSTANT	shift, and go to state 21
-    IDENTIFIER	shift, and go to state 22
-    CHAR_CONSTANT	shift, and go to state 23
-    EOLN	shift, and go to state 24
-    '(' 	shift, and go to state 25
-    '-' 	shift, and go to state 26
+    ADDOP	shift, and go to state 54
+    '-' 	shift, and go to state 56
 
-    expr	go to state 75
-    simple_expr	go to state 29
-    term	go to state 30
-    function_ref	go to state 31
-    function_ref_par	go to state 32
-    variable	go to state 33
-    simple_variable_or_proc	go to state 34
-    factor_a	go to state 35
-    factor	go to state 36
-    constant	go to state 37
+    $default	reduce using rule 31 (expr)
 
 
 
 state 71
 
-    write_stmt  ->  WRITE '(' expr_list ')' .   (rule 20)
+    simple_expr  ->  simple_expr '-' term .   (rule 34)
+    term  ->  term . MULOP factor_a   (rule 36)
 
-    $default	reduce using rule 20 (write_stmt)
+    MULOP	shift, and go to state 57
+
+    $default	reduce using rule 34 (simple_expr)
 
 
 
 state 72
 
-    if_stmt  ->  IF cond THEN stmt ELSE . stmt   (rule 18)
+    term  ->  term MULOP factor_a .   (rule 36)
 
-    IDENTIFIER	shift, and go to state 2
-    BEGIN_STMT	shift, and go to state 1
-    IF  	shift, and go to state 3
-    READ	shift, and go to state 4
-    WRITE	shift, and go to state 5
-    GOTO	shift, and go to state 6
-
-    compound_stmt	go to state 7
-    stmt	go to state 76
-    label	go to state 10
-    unlabelled_stmt	go to state 11
-    assign_stmt	go to state 12
-    if_stmt	go to state 13
-    read_stmt	go to state 14
-    write_stmt	go to state 15
-    goto_stmt	go to state 16
+    $default	reduce using rule 36 (term)
 
 
 
 state 73
 
-    function_ref_par  ->  variable '(' expr_list ')' .   (rule 33)
+    expr_list  ->  expr_list . ',' expr   (rule 29)
+    function_ref_par  ->  variable '(' expr_list . ')'   (rule 39)
 
-    $default	reduce using rule 33 (function_ref_par)
+    ',' 	shift, and go to state 76
+    ')' 	shift, and go to state 82
 
 
 
 state 74
+
+    ident_list  ->  ident_list ',' . IDENTIFIER   (rule 1)
+
+    IDENTIFIER	shift, and go to state 83
+
+
+
+state 75
+
+    read_stmt  ->  READ '(' ident_list ')' .   (rule 25)
+
+    $default	reduce using rule 25 (read_stmt)
+
+
+
+state 76
+
+    expr_list  ->  expr_list ',' . expr   (rule 29)
+
+    NOT 	shift, and go to state 21
+    INT_CONSTANT	shift, and go to state 22
+    REAL_CONSTANT	shift, and go to state 23
+    BOOL_CONSTANT	shift, and go to state 24
+    IDENTIFIER	shift, and go to state 25
+    CHAR_CONSTANT	shift, and go to state 26
+    EOLN	shift, and go to state 27
+    '(' 	shift, and go to state 28
+    '-' 	shift, and go to state 29
+
+    expr	go to state 84
+    simple_expr	go to state 32
+    term	go to state 33
+    function_ref	go to state 34
+    function_ref_par	go to state 35
+    variable	go to state 36
+    simple_variable_or_proc	go to state 37
+    factor_a	go to state 38
+    factor	go to state 39
+    constant	go to state 40
+
+
+
+state 77
+
+    write_stmt  ->  WRITE '(' expr_list ')' .   (rule 26)
+
+    $default	reduce using rule 26 (write_stmt)
+
+
+
+state 78
+
+    stmt_suffix  ->  END .   (rule 24)
+
+    $default	reduce using rule 24 (stmt_suffix)
+
+
+
+state 79
+
+    stmt_suffix  ->  UNTIL . cond   (rule 23)
+
+    NOT 	shift, and go to state 21
+    INT_CONSTANT	shift, and go to state 22
+    REAL_CONSTANT	shift, and go to state 23
+    BOOL_CONSTANT	shift, and go to state 24
+    IDENTIFIER	shift, and go to state 25
+    CHAR_CONSTANT	shift, and go to state 26
+    EOLN	shift, and go to state 27
+    '(' 	shift, and go to state 28
+    '-' 	shift, and go to state 29
+
+    cond	go to state 85
+    expr	go to state 31
+    simple_expr	go to state 32
+    term	go to state 33
+    function_ref	go to state 34
+    function_ref_par	go to state 35
+    variable	go to state 36
+    simple_variable_or_proc	go to state 37
+    factor_a	go to state 38
+    factor	go to state 39
+    constant	go to state 40
+
+
+
+state 80
+
+    loop_stmt  ->  stmt_prefix DO stmt_list stmt_suffix .   (rule 20)
+
+    $default	reduce using rule 20 (loop_stmt)
+
+
+
+state 81
+
+    if_stmt  ->  IF cond THEN stmt ELSE . stmt   (rule 19)
+
+    IDENTIFIER	shift, and go to state 2
+    BEGIN_STMT	shift, and go to state 1
+    IF  	shift, and go to state 3
+    WHILE	shift, and go to state 4
+    READ	shift, and go to state 5
+    WRITE	shift, and go to state 6
+    GOTO	shift, and go to state 7
+
+    $default	reduce using rule 22 (stmt_prefix)
+
+    compound_stmt	go to state 8
+    stmt	go to state 86
+    label	go to state 11
+    unlabelled_stmt	go to state 12
+    assign_stmt	go to state 13
+    if_stmt	go to state 14
+    loop_stmt	go to state 15
+    stmt_prefix	go to state 16
+    read_stmt	go to state 17
+    write_stmt	go to state 18
+    goto_stmt	go to state 19
+
+
+
+state 82
+
+    function_ref_par  ->  variable '(' expr_list ')' .   (rule 39)
+
+    $default	reduce using rule 39 (function_ref_par)
+
+
+
+state 83
 
     ident_list  ->  ident_list ',' IDENTIFIER .   (rule 1)
 
@@ -1104,34 +1276,42 @@ state 74
 
 
 
-state 75
+state 84
 
-    expr_list  ->  expr_list ',' expr .   (rule 23)
+    expr_list  ->  expr_list ',' expr .   (rule 29)
 
-    $default	reduce using rule 23 (expr_list)
-
-
-
-state 76
-
-    if_stmt  ->  IF cond THEN stmt ELSE stmt .   (rule 18)
-
-    $default	reduce using rule 18 (if_stmt)
+    $default	reduce using rule 29 (expr_list)
 
 
 
-state 77
+state 85
 
-    $   	go to state 78
+    stmt_suffix  ->  UNTIL cond .   (rule 23)
 
-
-
-state 78
-
-    $   	go to state 79
+    $default	reduce using rule 23 (stmt_suffix)
 
 
 
-state 79
+state 86
+
+    if_stmt  ->  IF cond THEN stmt ELSE stmt .   (rule 19)
+
+    $default	reduce using rule 19 (if_stmt)
+
+
+
+state 87
+
+    $   	go to state 88
+
+
+
+state 88
+
+    $   	go to state 89
+
+
+
+state 89
 
     $default	accept
