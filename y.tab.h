@@ -198,35 +198,36 @@ typedef
 #define	REAL_CONSTANT	266
 #define	BOOL_CONSTANT	267
 #define	IDENTIFIER	268
-#define	CHAR_CONSTANT	269
-#define	PROGRAM	270
-#define	INTEGER	271
-#define	REAL	272
-#define	BOOLEAN	273
-#define	CHAR	274
-#define	BEGIN_STMT	275
-#define	END	276
-#define	IF	277
-#define	THEN	278
-#define	ELSE	279
-#define	DO	280
-#define	WHILE	281
-#define	UNTIL	282
-#define	READ	283
-#define	WRITE	284
-#define	GOTO	285
-#define	SIN	286
-#define	LOG	287
-#define	COS	288
-#define	ORD	289
-#define	CHR	290
-#define	ABS	291
-#define	SQRT	292
-#define	EXP	293
-#define	EOF_TOKEN	294
-#define	EOLN	295
-#define	UMINUS	296
-#define	IDX	297
+#define	IDENTIFIER_F	269
+#define	CHAR_CONSTANT	270
+#define	PROGRAM	271
+#define	INTEGER	272
+#define	REAL	273
+#define	BOOLEAN	274
+#define	CHAR	275
+#define	BEGIN_STMT	276
+#define	END	277
+#define	IF	278
+#define	THEN	279
+#define	ELSE	280
+#define	DO	281
+#define	WHILE	282
+#define	UNTIL	283
+#define	READ	284
+#define	WRITE	285
+#define	GOTO	286
+#define	SIN	287
+#define	LOG	288
+#define	COS	289
+#define	ORD	290
+#define	CHR	291
+#define	ABS	292
+#define	SQRT	293
+#define	EXP	294
+#define	EOF_TOKEN	295
+#define	EOLN	296
+#define	UMINUS	297
+#define	IDX	298
 
 
 #line 169 "/usr/share/bison++/bison.h"
@@ -286,6 +287,7 @@ static const int INT_CONSTANT;
 static const int REAL_CONSTANT;
 static const int BOOL_CONSTANT;
 static const int IDENTIFIER;
+static const int IDENTIFIER_F;
 static const int CHAR_CONSTANT;
 static const int PROGRAM;
 static const int INTEGER;
@@ -334,35 +336,36 @@ static const int IDX;
 	,REAL_CONSTANT=266
 	,BOOL_CONSTANT=267
 	,IDENTIFIER=268
-	,CHAR_CONSTANT=269
-	,PROGRAM=270
-	,INTEGER=271
-	,REAL=272
-	,BOOLEAN=273
-	,CHAR=274
-	,BEGIN_STMT=275
-	,END=276
-	,IF=277
-	,THEN=278
-	,ELSE=279
-	,DO=280
-	,WHILE=281
-	,UNTIL=282
-	,READ=283
-	,WRITE=284
-	,GOTO=285
-	,SIN=286
-	,LOG=287
-	,COS=288
-	,ORD=289
-	,CHR=290
-	,ABS=291
-	,SQRT=292
-	,EXP=293
-	,EOF_TOKEN=294
-	,EOLN=295
-	,UMINUS=296
-	,IDX=297
+	,IDENTIFIER_F=269
+	,CHAR_CONSTANT=270
+	,PROGRAM=271
+	,INTEGER=272
+	,REAL=273
+	,BOOLEAN=274
+	,CHAR=275
+	,BEGIN_STMT=276
+	,END=277
+	,IF=278
+	,THEN=279
+	,ELSE=280
+	,DO=281
+	,WHILE=282
+	,UNTIL=283
+	,READ=284
+	,WRITE=285
+	,GOTO=286
+	,SIN=287
+	,LOG=288
+	,COS=289
+	,ORD=290
+	,CHR=291
+	,ABS=292
+	,SQRT=293
+	,EXP=294
+	,EOF_TOKEN=295
+	,EOLN=296
+	,UMINUS=297
+	,IDX=298
 
 
 #line 215 "/usr/share/bison++/bison.h"

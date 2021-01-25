@@ -100,7 +100,7 @@ int resWord(char* str, char* list[], int size){
     int i = 1;
     for(i = 1; i < size; i++){
         if(strcmp(str,list[i]) == 0){
-            return resWordId(str);
+            return i;
         }
     }
     return -1;
@@ -119,7 +119,7 @@ int tokenId(){
     }else if(resWord(yytext, functs, functsSize) != -1){
         // Nome de função
         printf("[%4d] Function: \t%s\n", yylineno, yytext);
-        return functId(yytext);
+        return IDENTIFIER_F;
     }else{
         // Identificador
         printf("[%4d] Identifier: \t%s\n", yylineno, yytext);

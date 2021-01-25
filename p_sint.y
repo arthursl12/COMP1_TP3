@@ -26,6 +26,7 @@
 %token <real> REAL_CONSTANT
 %token <boolean> BOOL_CONSTANT
 %token <identifier> IDENTIFIER
+%token <identifier> IDENTIFIER_F       // Identificador de funções-padrão
 %token <character> CHAR_CONSTANT
 
 /* Tokens de Palavras Reservadas */
@@ -136,7 +137,7 @@ function_ref_par        :   variable '(' expr_list ')'
 variable                :   simple_variable_or_proc
                         |   function_ref_par
                         ;
-simple_variable_or_proc :   IDENTIFIER
+simple_variable_or_proc :   IDENTIFIER_F
                         ;
 factor_a                :   '-'factor %prec UMINUS
                         |   factor
