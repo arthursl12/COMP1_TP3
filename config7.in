@@ -1,0 +1,40 @@
+program mytest;
+
+x: integer;
+y: real;
+z: integer
+
+begin
+    begin
+        x := cos(0);
+        y := (10 + 3*5);
+        z := 0;
+        while (x <= 5) do
+            z := z + y;
+            x := x + 1
+        end;
+
+        do  
+            z := z-sin(x);
+            x := x-1;
+            while (x <= 5) do
+                z := z + y;
+                x := x + 1
+            end
+        until (x <= 0);
+
+        do  
+            z := z-x;
+            x := x-1
+        until (x <= 0)
+    end;
+    begin
+        goto label1;
+        begin
+            label1:
+                read (file3);
+                write (1+1,teste2)
+        end
+    end;
+    z := cos(35)
+end

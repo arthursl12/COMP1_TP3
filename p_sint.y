@@ -44,7 +44,7 @@
 %token EOF_TOKEN EOLN
 
 /* Símbolo de partida */
-%start compound_stmt
+%start program
 
 /* Associatividade e Precedência */
 %left ADDOP MULOP
@@ -60,8 +60,19 @@
 %%
 
 /* descriptions of expected inputs     corresponding actions (in C) */
+    /* Header e Declarações */
+program                 :   PROGRAM IDENTIFIER ';' decl_list compound_stmt
+decl_list               :   decl_list ';' decl
+                        |   decl
+                        ;
+decl                    :   ident_list ':' type
 ident_list              :   ident_list ',' IDENTIFIER
                         |   IDENTIFIER
+                        ;
+type                    :   INTEGER
+                        |   REAL
+                        |   BOOLEAN
+                        |   CHAR
                         ;
     /* ----- Statements ----- */
 compound_stmt           :   BEGIN_STMT stmt_list END
