@@ -37,6 +37,12 @@
 %token UNTIL END
 %token READ WRITE GOTO
 
+/* Tokens de Funções Padrão */
+%token SIN LOG COS
+%token ORD CHR
+%token ABS SQRT EXP
+%token EOF_TOKEN EOLN
+
 /* Símbolo de partida */
 %start compound_stmt
 
@@ -54,6 +60,10 @@
 %%
 
 /* descriptions of expected inputs     corresponding actions (in C) */
+ident_list              :   ident_list ',' IDENTIFIER
+                        |   IDENTIFIER
+                        ;
+    /* ----- Statements ----- */
 compound_stmt           :   BEGIN_STMT stmt_list END
                         ;
 stmt_list               :   stmt_list ';' stmt
@@ -66,6 +76,9 @@ label                   :   IDENTIFIER
                         ;
 unlabelled_stmt         :   assign_stmt
                         |   if_stmt
+                        |   read_stmt
+                        |   write_stmt
+                        |   goto_stmt
                         |   compound_stmt
                         ;
 cond                    :   expr
@@ -75,6 +88,13 @@ assign_stmt             :   IDENTIFIER ASSIGN expr
 if_stmt                 :   IF cond THEN stmt   %prec THEN
                         |   IF cond THEN stmt ELSE stmt
                         ;
+read_stmt               :   READ '(' ident_list ')'
+                        ;
+write_stmt              :   WRITE '(' expr_list ')'
+                        ;
+goto_stmt               :   GOTO IDENTIFIER
+                        ;
+    /* ----- Expressões ----- */
 expr_list               :   expr
                         |   expr_list ',' expr
                         ;
@@ -88,7 +108,8 @@ simple_expr             :   term
 term                    :   factor_a
                         |   term MULOP factor_a
                         ;
-function_ref            :   function_ref_par
+function_ref            :   EOLN
+                        |   function_ref_par
                         ;
 function_ref_par        :   variable '(' expr_list ')'
                         ;

@@ -215,8 +215,18 @@ typedef
 #define	READ	283
 #define	WRITE	284
 #define	GOTO	285
-#define	UMINUS	286
-#define	IDX	287
+#define	SIN	286
+#define	LOG	287
+#define	COS	288
+#define	ORD	289
+#define	CHR	290
+#define	ABS	291
+#define	SQRT	292
+#define	EXP	293
+#define	EOF_TOKEN	294
+#define	EOLN	295
+#define	UMINUS	296
+#define	IDX	297
 
 
 #line 169 "/usr/share/bison++/bison.h"
@@ -293,6 +303,16 @@ static const int UNTIL;
 static const int READ;
 static const int WRITE;
 static const int GOTO;
+static const int SIN;
+static const int LOG;
+static const int COS;
+static const int ORD;
+static const int CHR;
+static const int ABS;
+static const int SQRT;
+static const int EXP;
+static const int EOF_TOKEN;
+static const int EOLN;
 static const int UMINUS;
 static const int IDX;
 
@@ -331,8 +351,18 @@ static const int IDX;
 	,READ=283
 	,WRITE=284
 	,GOTO=285
-	,UMINUS=286
-	,IDX=287
+	,SIN=286
+	,LOG=287
+	,COS=288
+	,ORD=289
+	,CHR=290
+	,ABS=291
+	,SQRT=292
+	,EXP=293
+	,EOF_TOKEN=294
+	,EOLN=295
+	,UMINUS=296
+	,IDX=297
 
 
 #line 215 "/usr/share/bison++/bison.h"

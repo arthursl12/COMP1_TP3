@@ -23,7 +23,7 @@ int yywrap (void){
 }
 
 /*
-Retorna o índice dado pelo LEX à palavra reservada str
+Retorna o índice dado pelo YACC ao token da palavra reservada str
 */
 int resWordId(char* str){
     if (strcmp(str, "program") == 0)
@@ -64,41 +64,29 @@ int resWordId(char* str){
 
 
 /*
-Retorna o índice dado pelo LEX à função padrão str
+Retorna o índice dado pelo YACC ao token da função padrão str
 */
 int functId(char* str){
-    if (strcmp(str, "program") == 0)
-        return PROGRAM;
-    else if (strcmp(str, "integer") == 0)
-        return INTEGER;
+    if (strcmp(str, "sin") == 0)
+        return SIN;
+    else if (strcmp(str, "cos") == 0)
+        return COS;
     else if (strcmp(str, "real") == 0)
-        return REAL;
+        return LOG;
     else if (strcmp(str, "boolean") == 0)
-        return BOOLEAN;
+        return ORD;
     else if (strcmp(str, "char") == 0)
-        return CHAR;
+        return CHR;
     else if (strcmp(str, "begin") == 0)
-        return BEGIN_STMT;
+        return ABS;
     else if (strcmp(str, "end") == 0)
-        return END;
+        return SQRT;
     else if (strcmp(str, "if") == 0)
-        return IF;
+        return EXP;
     else if (strcmp(str, "then") == 0)
-        return THEN;
+        return EOF_TOKEN;
     else if (strcmp(str, "else") == 0)
-        return ELSE;
-    else if (strcmp(str, "do") == 0)
-        return DO;
-    else if (strcmp(str, "while") == 0)
-        return WHILE;
-    else if (strcmp(str, "until") == 0)
-        return UNTIL;
-    else if (strcmp(str, "read") == 0)
-        return READ;
-    else if (strcmp(str, "write") == 0)
-        return WRITE;
-    else if (strcmp(str, "goto") == 0)
-        return GOTO;
+        return EOLN;
     else
         return -1;
 }
