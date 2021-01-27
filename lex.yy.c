@@ -431,9 +431,9 @@ goto find_rule; \
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "p_lex.l"
+#line 1 "yylex.l"
 #define INITIAL 0
-#line 2 "p_lex.l"
+#line 2 "yylex.l"
     #include "tokens.h"
     #include "aux.h"
     #include <stdlib.h>
@@ -607,7 +607,7 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 28 "p_lex.l"
+#line 28 "yylex.l"
 
     /* Delimitadores e Espaços */
 #line 614 "lex.yy.c"
@@ -703,161 +703,161 @@ do_action:	/* This label is used only to access EOF actions. */
 	{ /* beginning of action switch */
 case 1:
 YY_RULE_SETUP
-#line 30 "p_lex.l"
+#line 30 "yylex.l"
 ;
 	YY_BREAK
 /* Constantes */
 case 2:
 YY_RULE_SETUP
-#line 32 "p_lex.l"
+#line 32 "yylex.l"
 { printToken("Integer"); return INT_CONSTANT; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 33 "p_lex.l"
+#line 33 "yylex.l"
 { printf("[%4d] Real: \t%s\n", yylineno, yytext); return REAL_CONSTANT; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 34 "p_lex.l"
+#line 34 "yylex.l"
 { printf("[%4d] Char: \t%s\n", yylineno, yytext); return CHAR_CONSTANT; }
 	YY_BREAK
 /* Constantes Booleanas */
 case 5:
 YY_RULE_SETUP
-#line 36 "p_lex.l"
+#line 36 "yylex.l"
 { printf("[%4d] Bool: \t%s\n", yylineno, yytext); return BOOL_CONSTANT; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 37 "p_lex.l"
+#line 37 "yylex.l"
 { printf("[%4d] Bool: \t%s\n", yylineno, yytext); return BOOL_CONSTANT; }
 	YY_BREAK
 /* RELOP */ 
 case 7:
 YY_RULE_SETUP
-#line 40 "p_lex.l"
+#line 40 "yylex.l"
 { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 41 "p_lex.l"
+#line 41 "yylex.l"
 { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 42 "p_lex.l"
+#line 42 "yylex.l"
 { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 43 "p_lex.l"
+#line 43 "yylex.l"
 { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 44 "p_lex.l"
+#line 44 "yylex.l"
 { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 45 "p_lex.l"
+#line 45 "yylex.l"
 { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 46 "p_lex.l"
+#line 46 "yylex.l"
 { printf("[%4d] NOT: \t%s\n", yylineno, yytext); return NOT; }
 	YY_BREAK
 /* ADDOP */
 case 14:
 YY_RULE_SETUP
-#line 49 "p_lex.l"
+#line 49 "yylex.l"
 { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 50 "p_lex.l"
+#line 50 "yylex.l"
 { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 51 "p_lex.l"
+#line 51 "yylex.l"
 { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
 	YY_BREAK
 /* MULOP */
 case 17:
 YY_RULE_SETUP
-#line 54 "p_lex.l"
+#line 54 "yylex.l"
 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 55 "p_lex.l"
+#line 55 "yylex.l"
 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 56 "p_lex.l"
+#line 56 "yylex.l"
 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 57 "p_lex.l"
+#line 57 "yylex.l"
 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 58 "p_lex.l"
+#line 58 "yylex.l"
 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
 	YY_BREAK
 /* ASSIGN */
 case 22:
 YY_RULE_SETUP
-#line 60 "p_lex.l"
+#line 60 "yylex.l"
 { printf("[%4d] Assign: \t%s\n", yylineno, yytext); return ASSIGN; }
 	YY_BREAK
 /* Identificadores e Palavras Reservadas */
 case 23:
 YY_RULE_SETUP
-#line 63 "p_lex.l"
+#line 63 "yylex.l"
 { return tokenId(); }
 	YY_BREAK
 /* Símbolos especiais */
 case 24:
 YY_RULE_SETUP
-#line 66 "p_lex.l"
+#line 66 "yylex.l"
 { printf("[%4d] CharEsp: \t%s\n", yylineno, yytext); return *yytext; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 67 "p_lex.l"
+#line 67 "yylex.l"
 { printf("[%4d] CharEsp: \t%s\n", yylineno, yytext); return *yytext; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 68 "p_lex.l"
+#line 68 "yylex.l"
 { printf("[%4d] CharEsp: \t%s\n", yylineno, yytext); return *yytext; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 69 "p_lex.l"
+#line 69 "yylex.l"
 { printf("[%4d] CharEsp: \t%s\n", yylineno, yytext); return *yytext; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 70 "p_lex.l"
+#line 70 "yylex.l"
 { printf("[%4d] CharEsp: \t%s\n", yylineno, yytext); return *yytext; }
 	YY_BREAK
 /* Qualquer outro deve ser ignorado */
 case 29:
 YY_RULE_SETUP
-#line 73 "p_lex.l"
+#line 73 "yylex.l"
 printf("Caractere ou token inválido\n");
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 76 "p_lex.l"
+#line 76 "yylex.l"
 ECHO;
 	YY_BREAK
 #line 864 "lex.yy.c"
@@ -1748,6 +1748,6 @@ int main()
 	return 0;
 	}
 #endif
-#line 76 "p_lex.l"
+#line 76 "yylex.l"
 
 /* Funções auxiliares no 'aux.c' */
