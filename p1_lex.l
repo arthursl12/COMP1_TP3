@@ -1,6 +1,7 @@
 %{
-    #include "tokens.h"
+    // #include "tokens.h"
     #include "aux.h"
+    #include "y.tab.h"
     #include <stdlib.h>
     #include <stdbool.h>
     void yyerror (char *s);
@@ -8,7 +9,7 @@
 /* Para usar o 'yylineno' (número da linha) */
 %option nounput yylineno   
 
-/* DEFINIÇÕES VIA EXPRESSÕES REGULARES */ 
+/* DEFINIÇÕES REGULARES */ 
 /* Espaços */
 delim [ \t\n] 
 ws {delim}+ 
@@ -29,12 +30,12 @@ id              {letter}({letter}|{digit})*
     /* Delimitadores e Espaços */
 {ws}                ;
     /* Constantes */
-{uint}              { printToken("Integer"); return INT_CONSTANT; }
-{ureal}             { printf("[%4d] Real: \t%s\n", yylineno, yytext); return REAL_CONSTANT; }
-{char}              { printf("[%4d] Char: \t%s\n", yylineno, yytext); return CHAR_CONSTANT; }
+{uint}              { printToken("Integer"); yylval.integer = atoi(yytext); return INT_CONSTANT; }
+{ureal}             { printf("[%4d] Real: \t%s\n", yylineno, yytext); yylval.real = atof(yytext); return REAL_CONSTANT; }
+{char}              { printf("[%4d] Char: \t%s\n", yylineno, yytext); yylval.character = *yytext; return CHAR_CONSTANT; }
     /* Constantes Booleanas */
-"true"              { printf("[%4d] Bool: \t%s\n", yylineno, yytext); return BOOL_CONSTANT; }
-"false"             { printf("[%4d] Bool: \t%s\n", yylineno, yytext); return BOOL_CONSTANT; }
+"true"              { printf("[%4d] Bool: \t%s\n", yylineno, yytext); yylval.boolean = 1; return BOOL_CONSTANT; }
+"false"             { printf("[%4d] Bool: \t%s\n", yylineno, yytext); yylval.boolean = 0; return BOOL_CONSTANT; }
 
     /* RELOP */ 
 ">"                 { printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
@@ -47,8 +48,9 @@ id              {letter}({letter}|{digit})*
 
     /* ADDOP */
 "+"                 { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
-"-"                 { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
 "or"                { printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
+    /* Minus: special case */
+"-"                 { printf("[%4d] Minus: \t%s\n", yylineno, yytext); return *yytext; }
 
     /* MULOP */
 "*"                 { printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
@@ -63,14 +65,14 @@ id              {letter}({letter}|{digit})*
 {id}                { return tokenId(); }
 
     /* Símbolos especiais */
-":"                 { printf("[%4d] CharEsp: \t%s\n", yylineno, yytext); return *yytext; }
-";"                 { printf("[%4d] CharEsp: \t%s\n", yylineno, yytext); return *yytext; }
-","                 { printf("[%4d] CharEsp: \t%s\n", yylineno, yytext); return *yytext; }
-")"                 { printf("[%4d] CharEsp: \t%s\n", yylineno, yytext); return *yytext; }
-"("                 { printf("[%4d] CharEsp: \t%s\n", yylineno, yytext); return *yytext; }
+":"                 { return *yytext; }
+";"                 { return *yytext; }
+","                 { return *yytext; }
+")"                 { return *yytext; }
+"("                 { return *yytext; }
 
     /* Qualquer outro deve ser ignorado */
-.                   printf("Caractere ou token inválido\n");
+.                   printf("Unexpected character\n");
 
 
 %%

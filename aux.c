@@ -2,7 +2,6 @@
 #include "tokens.h"
 #include <stdio.h>
 
-char* names[] = {NULL, "db_type", "db_name", "db_table_prefix", "db_port"};
 char* reserved[] = {NULL, "program",
                     "integer","real", "boolean","char",
                     "begin","end",
