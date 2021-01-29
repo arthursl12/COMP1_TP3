@@ -3,13 +3,12 @@
 
 #include "tab.h"
 
-
 extern int escopo[10];
 extern int nivel;      /* nível atual */
 extern int L;          /* índice do último elemento da tabela */
-
 extern int Raiz;       
 
+/* Código que inicializa a tabela, deve ser colocado no main */
 // int main(){
 //     L = 1;                  /* Primeira posição da tabela é 1. 
 //                                L é o final da árvore */

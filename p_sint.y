@@ -10,20 +10,20 @@
     void yyerror (char *s);
     int yylex();
 
+    /* ========= OLD CODE */
+    int symbols[52];
+    int symbolVal(char symbol);
+    void updateSymbolVal(char symbol, int val);
+    /* ========= OLD CODE */
+
     /* Globals da Tabela de Símbolos */
     extern int escopo[10];
     extern int nivel;      /* nível atual */
     extern int L;          /* índice do último elemento da tabela */
-
     extern int Raiz;   
 
-    int symbols[52];
-    int symbolVal(char symbol);
-    void updateSymbolVal(char symbol, int val);
-
-
+    /* Funções Auxiliares da Tabela de Símbolos */
     void installIdentList(char* type);
-
     int q = 0;              /* Tamanho do ident_list */
     char* id_list[20];      /* Lista de identificadores numa declaração */
 %}
@@ -184,13 +184,13 @@ constant                :   INT_CONSTANT
 %%                     /* C code */
 
 void installIdentList(char* type){
-    //   Obs.: o tamanho do array 'ident_list' está 
-    // na variável global 'qtd_declaracoes'
+    //   Obs.: o tamanho do array 'id_list' está na variável global 'q'
     int i = 0;
     printf("%i declaracoes do tipo %s\n", q, type);
 
     for (i = 0; i < q; i++){
         printf("Instalando %s, do tipo %s\n", id_list[i], type);
+        Instala(id_list[i], type);
     }
     
 }
@@ -243,6 +243,7 @@ int main (void) {
 
     if (yyparse() == 0){
         printf("Parse sucessful\n");
+        imprimir();
         return 0;
     }else{
         return 1;
