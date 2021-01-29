@@ -9,7 +9,7 @@ aux.o:
 	gcc -c aux.c -o aux.o 
 
 clean:
-	rm *.o
+	rm -rf *.o
 	rm yylex
 	rm lex.yy.c
 
