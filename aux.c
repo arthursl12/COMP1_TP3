@@ -58,14 +58,3 @@ int tokenId(){
 void printToken(char* tokenName){
     printf("[%4d] %s: \t%s\n", yylineno, tokenName, yytext);
 }
-
-int installID() {
-    /* function to install the lexeme, whose first character is pointed to by 
-    yytext, and whose length is yyleng, into the symbol table and return a 
-    pointer thereto */ 
-} 
-
-int installNum() {
-    /* similar to installID, but puts numerical 
-    constants into a separate table */ 
-}

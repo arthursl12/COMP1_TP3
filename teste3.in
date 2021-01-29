@@ -1,8 +1,7 @@
 program mytest;
 
 x: integer;
-y: real;
-z: integer
+z: real
 
 begin
     begin
