@@ -1,6 +1,6 @@
 program mytest;
 
-x: integer;
+x, k, i: integer;
 y: real;
 z: integer
 

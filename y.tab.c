@@ -100,19 +100,42 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
  #line 88 "/usr/share/bison++/bison.cc"
 #line 1 "p_sint.y"
 
-    void yyerror (char *s);
-    int yylex();
-    #include <stdio.h>     /* C declarations used in actions */
+    #include <stdio.h>    
     #include <stdlib.h>
     #include <ctype.h>
+    #include "tab.h"
+
+    #define YYDEBUG 0          /* Se ligado, imprime mais informações */
+
+    /* Forward declaration de funções do Lex */
+    void yyerror (char *s);
+    int yylex();
+
+    /* Globals da Tabela de Símbolos */
+    extern int escopo[10];
+    extern int nivel;      /* nível atual */
+    extern int L;          /* índice do último elemento da tabela */
+
+    extern int Raiz;   
+
     int symbols[52];
     int symbolVal(char symbol);
     void updateSymbolVal(char symbol, int val);
 
-    #define YYDEBUG 1
 
-#line 14 "p_sint.y"
-typedef union {int integer; float real; int boolean; char character; char* identifier;} yy_parse_stype;
+    void installIdentList(char* type);
+
+    int q = 0;              /* Tamanho do ident_list */
+    char* id_list[20];      /* Lista de identificadores numa declaração */
+
+#line 31 "p_sint.y"
+typedef union {
+    int integer; 
+    float real; 
+    int boolean; 
+    char character; 
+    char* string; 
+} yy_parse_stype;
 #define YY_parse_STYPE yy_parse_stype
 #ifndef YY_USE_CLASS
 #define YYSTYPE yy_parse_stype
@@ -662,13 +685,13 @@ static const short yyrhs[] = {    16,
 
 #if (YY_parse_DEBUG != 0) || defined(YY_parse_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-    65,    66,    67,    69,    70,    71,    73,    74,    75,    76,
-    79,    81,    82,    84,    85,    87,    89,    90,    91,    92,
-    93,    94,    95,    97,    99,   101,   102,   104,   106,   107,
-   109,   110,   112,   114,   116,   119,   120,   122,   123,   125,
-   126,   127,   129,   130,   132,   133,   135,   137,   138,   140,
-   142,   143,   145,   146,   147,   148,   149,   151,   152,   153,
-   154
+    91,    92,    93,    95,    96,    97,    99,   100,   101,   102,
+   105,   107,   108,   110,   111,   113,   115,   116,   117,   118,
+   119,   120,   121,   123,   125,   127,   128,   130,   132,   133,
+   135,   136,   138,   140,   142,   145,   146,   148,   149,   151,
+   152,   153,   155,   156,   158,   159,   161,   163,   164,   166,
+   168,   169,   171,   172,   173,   174,   175,   177,   178,   179,
+   180
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","print","exit_command",
@@ -1267,6 +1290,26 @@ YYLABEL(yyreduce)
 
   switch (yyn) {
 
+case 2:
+#line 92 "p_sint.y"
+{ q = 0; ;
+    break;}
+case 3:
+#line 93 "p_sint.y"
+{ q = 0; ;
+    break;}
+case 4:
+#line 95 "p_sint.y"
+{ installIdentList(yyvsp[0].string) ;
+    break;}
+case 5:
+#line 96 "p_sint.y"
+{ id_list[q] = yyvsp[0].string; q++; ;
+    break;}
+case 6:
+#line 97 "p_sint.y"
+{ id_list[q] = yyvsp[0].string; q++; ;
+    break;}
 }
 
 #line 839 "/usr/share/bison++/bison.cc"
@@ -1471,8 +1514,20 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "/usr/share/bison++/bison.cc"
-#line 158 "p_sint.y"
+#line 184 "p_sint.y"
                      /* C code */
+
+void installIdentList(char* type){
+    //   Obs.: o tamanho do array 'ident_list' está 
+    // na variável global 'qtd_declaracoes'
+    int i = 0;
+    printf("%i declaracoes do tipo %s\n", q, type);
+
+    for (i = 0; i < q; i++){
+        printf("Instalando %s, do tipo %s\n", id_list[i], type);
+    }
+    
+}
 
 int computeSymbolIndex(char token)
 {
@@ -1503,7 +1558,18 @@ int main (void) {
     #if YYDEBUG
         yydebug = 1;     
     #endif 
-	/* init symbol table */
+
+
+    /* Inicialização da Tabela de Símbolos */
+    /* Primeira posição da tabela é 1. L é o final da árvore */
+    L = 1;             
+    /* Primeiro nível é 1 */     
+    nivel = 1;              
+    /* escopo[1] contém o indice do primeiro elemento */
+    escopo[nivel] = 0;      
+	
+    
+    /* init symbol table */
 	int i;
 	for(i=0; i<52; i++) {
 		symbols[i] = 0;

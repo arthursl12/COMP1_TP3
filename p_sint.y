@@ -1,17 +1,40 @@
 %{
-    void yyerror (char *s);
-    int yylex();
-    #include <stdio.h>     /* C declarations used in actions */
+    #include <stdio.h>    
     #include <stdlib.h>
     #include <ctype.h>
+    #include "tab.h"
+
+    #define YYDEBUG 0          /* Se ligado, imprime mais informações */
+
+    /* Forward declaration de funções do Lex */
+    void yyerror (char *s);
+    int yylex();
+
+    /* Globals da Tabela de Símbolos */
+    extern int escopo[10];
+    extern int nivel;      /* nível atual */
+    extern int L;          /* índice do último elemento da tabela */
+
+    extern int Raiz;   
+
     int symbols[52];
     int symbolVal(char symbol);
     void updateSymbolVal(char symbol, int val);
 
-    #define YYDEBUG 1
+
+    void installIdentList(char* type);
+
+    int q = 0;              /* Tamanho do ident_list */
+    char* id_list[20];      /* Lista de identificadores numa declaração */
 %}
 
-%union {int integer; float real; int boolean; char character; char* identifier;}         /* Yacc definitions */
+%union {
+    int integer; 
+    float real; 
+    int boolean; 
+    char character; 
+    char* string; 
+}         /* Yacc definitions */
 
 %token print
 %token exit_command
@@ -25,13 +48,13 @@
 %token <integer> INT_CONSTANT
 %token <real> REAL_CONSTANT
 %token <boolean> BOOL_CONSTANT
-%token <identifier> IDENTIFIER
-%token <identifier> IDENTIFIER_F       // Identificador de funções-padrão
+%token <string> IDENTIFIER
+%token <string> IDENTIFIER_F       // Identificador de funções-padrão
 %token <character> CHAR_CONSTANT
 
 /* Tokens de Palavras Reservadas */
 %token PROGRAM
-%token INTEGER REAL BOOLEAN CHAR
+%token <string> INTEGER REAL BOOLEAN CHAR
 %token BEGIN_STMT END
 %token IF THEN ELSE
 %token DO WHILE
@@ -54,21 +77,24 @@
 %nonassoc THEN
 %nonassoc ELSE
 %nonassoc IDX
+
 // %type 
 // %type <num> line exp term 
 // %type <id> assignment
+// %type <identifier_list> ident_list 
+%type <string> type
 
 %%
 
 /* descriptions of expected inputs     corresponding actions (in C) */
     /* Header e Declarações */
 program                 :   PROGRAM IDENTIFIER ';' decl_list compound_stmt
-decl_list               :   decl_list ';' decl
-                        |   decl
+decl_list               :   decl_list ';' decl              { q = 0; }
+                        |   decl                            { q = 0; }
                         ;
-decl                    :   ident_list ':' type
-ident_list              :   ident_list ',' IDENTIFIER
-                        |   IDENTIFIER
+decl                    :   ident_list ':' type             { installIdentList($3) }
+ident_list              :   ident_list ',' IDENTIFIER       { id_list[q] = $3; q++; }
+                        |   IDENTIFIER                      { id_list[q] = $1; q++; }
                         ;
 type                    :   INTEGER
                         |   REAL
@@ -157,6 +183,18 @@ constant                :   INT_CONSTANT
 
 %%                     /* C code */
 
+void installIdentList(char* type){
+    //   Obs.: o tamanho do array 'ident_list' está 
+    // na variável global 'qtd_declaracoes'
+    int i = 0;
+    printf("%i declaracoes do tipo %s\n", q, type);
+
+    for (i = 0; i < q; i++){
+        printf("Instalando %s, do tipo %s\n", id_list[i], type);
+    }
+    
+}
+
 int computeSymbolIndex(char token)
 {
 	int idx = -1;
@@ -186,7 +224,18 @@ int main (void) {
     #if YYDEBUG
         yydebug = 1;     
     #endif 
-	/* init symbol table */
+
+
+    /* Inicialização da Tabela de Símbolos */
+    /* Primeira posição da tabela é 1. L é o final da árvore */
+    L = 1;             
+    /* Primeiro nível é 1 */     
+    nivel = 1;              
+    /* escopo[1] contém o indice do primeiro elemento */
+    escopo[nivel] = 0;      
+	
+    
+    /* init symbol table */
 	int i;
 	for(i=0; i<52; i++) {
 		symbols[i] = 0;
