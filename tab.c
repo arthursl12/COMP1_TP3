@@ -50,94 +50,94 @@ void Saida_Bloco(){
 }
 
 /*
-Implementando manualmente a função depreciada strcmpi
-*/
-int strcmpi(const char *__s1, const char *__s2){
-    int res = strcmp(__s1, __s2);
-    if (res == 0){
-        return 0;
-    }else{
-        if (strlen(__s1) < strlen(__s2)){
-            return -1;
-        }else{
-            return 1;
-        }
-    }
-}
-
-/*
 Pesquisa o símbolo 'x' e retorna o índice da Tabela de Símbolos onde ele se 
 encontra
 */
-void Get_Entry(char x[10]){
+void Get_Entry(char x[TNome], int* res_nivel, int* res_i){
     int n, k, aux, achou;
     achou = 0;
     n = nivel;
     // Enquanto tiver níveis (árvores) para explorar
-    while ((n > 0) && (achou == 0)){
+    while (n > 0){
         k = escopo[n];
+
         // Explore em cada árvore (do nível mais alto para o mais baixo)
         while ((k != 0) && (achou == 0)){
-            aux = strcmpi(x, TabelaS[k].nome);
-            if (aux == 0)
+            aux = strcmp(TabelaS[k].nome, x);
+            if (aux == 0){
                 achou = 1;
-            else if (aux < 0)
+                n = 0;
+                break;
+            }
+            else if (x < TabelaS[k].nome) 	
                 k = TabelaS[k].esq;
-            else
+			else 
                 k = TabelaS[k].dir;
         }
         n--;
     }
 
+
     if (achou == 1){
+        printf("Encontrado %s. ", TabelaS[k].nome);
         printf("O item está no nível: %d", TabelaS[k].nivel);
-        printf("               Indice: %u", k);
+        printf(", indice: %u\n", k);
+        *res_nivel =  TabelaS[k].nivel;
+        *res_i = k;
     }else{
         Erro(2);
     }
 }
 
-void Instala(char X[10], char atribut[10]){
+void Instala(char X[TNome], char type[TType], char value[TValue]){
     int S, i, k, aux;
     aux = 1;
     S = escopo[nivel];
+    i = S;
 
     while (S != 0){
         // Enquanto não achar um nó folha
         i = S;
-        aux = strcmpi(X, TabelaS[S].nome);
+        aux = strcmp(TabelaS[S].nome, X);
         if (aux == 0){
             S = 0;
             Erro(3);
-        }else if (aux < 0)
+        }else if (X <TabelaS[S].nome)  
             S = TabelaS[S].esq;
-        else 
+		else 
             S = TabelaS[S].dir;
     }
-
-    if ((L < NMax + 1) && (aux != 0)){
+    if (L >= NMax + 1)	
+        Erro(1);
+    else{
         // Cria o novo nó
+        // Copia o nível passado
         TabelaS[L].nivel = nivel;
-        // Copia o atributo passado
-        aux = strlen(atribut);
-        for (k = 0; k <= aux-1; k++)
-            TabelaS[L].atributo[k] = atribut[k];
-        // Filhos inicializados vazios
-        TabelaS[L].esq = 0;
-        TabelaS[L].dir = 0;
         // Copia o nome passado
         aux = strlen(X);
         for(k = 0; k <= aux-1; k++)
             TabelaS[L].nome[k] = X[k];
-        
-        if (escopo[nivel] == 0)
+        // Copia o type passado
+        aux = strlen(type);
+        for (k = 0; k <= aux-1; k++)
+            TabelaS[L].type[k] = type[k];
+        // Copia o value passado
+        aux = strlen(value);
+        for (k = 0; k <= aux-1; k++)
+            TabelaS[L].value[k] = value[k];
+        // Filhos inicializados vazios
+        TabelaS[L].esq = TabelaS[L].dir = 0;
+
+        if (escopo[nivel] == 0){
             escopo[nivel] = L;
-        else if (X > TabelaS[i].nome)
+        }else if (X < TabelaS[i].nome){
             TabelaS[i].esq = L;
-        else
+        }else{
             TabelaS[i].dir = L;
+        }
         L++;
     }
+    // imprimir();
 }
 
 void imprimir(){
@@ -145,7 +145,8 @@ void imprimir(){
     for (i = 1; i <= L-1; i++){
         printf("\n\n");
         printf("Nome : %s\n", TabelaS[i].nome);
-        printf("Atributo : %s\n", TabelaS[i].atributo);
+        printf("Tipo : %s\n", TabelaS[i].type);
+        printf("Valor : %s\n", TabelaS[i].value);
         printf("Nivel : %i\n",TabelaS[i].nivel);
         printf("Esquerdo : %i\n",TabelaS[i].esq);
         printf("Direito : %i\n",TabelaS[i].dir);

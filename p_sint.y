@@ -24,6 +24,7 @@
 
     /* Funções Auxiliares da Tabela de Símbolos */
     void installIdentList(char* type);
+    void updateVal(char* id, char* value);
     int q = 0;              /* Tamanho do ident_list */
     char* id_list[20];      /* Lista de identificadores numa declaração */
 %}
@@ -88,7 +89,7 @@
 
 /* descriptions of expected inputs     corresponding actions (in C) */
     /* Header e Declarações */
-program                 :   PROGRAM IDENTIFIER ';' decl_list compound_stmt
+program                 :   PROGRAM IDENTIFIER ';' decl_list compound_stmt 
 decl_list               :   decl_list ';' decl              { q = 0; }
                         |   decl                            { q = 0; }
                         ;
@@ -120,7 +121,7 @@ unlabelled_stmt         :   assign_stmt
                         |   goto_stmt
                         |   compound_stmt
                         ;
-assign_stmt             :   IDENTIFIER ASSIGN expr
+assign_stmt             :   IDENTIFIER ASSIGN expr          { updateVal($1,"updt"); }
                         ;
 cond                    :   expr
                         ;
@@ -183,6 +184,10 @@ constant                :   INT_CONSTANT
 
 %%                     /* C code */
 
+/*
+Instala a lista de identificadores 'id_list' (global) de tipo 'type' na 
+tabela de símbolos
+*/
 void installIdentList(char* type){
     //   Obs.: o tamanho do array 'id_list' está na variável global 'q'
     int i = 0;
@@ -190,9 +195,17 @@ void installIdentList(char* type){
 
     for (i = 0; i < q; i++){
         printf("Instalando %s, do tipo %s\n", id_list[i], type);
-        Instala(id_list[i], type);
+        Instala(id_list[i], type, "");
     }
-    
+}
+
+/*
+Atualiza o atributo 'value' da entrada 'id' da tabela de símbolos
+*/
+void updateVal(char* id, char* value){
+    int res_niv;
+    int res_i;
+    Get_Entry(id, &res_niv, &res_i);
 }
 
 int computeSymbolIndex(char token)
@@ -233,8 +246,8 @@ int main (void) {
     nivel = 1;              
     /* escopo[1] contém o indice do primeiro elemento */
     escopo[nivel] = 0;      
-	
-    
+
+
     /* init symbol table */
 	int i;
 	for(i=0; i<52; i++) {

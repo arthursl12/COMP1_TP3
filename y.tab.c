@@ -125,10 +125,11 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
 
     /* Funções Auxiliares da Tabela de Símbolos */
     void installIdentList(char* type);
+    void updateVal(char* id, char* value);
     int q = 0;              /* Tamanho do ident_list */
     char* id_list[20];      /* Lista de identificadores numa declaração */
 
-#line 31 "p_sint.y"
+#line 32 "p_sint.y"
 typedef union {
     int integer; 
     float real; 
@@ -685,13 +686,13 @@ static const short yyrhs[] = {    16,
 
 #if (YY_parse_DEBUG != 0) || defined(YY_parse_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-    91,    92,    93,    95,    96,    97,    99,   100,   101,   102,
-   105,   107,   108,   110,   111,   113,   115,   116,   117,   118,
-   119,   120,   121,   123,   125,   127,   128,   130,   132,   133,
-   135,   136,   138,   140,   142,   145,   146,   148,   149,   151,
-   152,   153,   155,   156,   158,   159,   161,   163,   164,   166,
-   168,   169,   171,   172,   173,   174,   175,   177,   178,   179,
-   180
+    92,    93,    94,    96,    97,    98,   100,   101,   102,   103,
+   106,   108,   109,   111,   112,   114,   116,   117,   118,   119,
+   120,   121,   122,   124,   126,   128,   129,   131,   133,   134,
+   136,   137,   139,   141,   143,   146,   147,   149,   150,   152,
+   153,   154,   156,   157,   159,   160,   162,   164,   165,   167,
+   169,   170,   172,   173,   174,   175,   176,   178,   179,   180,
+   181
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","print","exit_command",
@@ -1291,24 +1292,28 @@ YYLABEL(yyreduce)
   switch (yyn) {
 
 case 2:
-#line 92 "p_sint.y"
-{ q = 0; ;
-    break;}
-case 3:
 #line 93 "p_sint.y"
 { q = 0; ;
     break;}
+case 3:
+#line 94 "p_sint.y"
+{ q = 0; ;
+    break;}
 case 4:
-#line 95 "p_sint.y"
+#line 96 "p_sint.y"
 { installIdentList(yyvsp[0].string) ;
     break;}
 case 5:
-#line 96 "p_sint.y"
+#line 97 "p_sint.y"
 { id_list[q] = yyvsp[0].string; q++; ;
     break;}
 case 6:
-#line 97 "p_sint.y"
+#line 98 "p_sint.y"
 { id_list[q] = yyvsp[0].string; q++; ;
+    break;}
+case 24:
+#line 124 "p_sint.y"
+{ updateVal(yyvsp[-2].string,"updt"); ;
     break;}
 }
 
@@ -1514,9 +1519,13 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "/usr/share/bison++/bison.cc"
-#line 184 "p_sint.y"
+#line 185 "p_sint.y"
                      /* C code */
 
+/*
+Instala a lista de identificadores 'id_list' (global) de tipo 'type' na 
+tabela de símbolos
+*/
 void installIdentList(char* type){
     //   Obs.: o tamanho do array 'id_list' está na variável global 'q'
     int i = 0;
@@ -1524,9 +1533,17 @@ void installIdentList(char* type){
 
     for (i = 0; i < q; i++){
         printf("Instalando %s, do tipo %s\n", id_list[i], type);
-        Instala(id_list[i], type);
+        Instala(id_list[i], type, "");
     }
-    
+}
+
+/*
+Atualiza o atributo 'value' da entrada 'id' da tabela de símbolos
+*/
+void updateVal(char* id, char* value){
+    int res_niv;
+    int res_i;
+    Get_Entry(id, &res_niv, &res_i);
 }
 
 int computeSymbolIndex(char token)
@@ -1567,8 +1584,8 @@ int main (void) {
     nivel = 1;              
     /* escopo[1] contém o indice do primeiro elemento */
     escopo[nivel] = 0;      
-	
-    
+
+
     /* init symbol table */
 	int i;
 	for(i=0; i<52; i++) {
