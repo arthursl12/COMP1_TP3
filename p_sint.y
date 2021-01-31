@@ -11,12 +11,6 @@
     void yyerror (char *s);
     int yylex();
 
-    /* ========= OLD CODE */
-    int symbols[52];
-    int symbolVal(char symbol);
-    void updateSymbolVal(char symbol, int val);
-    /* ========= OLD CODE */
-
     /* Globals da Tabela de Símbolos */
     extern int escopo[10];
     extern int nivel;      /* nível atual */
@@ -38,9 +32,6 @@
     char character; 
     char* string; 
 }         /* Yacc definitions */
-
-%token print
-%token exit_command
 
 /* Tokens */
 %token ADDOP
@@ -81,10 +72,7 @@
 %nonassoc ELSE
 %nonassoc IDX
 
-// %type 
-// %type <num> line exp term 
-// %type <id> assignment
-// %type <identifier_list> ident_list 
+/* Tipos de alguns símbolos Não-terminais */
 %type <string> type
 
 %%
@@ -184,7 +172,7 @@ constant                :   INT_CONSTANT
                         ;
 
 
-%%                     /* C code */
+%%                     
 
 /*
 Instala a lista de identificadores 'id_list' (global) de tipo 'type' na 
@@ -219,31 +207,6 @@ void updateVal(char* id, char* value){
     novoVal++;
 }
 
-int computeSymbolIndex(char token)
-{
-	int idx = -1;
-	if(islower(token)) {
-		idx = token - 'a' + 26;
-	} else if(isupper(token)) {
-		idx = token - 'A';
-	}
-	return idx;
-} 
-
-/* returns the value of a given symbol */
-int symbolVal(char symbol)
-{
-	int bucket = computeSymbolIndex(symbol);
-	return symbols[bucket];
-}
-
-/* updates the value of a given symbol */
-void updateSymbolVal(char symbol, int val)
-{
-	int bucket = computeSymbolIndex(symbol);
-	symbols[bucket] = val;
-}
-
 int main (void) {
     #if YYDEBUG
         yydebug = 1;     
@@ -258,16 +221,10 @@ int main (void) {
     /* escopo[1] contém o indice do primeiro elemento */
     escopo[nivel] = 0;      
 
-
-    /* init symbol table */
-	int i;
-	for(i=0; i<52; i++) {
-		symbols[i] = 0;
-	}
-
+    /* Parsing */
     if (yyparse() == 0){
         printf("Parse sucessful\n");
-        imprimir();
+        // imprimir();     // Imprime a tabela de símbolos ao final
         return 0;
     }else{
         return 1;

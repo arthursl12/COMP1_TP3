@@ -13,7 +13,7 @@
 
  #line 8 "/usr/share/bison++/bison.h"
 
-#line 34 "p_sint.y"
+#line 28 "p_sint.y"
 typedef union {
     int integer; 
     float real; 
@@ -193,47 +193,45 @@ typedef
 
 
  #line 169 "/usr/share/bison++/bison.h"
-#define	print	258
-#define	exit_command	259
-#define	ADDOP	260
-#define	RELOP	261
-#define	MULOP	262
-#define	NOT	263
-#define	ASSIGN	264
-#define	INT_CONSTANT	265
-#define	REAL_CONSTANT	266
-#define	BOOL_CONSTANT	267
-#define	IDENTIFIER	268
-#define	IDENTIFIER_F	269
-#define	CHAR_CONSTANT	270
-#define	PROGRAM	271
-#define	INTEGER	272
-#define	REAL	273
-#define	BOOLEAN	274
-#define	CHAR	275
-#define	BEGIN_STMT	276
-#define	END	277
-#define	IF	278
-#define	THEN	279
-#define	ELSE	280
-#define	DO	281
-#define	WHILE	282
-#define	UNTIL	283
-#define	READ	284
-#define	WRITE	285
-#define	GOTO	286
-#define	SIN	287
-#define	LOG	288
-#define	COS	289
-#define	ORD	290
-#define	CHR	291
-#define	ABS	292
-#define	SQRT	293
-#define	EXP	294
-#define	EOF_TOKEN	295
-#define	EOLN	296
-#define	UMINUS	297
-#define	IDX	298
+#define	ADDOP	258
+#define	RELOP	259
+#define	MULOP	260
+#define	NOT	261
+#define	ASSIGN	262
+#define	INT_CONSTANT	263
+#define	REAL_CONSTANT	264
+#define	BOOL_CONSTANT	265
+#define	IDENTIFIER	266
+#define	IDENTIFIER_F	267
+#define	CHAR_CONSTANT	268
+#define	PROGRAM	269
+#define	INTEGER	270
+#define	REAL	271
+#define	BOOLEAN	272
+#define	CHAR	273
+#define	BEGIN_STMT	274
+#define	END	275
+#define	IF	276
+#define	THEN	277
+#define	ELSE	278
+#define	DO	279
+#define	WHILE	280
+#define	UNTIL	281
+#define	READ	282
+#define	WRITE	283
+#define	GOTO	284
+#define	SIN	285
+#define	LOG	286
+#define	COS	287
+#define	ORD	288
+#define	CHR	289
+#define	ABS	290
+#define	SQRT	291
+#define	EXP	292
+#define	EOF_TOKEN	293
+#define	EOLN	294
+#define	UMINUS	295
+#define	IDX	296
 
 
 #line 169 "/usr/share/bison++/bison.h"
@@ -282,8 +280,6 @@ public:
   /* static const int token ... */
   
  #line 212 "/usr/share/bison++/bison.h"
-static const int print;
-static const int exit_command;
 static const int ADDOP;
 static const int RELOP;
 static const int MULOP;
@@ -331,47 +327,45 @@ static const int IDX;
   enum YY_parse_ENUM_TOKEN { YY_parse_NULL_TOKEN=0
   
  #line 215 "/usr/share/bison++/bison.h"
-	,print=258
-	,exit_command=259
-	,ADDOP=260
-	,RELOP=261
-	,MULOP=262
-	,NOT=263
-	,ASSIGN=264
-	,INT_CONSTANT=265
-	,REAL_CONSTANT=266
-	,BOOL_CONSTANT=267
-	,IDENTIFIER=268
-	,IDENTIFIER_F=269
-	,CHAR_CONSTANT=270
-	,PROGRAM=271
-	,INTEGER=272
-	,REAL=273
-	,BOOLEAN=274
-	,CHAR=275
-	,BEGIN_STMT=276
-	,END=277
-	,IF=278
-	,THEN=279
-	,ELSE=280
-	,DO=281
-	,WHILE=282
-	,UNTIL=283
-	,READ=284
-	,WRITE=285
-	,GOTO=286
-	,SIN=287
-	,LOG=288
-	,COS=289
-	,ORD=290
-	,CHR=291
-	,ABS=292
-	,SQRT=293
-	,EXP=294
-	,EOF_TOKEN=295
-	,EOLN=296
-	,UMINUS=297
-	,IDX=298
+	,ADDOP=258
+	,RELOP=259
+	,MULOP=260
+	,NOT=261
+	,ASSIGN=262
+	,INT_CONSTANT=263
+	,REAL_CONSTANT=264
+	,BOOL_CONSTANT=265
+	,IDENTIFIER=266
+	,IDENTIFIER_F=267
+	,CHAR_CONSTANT=268
+	,PROGRAM=269
+	,INTEGER=270
+	,REAL=271
+	,BOOLEAN=272
+	,CHAR=273
+	,BEGIN_STMT=274
+	,END=275
+	,IF=276
+	,THEN=277
+	,ELSE=278
+	,DO=279
+	,WHILE=280
+	,UNTIL=281
+	,READ=282
+	,WRITE=283
+	,GOTO=284
+	,SIN=285
+	,LOG=286
+	,COS=287
+	,ORD=288
+	,CHR=289
+	,ABS=290
+	,SQRT=291
+	,EXP=292
+	,EOF_TOKEN=293
+	,EOLN=294
+	,UMINUS=295
+	,IDX=296
 
 
 #line 215 "/usr/share/bison++/bison.h"

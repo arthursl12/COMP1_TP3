@@ -14,7 +14,5 @@ int functId(char* str);
 int resWord(char* str, char* list[], int size);
 int tokenId();
 void printToken(char* tokenName);
-int installID();
-int installNum();
 
 #endif /* AUX */

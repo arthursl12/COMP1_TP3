@@ -112,12 +112,6 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
     void yyerror (char *s);
     int yylex();
 
-    /* ========= OLD CODE */
-    int symbols[52];
-    int symbolVal(char symbol);
-    void updateSymbolVal(char symbol, int val);
-    /* ========= OLD CODE */
-
     /* Globals da Tabela de Símbolos */
     extern int escopo[10];
     extern int nivel;      /* nível atual */
@@ -131,7 +125,7 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
     int q = 0;              /* Tamanho do ident_list */
     char* id_list[20];      /* Lista de identificadores numa declaração */
 
-#line 34 "p_sint.y"
+#line 28 "p_sint.y"
 typedef union {
     int integer; 
     float real; 
@@ -338,47 +332,45 @@ typedef
 /* TOKEN C */
 
  #line 263 "/usr/share/bison++/bison.cc"
-#define	print	258
-#define	exit_command	259
-#define	ADDOP	260
-#define	RELOP	261
-#define	MULOP	262
-#define	NOT	263
-#define	ASSIGN	264
-#define	INT_CONSTANT	265
-#define	REAL_CONSTANT	266
-#define	BOOL_CONSTANT	267
-#define	IDENTIFIER	268
-#define	IDENTIFIER_F	269
-#define	CHAR_CONSTANT	270
-#define	PROGRAM	271
-#define	INTEGER	272
-#define	REAL	273
-#define	BOOLEAN	274
-#define	CHAR	275
-#define	BEGIN_STMT	276
-#define	END	277
-#define	IF	278
-#define	THEN	279
-#define	ELSE	280
-#define	DO	281
-#define	WHILE	282
-#define	UNTIL	283
-#define	READ	284
-#define	WRITE	285
-#define	GOTO	286
-#define	SIN	287
-#define	LOG	288
-#define	COS	289
-#define	ORD	290
-#define	CHR	291
-#define	ABS	292
-#define	SQRT	293
-#define	EXP	294
-#define	EOF_TOKEN	295
-#define	EOLN	296
-#define	UMINUS	297
-#define	IDX	298
+#define	ADDOP	258
+#define	RELOP	259
+#define	MULOP	260
+#define	NOT	261
+#define	ASSIGN	262
+#define	INT_CONSTANT	263
+#define	REAL_CONSTANT	264
+#define	BOOL_CONSTANT	265
+#define	IDENTIFIER	266
+#define	IDENTIFIER_F	267
+#define	CHAR_CONSTANT	268
+#define	PROGRAM	269
+#define	INTEGER	270
+#define	REAL	271
+#define	BOOLEAN	272
+#define	CHAR	273
+#define	BEGIN_STMT	274
+#define	END	275
+#define	IF	276
+#define	THEN	277
+#define	ELSE	278
+#define	DO	279
+#define	WHILE	280
+#define	UNTIL	281
+#define	READ	282
+#define	WRITE	283
+#define	GOTO	284
+#define	SIN	285
+#define	LOG	286
+#define	COS	287
+#define	ORD	288
+#define	CHR	289
+#define	ABS	290
+#define	SQRT	291
+#define	EXP	292
+#define	EOF_TOKEN	293
+#define	EOLN	294
+#define	UMINUS	295
+#define	IDX	296
 
 
 #line 263 "/usr/share/bison++/bison.cc"
@@ -428,8 +420,6 @@ public:
 /* static const int token ... */
 
  #line 307 "/usr/share/bison++/bison.cc"
-static const int print;
-static const int exit_command;
 static const int ADDOP;
 static const int RELOP;
 static const int MULOP;
@@ -477,47 +467,45 @@ static const int IDX;
 enum YY_parse_ENUM_TOKEN { YY_parse_NULL_TOKEN=0
 
  #line 310 "/usr/share/bison++/bison.cc"
-	,print=258
-	,exit_command=259
-	,ADDOP=260
-	,RELOP=261
-	,MULOP=262
-	,NOT=263
-	,ASSIGN=264
-	,INT_CONSTANT=265
-	,REAL_CONSTANT=266
-	,BOOL_CONSTANT=267
-	,IDENTIFIER=268
-	,IDENTIFIER_F=269
-	,CHAR_CONSTANT=270
-	,PROGRAM=271
-	,INTEGER=272
-	,REAL=273
-	,BOOLEAN=274
-	,CHAR=275
-	,BEGIN_STMT=276
-	,END=277
-	,IF=278
-	,THEN=279
-	,ELSE=280
-	,DO=281
-	,WHILE=282
-	,UNTIL=283
-	,READ=284
-	,WRITE=285
-	,GOTO=286
-	,SIN=287
-	,LOG=288
-	,COS=289
-	,ORD=290
-	,CHR=291
-	,ABS=292
-	,SQRT=293
-	,EXP=294
-	,EOF_TOKEN=295
-	,EOLN=296
-	,UMINUS=297
-	,IDX=298
+	,ADDOP=258
+	,RELOP=259
+	,MULOP=260
+	,NOT=261
+	,ASSIGN=262
+	,INT_CONSTANT=263
+	,REAL_CONSTANT=264
+	,BOOL_CONSTANT=265
+	,IDENTIFIER=266
+	,IDENTIFIER_F=267
+	,CHAR_CONSTANT=268
+	,PROGRAM=269
+	,INTEGER=270
+	,REAL=271
+	,BOOLEAN=272
+	,CHAR=273
+	,BEGIN_STMT=274
+	,END=275
+	,IF=276
+	,THEN=277
+	,ELSE=278
+	,DO=279
+	,WHILE=280
+	,UNTIL=281
+	,READ=282
+	,WRITE=283
+	,GOTO=284
+	,SIN=285
+	,LOG=286
+	,COS=287
+	,ORD=288
+	,CHR=289
+	,ABS=290
+	,SQRT=291
+	,EXP=292
+	,EOF_TOKEN=293
+	,EOLN=294
+	,UMINUS=295
+	,IDX=296
 
 
 #line 310 "/usr/share/bison++/bison.cc"
@@ -554,47 +542,45 @@ public:
 #if YY_parse_USE_CONST_TOKEN != 0
 
  #line 341 "/usr/share/bison++/bison.cc"
-const int YY_parse_CLASS::print=258;
-const int YY_parse_CLASS::exit_command=259;
-const int YY_parse_CLASS::ADDOP=260;
-const int YY_parse_CLASS::RELOP=261;
-const int YY_parse_CLASS::MULOP=262;
-const int YY_parse_CLASS::NOT=263;
-const int YY_parse_CLASS::ASSIGN=264;
-const int YY_parse_CLASS::INT_CONSTANT=265;
-const int YY_parse_CLASS::REAL_CONSTANT=266;
-const int YY_parse_CLASS::BOOL_CONSTANT=267;
-const int YY_parse_CLASS::IDENTIFIER=268;
-const int YY_parse_CLASS::IDENTIFIER_F=269;
-const int YY_parse_CLASS::CHAR_CONSTANT=270;
-const int YY_parse_CLASS::PROGRAM=271;
-const int YY_parse_CLASS::INTEGER=272;
-const int YY_parse_CLASS::REAL=273;
-const int YY_parse_CLASS::BOOLEAN=274;
-const int YY_parse_CLASS::CHAR=275;
-const int YY_parse_CLASS::BEGIN_STMT=276;
-const int YY_parse_CLASS::END=277;
-const int YY_parse_CLASS::IF=278;
-const int YY_parse_CLASS::THEN=279;
-const int YY_parse_CLASS::ELSE=280;
-const int YY_parse_CLASS::DO=281;
-const int YY_parse_CLASS::WHILE=282;
-const int YY_parse_CLASS::UNTIL=283;
-const int YY_parse_CLASS::READ=284;
-const int YY_parse_CLASS::WRITE=285;
-const int YY_parse_CLASS::GOTO=286;
-const int YY_parse_CLASS::SIN=287;
-const int YY_parse_CLASS::LOG=288;
-const int YY_parse_CLASS::COS=289;
-const int YY_parse_CLASS::ORD=290;
-const int YY_parse_CLASS::CHR=291;
-const int YY_parse_CLASS::ABS=292;
-const int YY_parse_CLASS::SQRT=293;
-const int YY_parse_CLASS::EXP=294;
-const int YY_parse_CLASS::EOF_TOKEN=295;
-const int YY_parse_CLASS::EOLN=296;
-const int YY_parse_CLASS::UMINUS=297;
-const int YY_parse_CLASS::IDX=298;
+const int YY_parse_CLASS::ADDOP=258;
+const int YY_parse_CLASS::RELOP=259;
+const int YY_parse_CLASS::MULOP=260;
+const int YY_parse_CLASS::NOT=261;
+const int YY_parse_CLASS::ASSIGN=262;
+const int YY_parse_CLASS::INT_CONSTANT=263;
+const int YY_parse_CLASS::REAL_CONSTANT=264;
+const int YY_parse_CLASS::BOOL_CONSTANT=265;
+const int YY_parse_CLASS::IDENTIFIER=266;
+const int YY_parse_CLASS::IDENTIFIER_F=267;
+const int YY_parse_CLASS::CHAR_CONSTANT=268;
+const int YY_parse_CLASS::PROGRAM=269;
+const int YY_parse_CLASS::INTEGER=270;
+const int YY_parse_CLASS::REAL=271;
+const int YY_parse_CLASS::BOOLEAN=272;
+const int YY_parse_CLASS::CHAR=273;
+const int YY_parse_CLASS::BEGIN_STMT=274;
+const int YY_parse_CLASS::END=275;
+const int YY_parse_CLASS::IF=276;
+const int YY_parse_CLASS::THEN=277;
+const int YY_parse_CLASS::ELSE=278;
+const int YY_parse_CLASS::DO=279;
+const int YY_parse_CLASS::WHILE=280;
+const int YY_parse_CLASS::UNTIL=281;
+const int YY_parse_CLASS::READ=282;
+const int YY_parse_CLASS::WRITE=283;
+const int YY_parse_CLASS::GOTO=284;
+const int YY_parse_CLASS::SIN=285;
+const int YY_parse_CLASS::LOG=286;
+const int YY_parse_CLASS::COS=287;
+const int YY_parse_CLASS::ORD=288;
+const int YY_parse_CLASS::CHR=289;
+const int YY_parse_CLASS::ABS=290;
+const int YY_parse_CLASS::SQRT=291;
+const int YY_parse_CLASS::EXP=292;
+const int YY_parse_CLASS::EOF_TOKEN=293;
+const int YY_parse_CLASS::EOLN=294;
+const int YY_parse_CLASS::UMINUS=295;
+const int YY_parse_CLASS::IDX=296;
 
 
 #line 341 "/usr/share/bison++/bison.cc"
@@ -615,17 +601,17 @@ YY_parse_CONSTRUCTOR_CODE;
 
 #define	YYFINAL		105
 #define	YYFLAG		-32768
-#define	YYNTBASE	50
+#define	YYNTBASE	48
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 298 ? yytranslate[x] : 80)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 296 ? yytranslate[x] : 78)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     2,     2,     2,     2,    47,
-    48,     2,     2,    46,    49,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     2,     2,    45,    44,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,    45,
+    46,     2,     2,    44,    47,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,    43,    42,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -649,7 +635,7 @@ static const char yytranslate[] = {     0,
      6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
     16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
     26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
-    36,    37,    38,    39,    40,    41,    42,    43
+    36,    37,    38,    39,    40,    41
 };
 
 #if YY_parse_DEBUG != 0
@@ -663,61 +649,61 @@ static const short yyprhs[] = {     0,
    174
 };
 
-static const short yyrhs[] = {    16,
-    13,    44,    51,    55,     0,    51,    44,    52,     0,    52,
-     0,    53,    45,    54,     0,    53,    46,    13,     0,    13,
-     0,    17,     0,    18,     0,    19,     0,    20,     0,    21,
-    56,    22,     0,    56,    44,    57,     0,    57,     0,    58,
-    45,    59,     0,    59,     0,    13,     0,    60,     0,    62,
-     0,    63,     0,    66,     0,    67,     0,    68,     0,    55,
-     0,    13,     9,    70,     0,    70,     0,    23,    61,    24,
-    57,     0,    23,    61,    24,    57,    25,    57,     0,    64,
-    26,    56,    65,     0,    27,    61,     0,     0,    28,    61,
-     0,    22,     0,    29,    47,    53,    48,     0,    30,    47,
-    69,    48,     0,    31,    13,     0,    70,     0,    69,    46,
-    70,     0,    71,     0,    71,     6,    71,     0,    72,     0,
-    71,     5,    72,     0,    71,    49,    72,     0,    77,     0,
-    72,     7,    77,     0,    41,     0,    74,     0,    75,    47,
-    69,    48,     0,    76,     0,    74,     0,    14,     0,    49,
-    78,     0,    78,     0,    13,     0,    79,     0,    47,    70,
-    48,     0,    73,     0,     8,    78,     0,    10,     0,    11,
-     0,    15,     0,    12,     0
+static const short yyrhs[] = {    14,
+    11,    42,    49,    53,     0,    49,    42,    50,     0,    50,
+     0,    51,    43,    52,     0,    51,    44,    11,     0,    11,
+     0,    15,     0,    16,     0,    17,     0,    18,     0,    19,
+    54,    20,     0,    54,    42,    55,     0,    55,     0,    56,
+    43,    57,     0,    57,     0,    11,     0,    58,     0,    60,
+     0,    61,     0,    64,     0,    65,     0,    66,     0,    53,
+     0,    11,     7,    68,     0,    68,     0,    21,    59,    22,
+    55,     0,    21,    59,    22,    55,    23,    55,     0,    62,
+    24,    54,    63,     0,    25,    59,     0,     0,    26,    59,
+     0,    20,     0,    27,    45,    51,    46,     0,    28,    45,
+    67,    46,     0,    29,    11,     0,    68,     0,    67,    44,
+    68,     0,    69,     0,    69,     4,    69,     0,    70,     0,
+    69,     3,    70,     0,    69,    47,    70,     0,    75,     0,
+    70,     5,    75,     0,    39,     0,    72,     0,    73,    45,
+    67,    46,     0,    74,     0,    72,     0,    12,     0,    47,
+    76,     0,    76,     0,    11,     0,    77,     0,    45,    68,
+    46,     0,    71,     0,     6,    76,     0,     8,     0,     9,
+     0,    13,     0,    10,     0
 };
 
 #endif
 
 #if (YY_parse_DEBUG != 0) || defined(YY_parse_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-    94,    95,    96,    98,    99,   100,   102,   103,   104,   105,
-   108,   110,   111,   113,   114,   116,   118,   119,   120,   121,
-   122,   123,   124,   126,   128,   130,   131,   133,   135,   136,
-   138,   139,   141,   143,   145,   148,   149,   151,   152,   154,
-   155,   156,   158,   159,   161,   162,   164,   166,   167,   169,
-   171,   172,   174,   175,   176,   177,   178,   180,   181,   182,
-   183
+    82,    83,    84,    86,    87,    88,    90,    91,    92,    93,
+    96,    98,    99,   101,   102,   104,   106,   107,   108,   109,
+   110,   111,   112,   114,   116,   118,   119,   121,   123,   124,
+   126,   127,   129,   131,   133,   136,   137,   139,   140,   142,
+   143,   144,   146,   147,   149,   150,   152,   154,   155,   157,
+   159,   160,   162,   163,   164,   165,   166,   168,   169,   170,
+   171
 };
 
-static const char * const yytname[] = {   "$","error","$illegal.","print","exit_command",
-"ADDOP","RELOP","MULOP","NOT","ASSIGN","INT_CONSTANT","REAL_CONSTANT","BOOL_CONSTANT",
-"IDENTIFIER","IDENTIFIER_F","CHAR_CONSTANT","PROGRAM","INTEGER","REAL","BOOLEAN",
-"CHAR","BEGIN_STMT","END","IF","THEN","ELSE","DO","WHILE","UNTIL","READ","WRITE",
-"GOTO","SIN","LOG","COS","ORD","CHR","ABS","SQRT","EXP","EOF_TOKEN","EOLN","UMINUS",
-"IDX","';'","':'","','","'('","')'","'-'","program","decl_list","decl","ident_list",
-"type","compound_stmt","stmt_list","stmt","label","unlabelled_stmt","assign_stmt",
-"cond","if_stmt","loop_stmt","stmt_prefix","stmt_suffix","read_stmt","write_stmt",
-"goto_stmt","expr_list","expr","simple_expr","term","function_ref","function_ref_par",
-"variable","simple_variable_or_proc","factor_a","factor","constant",""
+static const char * const yytname[] = {   "$","error","$illegal.","ADDOP","RELOP",
+"MULOP","NOT","ASSIGN","INT_CONSTANT","REAL_CONSTANT","BOOL_CONSTANT","IDENTIFIER",
+"IDENTIFIER_F","CHAR_CONSTANT","PROGRAM","INTEGER","REAL","BOOLEAN","CHAR","BEGIN_STMT",
+"END","IF","THEN","ELSE","DO","WHILE","UNTIL","READ","WRITE","GOTO","SIN","LOG",
+"COS","ORD","CHR","ABS","SQRT","EXP","EOF_TOKEN","EOLN","UMINUS","IDX","';'",
+"':'","','","'('","')'","'-'","program","decl_list","decl","ident_list","type",
+"compound_stmt","stmt_list","stmt","label","unlabelled_stmt","assign_stmt","cond",
+"if_stmt","loop_stmt","stmt_prefix","stmt_suffix","read_stmt","write_stmt","goto_stmt",
+"expr_list","expr","simple_expr","term","function_ref","function_ref_par","variable",
+"simple_variable_or_proc","factor_a","factor","constant",""
 };
 #endif
 
 static const short yyr1[] = {     0,
-    50,    51,    51,    52,    53,    53,    54,    54,    54,    54,
-    55,    56,    56,    57,    57,    58,    59,    59,    59,    59,
-    59,    59,    59,    60,    61,    62,    62,    63,    64,    64,
-    65,    65,    66,    67,    68,    69,    69,    70,    70,    71,
-    71,    71,    72,    72,    73,    73,    74,    75,    75,    76,
-    77,    77,    78,    78,    78,    78,    78,    79,    79,    79,
-    79
+    48,    49,    49,    50,    51,    51,    52,    52,    52,    52,
+    53,    54,    54,    55,    55,    56,    57,    57,    57,    57,
+    57,    57,    57,    58,    59,    60,    60,    61,    62,    62,
+    63,    63,    64,    65,    66,    67,    67,    68,    68,    69,
+    69,    69,    70,    70,    71,    71,    72,    73,    73,    74,
+    75,    75,    76,    76,    76,    76,    76,    77,    77,    77,
+    77
 };
 
 static const short yyr2[] = {     0,
@@ -750,24 +736,24 @@ static const short yydefgoto[] = {   103,
     51,    52,    53,    54,    55,    56,    57,    58,    59
 };
 
-static const short yypact[] = {    -9,
-    23,     5,    28,-32768,   -12,-32768,   -23,    38,    28,-32768,
-    65,    40,    45,     3,     3,    13,    17,    53,-32768,    -2,
--32768,    26,-32768,-32768,-32768,-32768,    32,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,-32768,-32768,-32768,     3,    16,-32768,
--32768,-32768,-32768,-32768,-32768,-32768,     3,    16,    50,-32768,
-    -3,    66,-32768,    30,    39,-32768,-32768,-32768,-32768,-32768,
-    28,     3,-32768,-32768,    38,    49,    38,-32768,-32768,    27,
--32768,    38,     3,     3,     3,     3,     3,   -40,   -27,-32768,
--32768,    45,-32768,    11,-32768,    62,    66,    -1,    66,-32768,
-   -11,-32768,     3,-32768,-32768,     3,-32768,    38,-32768,-32768,
+static const short yypact[] = {    -7,
+    25,     7,    30,-32768,   -10,-32768,   -21,    40,    30,-32768,
+    67,    42,    47,     5,     5,    15,    19,    55,-32768,     0,
+-32768,    28,-32768,-32768,-32768,-32768,    34,-32768,-32768,-32768,
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,     5,    18,-32768,
+-32768,-32768,-32768,-32768,-32768,-32768,     5,    18,    52,-32768,
+    -1,    68,-32768,    32,    41,-32768,-32768,-32768,-32768,-32768,
+    30,     5,-32768,-32768,    40,    51,    40,-32768,-32768,    29,
+-32768,    40,     5,     5,     5,     5,     5,   -38,   -25,-32768,
+-32768,    47,-32768,    13,-32768,    64,    68,     1,    68,-32768,
+    -9,-32768,     5,-32768,-32768,     5,-32768,    40,-32768,-32768,
 -32768,-32768,    88,    89,-32768
 };
 
 static const short yypgoto[] = {-32768,
--32768,    81,    31,-32768,    86,    29,   -60,-32768,    33,-32768,
-   -15,-32768,-32768,-32768,-32768,-32768,-32768,-32768,    18,   -37,
-    19,   -28,-32768,-32768,-32768,-32768,    21,    -5,-32768
+-32768,    81,    31,-32768,    86,    26,   -60,-32768,    33,-32768,
+   -15,-32768,-32768,-32768,-32768,-32768,-32768,-32768,    17,   -37,
+    21,   -28,-32768,-32768,-32768,-32768,    20,    -5,-32768
 };
 
 
@@ -784,20 +770,20 @@ static const short yytable[] = {    60,
     14,    82,    47,    62,    15,    63,    16,    17,    18,     8,
     66,    14,    76,    72,    85,    15,   -49,    16,    17,    18,
    101,    32,    33,    34,    35,    77,    98,   104,   105,    31,
-    10,    78,    88,     0,    91,    84,    90,     0,    83
+    10,    78,    84,    91,    88,    90,     0,     0,    83
 };
 
 static const short yycheck[] = {    15,
-    38,     5,     6,     5,    65,    46,    16,    48,    21,    47,
-     8,    72,    10,    11,    12,    13,    14,    15,    46,    22,
-    48,    45,    46,     8,    62,    10,    11,    12,    13,    14,
-    15,    44,    22,    39,    46,    13,    48,    98,    28,    77,
-    13,    44,    48,    41,    73,    49,    75,    49,    44,    47,
-    13,    49,    13,     9,    44,    93,    41,    26,    21,    47,
-    23,    13,    47,    47,    27,    13,    29,    30,    31,    21,
-    45,    23,     7,    24,    48,    27,    47,    29,    30,    31,
-    96,    17,    18,    19,    20,    47,    25,     0,     0,     9,
-     5,    61,    74,    -1,    77,    67,    76,    -1,    66
+    38,     3,     4,     3,    65,    44,    14,    46,    19,    47,
+     6,    72,     8,     9,    10,    11,    12,    13,    44,    20,
+    46,    43,    44,     6,    62,     8,     9,    10,    11,    12,
+    13,    42,    20,    39,    44,    11,    46,    98,    26,    77,
+    11,    42,    48,    39,    73,    47,    75,    47,    42,    45,
+    11,    47,    11,     7,    42,    93,    39,    24,    19,    45,
+    21,    11,    45,    45,    25,    11,    27,    28,    29,    19,
+    43,    21,     5,    22,    46,    25,    45,    27,    28,    29,
+    96,    15,    16,    17,    18,    45,    23,     0,     0,     9,
+     5,    61,    67,    77,    74,    76,    -1,    -1,    66
 };
 
 #line 352 "/usr/share/bison++/bison.cc"
@@ -1294,27 +1280,27 @@ YYLABEL(yyreduce)
   switch (yyn) {
 
 case 2:
-#line 95 "p_sint.y"
+#line 83 "p_sint.y"
 { q = 0; ;
     break;}
 case 3:
-#line 96 "p_sint.y"
+#line 84 "p_sint.y"
 { q = 0; ;
     break;}
 case 4:
-#line 98 "p_sint.y"
+#line 86 "p_sint.y"
 { installIdentList(yyvsp[0].string) ;
     break;}
 case 5:
-#line 99 "p_sint.y"
+#line 87 "p_sint.y"
 { id_list[q] = yyvsp[0].string; q++; ;
     break;}
 case 6:
-#line 100 "p_sint.y"
+#line 88 "p_sint.y"
 { id_list[q] = yyvsp[0].string; q++; ;
     break;}
 case 24:
-#line 126 "p_sint.y"
+#line 114 "p_sint.y"
 { updateVal(yyvsp[-2].string,"updt"); ;
     break;}
 }
@@ -1521,8 +1507,8 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "/usr/share/bison++/bison.cc"
-#line 187 "p_sint.y"
-                     /* C code */
+#line 175 "p_sint.y"
+                     
 
 /*
 Instala a lista de identificadores 'id_list' (global) de tipo 'type' na 
@@ -1557,31 +1543,6 @@ void updateVal(char* id, char* value){
     novoVal++;
 }
 
-int computeSymbolIndex(char token)
-{
-	int idx = -1;
-	if(islower(token)) {
-		idx = token - 'a' + 26;
-	} else if(isupper(token)) {
-		idx = token - 'A';
-	}
-	return idx;
-} 
-
-/* returns the value of a given symbol */
-int symbolVal(char symbol)
-{
-	int bucket = computeSymbolIndex(symbol);
-	return symbols[bucket];
-}
-
-/* updates the value of a given symbol */
-void updateSymbolVal(char symbol, int val)
-{
-	int bucket = computeSymbolIndex(symbol);
-	symbols[bucket] = val;
-}
-
 int main (void) {
     #if YYDEBUG
         yydebug = 1;     
@@ -1596,16 +1557,10 @@ int main (void) {
     /* escopo[1] contém o indice do primeiro elemento */
     escopo[nivel] = 0;      
 
-
-    /* init symbol table */
-	int i;
-	for(i=0; i<52; i++) {
-		symbols[i] = 0;
-	}
-
+    /* Parsing */
     if (yyparse() == 0){
         printf("Parse sucessful\n");
-        imprimir();
+        // imprimir();     // Imprime a tabela de símbolos ao final
         return 0;
     }else{
         return 1;

@@ -1,8 +1,8 @@
-#include "aux.h"
-#include "y.tab.h"
 #include <stdio.h>
 
-char* names[] = {NULL, "db_type", "db_name", "db_table_prefix", "db_port"};
+#include "aux.h"
+#include "y.tab.h"
+
 char* reserved[] = {NULL, "program",
                     "integer","real", "boolean","char",
                     "begin","end",
@@ -111,7 +111,7 @@ Retorna o token relativo ao identificador 'yytext' lido. Se for alguma palavra
 reservada ou função definida, será retornado um token apropriado.
 */
 int tokenId(){
-    yylval.identifier = strdup(yytext);
+    yylval.string = strdup(yytext);
     if (resWord(yytext, reserved, reservedSize) != -1){
         // Palavra reservada
         printf("[%4d] Reserved: \t%s\n", yylineno, yytext);
@@ -129,15 +129,4 @@ int tokenId(){
 
 void printToken(char* tokenName){
     printf("[%4d] %s: \t%s\n", yylineno, tokenName, yytext);
-}
-
-int installID() {
-    /* function to install the lexeme, whose first character is pointed to by 
-    yytext, and whose length is yyleng, into the symbol table and return a 
-    pointer thereto */ 
-} 
-
-int installNum() {
-    /* similar to installID, but puts numerical 
-    constants into a separate table */ 
 }
