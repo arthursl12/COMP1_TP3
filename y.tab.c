@@ -102,6 +102,7 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
 
     #include <stdio.h>    
     #include <stdlib.h>
+    #include <string.h>
     #include <ctype.h>
     #include "tab.h"
 
@@ -125,11 +126,12 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
 
     /* Funções Auxiliares da Tabela de Símbolos */
     void installIdentList(char* type);
+    int novoVal = 10;       /* Global para testar o updateVal */
     void updateVal(char* id, char* value);
     int q = 0;              /* Tamanho do ident_list */
     char* id_list[20];      /* Lista de identificadores numa declaração */
 
-#line 32 "p_sint.y"
+#line 34 "p_sint.y"
 typedef union {
     int integer; 
     float real; 
@@ -686,13 +688,13 @@ static const short yyrhs[] = {    16,
 
 #if (YY_parse_DEBUG != 0) || defined(YY_parse_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-    92,    93,    94,    96,    97,    98,   100,   101,   102,   103,
-   106,   108,   109,   111,   112,   114,   116,   117,   118,   119,
-   120,   121,   122,   124,   126,   128,   129,   131,   133,   134,
-   136,   137,   139,   141,   143,   146,   147,   149,   150,   152,
-   153,   154,   156,   157,   159,   160,   162,   164,   165,   167,
-   169,   170,   172,   173,   174,   175,   176,   178,   179,   180,
-   181
+    94,    95,    96,    98,    99,   100,   102,   103,   104,   105,
+   108,   110,   111,   113,   114,   116,   118,   119,   120,   121,
+   122,   123,   124,   126,   128,   130,   131,   133,   135,   136,
+   138,   139,   141,   143,   145,   148,   149,   151,   152,   154,
+   155,   156,   158,   159,   161,   162,   164,   166,   167,   169,
+   171,   172,   174,   175,   176,   177,   178,   180,   181,   182,
+   183
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","print","exit_command",
@@ -1292,27 +1294,27 @@ YYLABEL(yyreduce)
   switch (yyn) {
 
 case 2:
-#line 93 "p_sint.y"
+#line 95 "p_sint.y"
 { q = 0; ;
     break;}
 case 3:
-#line 94 "p_sint.y"
+#line 96 "p_sint.y"
 { q = 0; ;
     break;}
 case 4:
-#line 96 "p_sint.y"
+#line 98 "p_sint.y"
 { installIdentList(yyvsp[0].string) ;
     break;}
 case 5:
-#line 97 "p_sint.y"
+#line 99 "p_sint.y"
 { id_list[q] = yyvsp[0].string; q++; ;
     break;}
 case 6:
-#line 98 "p_sint.y"
+#line 100 "p_sint.y"
 { id_list[q] = yyvsp[0].string; q++; ;
     break;}
 case 24:
-#line 124 "p_sint.y"
+#line 126 "p_sint.y"
 { updateVal(yyvsp[-2].string,"updt"); ;
     break;}
 }
@@ -1519,7 +1521,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "/usr/share/bison++/bison.cc"
-#line 185 "p_sint.y"
+#line 187 "p_sint.y"
                      /* C code */
 
 /*
@@ -1544,6 +1546,15 @@ void updateVal(char* id, char* value){
     int res_niv;
     int res_i;
     Get_Entry(id, &res_niv, &res_i);
+
+    // strcpy(TabelaS[res_i].value, value);
+
+    // Ainda não avaliamos expressões para conseguir calcular o value
+    // mas podemos testar o updateVal
+    char* num;
+    sprintf(num, "%d", novoVal);
+    strcpy(TabelaS[res_i].value, num);
+    novoVal++;
 }
 
 int computeSymbolIndex(char token)

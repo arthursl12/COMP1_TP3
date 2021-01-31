@@ -13,7 +13,7 @@
 
  #line 8 "/usr/share/bison++/bison.h"
 
-#line 32 "p_sint.y"
+#line 34 "p_sint.y"
 typedef union {
     int integer; 
     float real; 

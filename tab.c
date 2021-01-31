@@ -51,7 +51,7 @@ void Saida_Bloco(){
 
 /*
 Pesquisa o símbolo 'x' e retorna o índice da Tabela de Símbolos onde ele se 
-encontra
+encontra nos parâmetros passados
 */
 void Get_Entry(char x[TNome], int* res_nivel, int* res_i){
     int n, k, aux, achou;

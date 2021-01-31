@@ -1,6 +1,7 @@
 %{
     #include <stdio.h>    
     #include <stdlib.h>
+    #include <string.h>
     #include <ctype.h>
     #include "tab.h"
 
@@ -24,6 +25,7 @@
 
     /* Funções Auxiliares da Tabela de Símbolos */
     void installIdentList(char* type);
+    int novoVal = 10;       /* Global para testar o updateVal */
     void updateVal(char* id, char* value);
     int q = 0;              /* Tamanho do ident_list */
     char* id_list[20];      /* Lista de identificadores numa declaração */
@@ -206,6 +208,15 @@ void updateVal(char* id, char* value){
     int res_niv;
     int res_i;
     Get_Entry(id, &res_niv, &res_i);
+
+    // strcpy(TabelaS[res_i].value, value);
+
+    // Ainda não avaliamos expressões para conseguir calcular o value
+    // mas podemos testar o updateVal
+    char* num;
+    sprintf(num, "%d", novoVal);
+    strcpy(TabelaS[res_i].value, num);
+    novoVal++;
 }
 
 int computeSymbolIndex(char token)
