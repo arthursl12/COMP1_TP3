@@ -1,9 +1,9 @@
-all: aux.o
+all: 
 	gcc -c tab.c -o tab.o 
-	yacc -d -v p_sint.y
+	yacc -d -v yysint.y
 	gcc -c aux.c -o aux.o
-	lex p_lex.l
-	gcc aux.o tab.o lex.yy.c  y.tab.c -o p_lex 
+	lex yylex.l
+	gcc aux.o tab.o lex.yy.c  y.tab.c -o yysint 
 	# ./p_lex < config0.in
 	# ./p_lex < config1.in
 	# ./p_lex < config2.in
@@ -11,22 +11,12 @@ all: aux.o
 	# ./p_lex < config4.in
 	# ./p_lex < config5.in
 	# ./p_lex < config6.in
-	./p_lex < config7.in
-
-
-
-
-
-
-
-aux.o:
-	
-
+	# ./p_lex < teste1.in
+	./yysint < teste2.in
 
 clean:
 	rm *.o
-	rm p_lex
-	rm -rf lex.yy.c y.tab.c y.tab.h p_lex p_lex.dSYM p_sint.dSYM
+	rm -rf lex.yy.c y.tab.c y.tab.h yysint *.dSYM
 
 .PHONY: clean
 
