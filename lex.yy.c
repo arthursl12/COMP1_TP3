@@ -716,108 +716,108 @@ YY_RULE_SETUP
 case 3:
 YY_RULE_SETUP
 #line 34 "yylex.l"
-{ printf("[%4d] Real: \t%s\n", yylineno, yytext); yylval.real = atof(yytext); return REAL_CONSTANT; }
+{ printToken("Real"); yylval.real = atof(yytext); return REAL_CONSTANT; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 35 "yylex.l"
-{ printf("[%4d] Char: \t%s\n", yylineno, yytext); yylval.character = *yytext; return CHAR_CONSTANT; }
+{ printToken("Char"); yylval.character = *yytext; return CHAR_CONSTANT; }
 	YY_BREAK
 /* Constantes Booleanas */
 case 5:
 YY_RULE_SETUP
 #line 37 "yylex.l"
-{ printf("[%4d] Bool: \t%s\n", yylineno, yytext); yylval.boolean = 1; return BOOL_CONSTANT; }
+{ printToken("Bool"); yylval.boolean = 1; return BOOL_CONSTANT; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 38 "yylex.l"
-{ printf("[%4d] Bool: \t%s\n", yylineno, yytext); yylval.boolean = 0; return BOOL_CONSTANT; }
+{ printToken("Bool"); yylval.boolean = 0; return BOOL_CONSTANT; }
 	YY_BREAK
 /* RELOP */ 
 case 7:
 YY_RULE_SETUP
 #line 41 "yylex.l"
-{ printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+{ printToken("Relop"); return RELOP; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 42 "yylex.l"
-{ printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+{ printToken("Relop"); return RELOP; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 43 "yylex.l"
-{ printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+{ printToken("Relop"); return RELOP; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 44 "yylex.l"
-{ printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+{ printToken("Relop"); return RELOP; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 45 "yylex.l"
-{ printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+{ printToken("Relop"); return RELOP; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 46 "yylex.l"
-{ printf("[%4d] Relop: \t%s\n", yylineno, yytext); return RELOP; }
+{ printToken("Relop"); return RELOP; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 47 "yylex.l"
-{ printf("[%4d] NOT: \t%s\n", yylineno, yytext); return NOT; }
+{ printToken("NOT"); return NOT; }
 	YY_BREAK
 /* ADDOP */
 case 14:
 YY_RULE_SETUP
 #line 50 "yylex.l"
-{ printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
+{ printToken("Addop"); return ADDOP; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 51 "yylex.l"
-{ printf("[%4d] Addop: \t%s\n", yylineno, yytext); return ADDOP; }
+{ printToken("Addop"); return ADDOP; }
 	YY_BREAK
 /* Minus: special case */
 case 16:
 YY_RULE_SETUP
 #line 53 "yylex.l"
-{ printf("[%4d] Minus: \t%s\n", yylineno, yytext); return *yytext; }
+{ printToken("Minus"); return *yytext; }
 	YY_BREAK
 /* MULOP */
 case 17:
 YY_RULE_SETUP
 #line 56 "yylex.l"
-{ printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
+{ printToken("Mulop"); return MULOP; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 57 "yylex.l"
-{ printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
+{ printToken("Mulop"); return MULOP; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 58 "yylex.l"
-{ printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
+{ printToken("Mulop"); return MULOP; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 59 "yylex.l"
-{ printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
+{ printToken("Mulop"); return MULOP; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 60 "yylex.l"
-{ printf("[%4d] Mulop: \t%s\n", yylineno, yytext); return MULOP; }
+{ printToken("Mulop"); return MULOP; }
 	YY_BREAK
 /* ASSIGN */
 case 22:
 YY_RULE_SETUP
 #line 62 "yylex.l"
-{ printf("[%4d] Assign: \t%s\n", yylineno, yytext); return ASSIGN; }
+{ printToken("Assign"); return ASSIGN; }
 	YY_BREAK
 /* Identificadores e Palavras Reservadas */
 case 23:
