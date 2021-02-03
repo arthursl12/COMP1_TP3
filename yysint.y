@@ -66,11 +66,9 @@
 
 /* Associatividade e Precedência */
 %left ADDOP MULOP
-%right UMINUS
 %nonassoc RELOP
 %nonassoc THEN
 %nonassoc ELSE
-%nonassoc IDX
 
 /* Tipos de alguns símbolos Não-terminais */
 %type <string> type
@@ -156,10 +154,10 @@ variable                :   simple_variable_or_proc
                         ;
 simple_variable_or_proc :   IDENTIFIER_F
                         ;
-factor_a                :   '-'factor %prec UMINUS
+factor_a                :   '-'factor      { printf("\tUnary Minus\n"); }
                         |   factor
                         ;
-factor                  :   IDENTIFIER  %prec IDX
+factor                  :   IDENTIFIER
                         |   constant
                         |   '(' expr ')'
                         |   function_ref
@@ -224,7 +222,7 @@ int main (void) {
     /* Parsing */
     if (yyparse() == 0){
         printf("Parse sucessful\n");
-        // imprimir();     // Imprime a tabela de símbolos ao final
+        imprimir();     // Imprime a tabela de símbolos ao final
         return 0;
     }else{
         return 1;

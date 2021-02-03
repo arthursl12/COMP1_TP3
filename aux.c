@@ -81,11 +81,11 @@ int functId(char* str){
         return ABS;
     else if (strcmp(str, "end") == 0)
         return SQRT;
-    else if (strcmp(str, "if") == 0)
+    else if (strcmp(str, "exp") == 0)
         return EXP;
-    else if (strcmp(str, "then") == 0)
+    else if (strcmp(str, "eof") == 0)
         return EOF_TOKEN;
-    else if (strcmp(str, "else") == 0)
+    else if (strcmp(str, "eoln") == 0)
         return EOLN;
     else
         return -1;
@@ -119,6 +119,8 @@ int tokenId(){
     }else if(resWord(yytext, functs, functsSize) != -1){
         // Nome de função
         printf("[%4d] Function: \t%s\n", yylineno, yytext);
+        if (strcmp(yytext, "eoln") == 0)
+            return EOLN;
         return IDENTIFIER_F;
     }else{
         // Identificador
