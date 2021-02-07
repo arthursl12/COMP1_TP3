@@ -1,8 +1,0 @@
-begin
-    goto label1;
-    begin
-        label1:
-            read (file3);
-            write (1+1,teste2)
-    end
-end
