@@ -153,6 +153,7 @@ variable                :   simple_variable_or_proc
                         |   function_ref_par
                         ;
 simple_variable_or_proc :   IDENTIFIER_F
+                        |   EOLN
                         ;
 factor_a                :   '-'factor      { printf("\tUnary Minus\n"); }
                         |   factor

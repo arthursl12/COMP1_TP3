@@ -66,39 +66,40 @@ rule 47   function_ref_par -> variable '(' expr_list ')'
 rule 48   variable -> simple_variable_or_proc
 rule 49   variable -> function_ref_par
 rule 50   simple_variable_or_proc -> IDENTIFIER_F
-rule 51   factor_a -> '-' factor
-rule 52   factor_a -> factor
-rule 53   factor -> IDENTIFIER
-rule 54   factor -> constant
-rule 55   factor -> '(' expr ')'
-rule 56   factor -> function_ref
-rule 57   factor -> NOT factor
-rule 58   constant -> INT_CONSTANT
-rule 59   constant -> REAL_CONSTANT
-rule 60   constant -> CHAR_CONSTANT
-rule 61   constant -> BOOL_CONSTANT
+rule 51   simple_variable_or_proc -> EOLN
+rule 52   factor_a -> '-' factor
+rule 53   factor_a -> factor
+rule 54   factor -> IDENTIFIER
+rule 55   factor -> constant
+rule 56   factor -> '(' expr ')'
+rule 57   factor -> function_ref
+rule 58   factor -> NOT factor
+rule 59   constant -> INT_CONSTANT
+rule 60   constant -> REAL_CONSTANT
+rule 61   constant -> CHAR_CONSTANT
+rule 62   constant -> BOOL_CONSTANT
 
 Terminals, with rules where they appear
 
 $ (-1)
-'(' (40) 33 34 47 55
-')' (41) 33 34 47 55
+'(' (40) 33 34 47 56
+')' (41) 33 34 47 56
 ',' (44) 5 37
-'-' (45) 42 51
+'-' (45) 42 52
 ':' (58) 4 14
 ';' (59) 1 2 12
 error (256)
 ADDOP (258) 41
 RELOP (259) 39
 MULOP (260) 44
-NOT (261) 57
+NOT (261) 58
 ASSIGN (262) 24
-INT_CONSTANT (263) 58
-REAL_CONSTANT (264) 59
-BOOL_CONSTANT (265) 61
-IDENTIFIER (266) 1 5 6 16 24 35 53
+INT_CONSTANT (263) 59
+REAL_CONSTANT (264) 60
+BOOL_CONSTANT (265) 62
+IDENTIFIER (266) 1 5 6 16 24 35 54
 IDENTIFIER_F (267) 50
-CHAR_CONSTANT (268) 60
+CHAR_CONSTANT (268) 61
 PROGRAM (269) 1
 INTEGER (270) 7
 REAL (271) 8
@@ -124,7 +125,7 @@ ABS (290)
 SQRT (291)
 EXP (292)
 EOF_TOKEN (293)
-EOLN (294) 45
+EOLN (294) 45 51
 
 Nonterminals, with rules where they appear
 
@@ -169,25 +170,25 @@ goto_stmt (64)
 expr_list (65)
     on left: 36 37, on right: 34 37 47
 expr (66)
-    on left: 38 39, on right: 24 25 36 37 55
+    on left: 38 39, on right: 24 25 36 37 56
 simple_expr (67)
     on left: 40 41 42, on right: 38 39 41 42
 term (68)
     on left: 43 44, on right: 40 41 42 44
 function_ref (69)
-    on left: 45 46, on right: 56
+    on left: 45 46, on right: 57
 function_ref_par (70)
     on left: 47, on right: 46 49
 variable (71)
     on left: 48 49, on right: 47
 simple_variable_or_proc (72)
-    on left: 50, on right: 48
+    on left: 50 51, on right: 48
 factor_a (73)
-    on left: 51 52, on right: 43 44
+    on left: 52 53, on right: 43 44
 factor (74)
-    on left: 53 54 55 56 57, on right: 51 52 57
+    on left: 54 55 56 57 58, on right: 52 53 58
 constant (75)
-    on left: 58 59 60 61, on right: 54
+    on left: 59 60 61 62, on right: 55
 
 
 state 0
@@ -611,7 +612,7 @@ state 38
 
 state 39
 
-    factor  ->  NOT . factor   (rule 57)
+    factor  ->  NOT . factor   (rule 58)
 
     NOT 	shift, and go to state 39
     INT_CONSTANT	shift, and go to state 40
@@ -634,33 +635,33 @@ state 39
 
 state 40
 
-    constant  ->  INT_CONSTANT .   (rule 58)
-
-    $default	reduce using rule 58 (constant)
-
-
-
-state 41
-
-    constant  ->  REAL_CONSTANT .   (rule 59)
+    constant  ->  INT_CONSTANT .   (rule 59)
 
     $default	reduce using rule 59 (constant)
 
 
 
+state 41
+
+    constant  ->  REAL_CONSTANT .   (rule 60)
+
+    $default	reduce using rule 60 (constant)
+
+
+
 state 42
 
-    constant  ->  BOOL_CONSTANT .   (rule 61)
+    constant  ->  BOOL_CONSTANT .   (rule 62)
 
-    $default	reduce using rule 61 (constant)
+    $default	reduce using rule 62 (constant)
 
 
 
 state 43
 
-    factor  ->  IDENTIFIER .   (rule 53)
+    factor  ->  IDENTIFIER .   (rule 54)
 
-    $default	reduce using rule 53 (factor)
+    $default	reduce using rule 54 (factor)
 
 
 
@@ -674,15 +675,16 @@ state 44
 
 state 45
 
-    constant  ->  CHAR_CONSTANT .   (rule 60)
+    constant  ->  CHAR_CONSTANT .   (rule 61)
 
-    $default	reduce using rule 60 (constant)
+    $default	reduce using rule 61 (constant)
 
 
 
 state 46
 
     function_ref  ->  EOLN .   (rule 45)
+    simple_variable_or_proc  ->  EOLN .   (rule 51)
 
     $default	reduce using rule 45 (function_ref)
 
@@ -690,7 +692,7 @@ state 46
 
 state 47
 
-    factor  ->  '(' . expr ')'   (rule 55)
+    factor  ->  '(' . expr ')'   (rule 56)
 
     NOT 	shift, and go to state 39
     INT_CONSTANT	shift, and go to state 40
@@ -718,7 +720,7 @@ state 47
 
 state 48
 
-    factor_a  ->  '-' . factor   (rule 51)
+    factor_a  ->  '-' . factor   (rule 52)
 
     NOT 	shift, and go to state 39
     INT_CONSTANT	shift, and go to state 40
@@ -784,9 +786,9 @@ state 52
 
 state 53
 
-    factor  ->  function_ref .   (rule 56)
+    factor  ->  function_ref .   (rule 57)
 
-    $default	reduce using rule 56 (factor)
+    $default	reduce using rule 57 (factor)
 
 
 
@@ -825,17 +827,17 @@ state 57
 
 state 58
 
-    factor_a  ->  factor .   (rule 52)
+    factor_a  ->  factor .   (rule 53)
 
-    $default	reduce using rule 52 (factor_a)
+    $default	reduce using rule 53 (factor_a)
 
 
 
 state 59
 
-    factor  ->  constant .   (rule 54)
+    factor  ->  constant .   (rule 55)
 
-    $default	reduce using rule 54 (factor)
+    $default	reduce using rule 55 (factor)
 
 
 
@@ -995,15 +997,15 @@ state 68
 
 state 69
 
-    factor  ->  NOT factor .   (rule 57)
+    factor  ->  NOT factor .   (rule 58)
 
-    $default	reduce using rule 57 (factor)
+    $default	reduce using rule 58 (factor)
 
 
 
 state 70
 
-    factor  ->  '(' expr . ')'   (rule 55)
+    factor  ->  '(' expr . ')'   (rule 56)
 
     ')' 	shift, and go to state 85
 
@@ -1011,9 +1013,9 @@ state 70
 
 state 71
 
-    factor_a  ->  '-' factor .   (rule 51)
+    factor_a  ->  '-' factor .   (rule 52)
 
-    $default	reduce using rule 51 (factor_a)
+    $default	reduce using rule 52 (factor_a)
 
 
 
@@ -1246,9 +1248,9 @@ state 84
 
 state 85
 
-    factor  ->  '(' expr ')' .   (rule 55)
+    factor  ->  '(' expr ')' .   (rule 56)
 
-    $default	reduce using rule 55 (factor)
+    $default	reduce using rule 56 (factor)
 
 
 

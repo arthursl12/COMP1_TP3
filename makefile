@@ -12,6 +12,7 @@ all:
 	# ./p_lex < config5.in
 	# ./p_lex < config6.in
 	# ./p_lex < teste1.in
+	# ./yysint < teste1.in
 	./yysint < teste2.in
 
 clean:

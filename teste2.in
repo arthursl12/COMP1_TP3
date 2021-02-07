@@ -1,4 +1,4 @@
-program mytest;
+program mytest2;
 
 x, k, i: integer;
 y: real;
@@ -6,7 +6,7 @@ z: integer
 
 begin
     begin
-        x := cos(30);
+        x := eoln(30);
         y := (10 * -3 + -(5*7));
         z := 0;
         label2: while (x <= 5) do
@@ -31,11 +31,15 @@ begin
     begin
         goto label1;
         begin
-            label1:
-                read (file3);
-                write (1+1,teste2);
-                goto label2
-            end
+            label1: read (file3);
+            write (1+1,teste2);
+            if NOT eoln then
+                y := 1
+            else
+                y := 2
+            ;
+            goto label2
+        end
     end;
     z := cos(35)
 end
