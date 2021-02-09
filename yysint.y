@@ -5,7 +5,7 @@
     #include <ctype.h>
     #include "tab.h"
 
-    #define YYDEBUG 1          /* Se ligado, imprime mais informações */
+    #define YYDEBUG 0          /* Se ligado, imprime mais informações */
 
     /* Forward declaration de funções do Lex */
     void yyerror (char *s);
@@ -155,7 +155,7 @@ variable                :   simple_variable_or_proc
                         ;
 simple_variable_or_proc :   IDENTIFIER_F
                         ;
-factor_a                :   '-'factor
+factor_a                :   '-'factor                   { printf("Unary minus\n"); }
                         |   factor
                         ;
 factor                  :   IDENTIFIER
