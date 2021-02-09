@@ -5,7 +5,7 @@
     #include <ctype.h>
     #include "tab.h"
 
-    #define YYDEBUG 0          /* Se ligado, imprime mais informações */
+    #define YYDEBUG 1          /* Se ligado, imprime mais informações */
 
     /* Forward declaration de funções do Lex */
     void yyerror (char *s);
@@ -146,8 +146,7 @@ simple_expr             :   term
 term                    :   factor_a
                         |   term MULOP factor_a
                         ;
-function_ref            :   EOLN
-                        |   function_ref_par
+function_ref            :   function_ref_par
                         ;
 function_ref_par        :   variable '(' expr_list ')'
                         ;
@@ -155,7 +154,6 @@ variable                :   simple_variable_or_proc
                         |   function_ref_par
                         ;
 simple_variable_or_proc :   IDENTIFIER_F
-                        |   EOLN
                         ;
 factor_a                :   '-'factor
                         |   factor

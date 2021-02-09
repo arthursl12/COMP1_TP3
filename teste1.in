@@ -6,7 +6,7 @@ z: integer;
 
 begin
     begin
-        x := eoln(0);
+        x := sin(0);
         y := (10 + 3*5);
         z := 0;
         while (x <= 5) do

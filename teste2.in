@@ -6,7 +6,7 @@ z: integer
 
 begin
     begin
-        x := eoln(30);
+        x := sin(30);
         y := (10 * -3 + -(5*7));
         z := 0;
         label2: while (x <= 5) do
@@ -33,7 +33,7 @@ begin
         begin
             label1: read (file3);
             write (1+1,teste2);
-            if NOT eoln then
+            if NOT eoln(file3) then
                 y := 1
             else
                 y := 2
