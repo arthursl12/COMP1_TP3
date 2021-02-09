@@ -30,36 +30,36 @@ id              {letter}({letter}|{digit})*
     /* Delimitadores e Espaços */
 {ws}                ;
     /* Constantes */
-{uint}              { printToken("Integer"); yylval.integer = atoi(yytext); return INT_CONSTANT; }
-{ureal}             { printToken("Real"); yylval.real = atof(yytext); return REAL_CONSTANT; }
-{char}              { printToken("Char"); yylval.character = *yytext; return CHAR_CONSTANT; }
+{uint}              { yylval.integer = atoi(yytext); return INT_CONSTANT; }
+{ureal}             { yylval.real = atof(yytext); return REAL_CONSTANT; }
+{char}              { yylval.character = *yytext; return CHAR_CONSTANT; }
     /* Constantes Booleanas */
-"true"              { printToken("Bool"); yylval.boolean = 1; return BOOL_CONSTANT; }
-"false"             { printToken("Bool"); yylval.boolean = 0; return BOOL_CONSTANT; }
+"true"              { yylval.boolean = 1; return BOOL_CONSTANT; }
+"false"             { yylval.boolean = 0; return BOOL_CONSTANT; }
 
     /* RELOP */ 
-">"                 { printToken("Relop"); return RELOP; }
-">="                { printToken("Relop"); return RELOP; }
-"<"                 { printToken("Relop"); return RELOP; }
-"<="                { printToken("Relop"); return RELOP; }
-"="                 { printToken("Relop"); return RELOP; }
-"!="                { printToken("Relop"); return RELOP; }
-"NOT"               { printToken("NOT"); return NOT; }
+">"                 { return RELOP; }
+">="                { return RELOP; }
+"<"                 { return RELOP; }
+"<="                { return RELOP; }
+"="                 { return RELOP; }
+"!="                { return RELOP; }
+"NOT"               { return NOT; }
 
     /* ADDOP */
-"+"                 { printToken("Addop"); return ADDOP; }
-"or"                { printToken("Addop"); return ADDOP; }
+"+"                 { return ADDOP; }
+"or"                { return ADDOP; }
     /* Minus: special case */
-"-"                 { printToken("Minus"); return *yytext; }
+"-"                 { return *yytext; }
 
     /* MULOP */
-"*"                 { printToken("Mulop"); return MULOP; }
-"/"                 { printToken("Mulop"); return MULOP; }
-"div"               { printToken("Mulop"); return MULOP; }
-"mod"               { printToken("Mulop"); return MULOP; }
-"and"               { printToken("Mulop"); return MULOP; }
+"*"                 { return MULOP; }
+"/"                 { return MULOP; }
+"div"               { return MULOP; }
+"mod"               { return MULOP; }
+"and"               { return MULOP; }
     /* ASSIGN */
-":="                { printToken("Assign"); return ASSIGN; }
+":="                { return ASSIGN; }
 
     /* Identificadores e Palavras Reservadas */
 {id}                { return tokenId(); }

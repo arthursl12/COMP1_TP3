@@ -33,6 +33,8 @@
     char* string; 
 }         /* Yacc definitions */
 
+
+
 /* Tokens */
 %token ADDOP
 %token RELOP
@@ -52,7 +54,7 @@
 %token BEGIN_STMT END
 %token IF THEN ELSE
 %token DO WHILE
-%token UNTIL END
+%token UNTIL
 %token READ WRITE GOTO
 
 /* Tokens de Funções Padrão */
@@ -71,7 +73,7 @@
 %nonassoc ELSE
 
 /* Tipos de alguns símbolos Não-terminais */
-%type <string> type
+%type <string> type decl ident_list
 
 %%
 
@@ -81,7 +83,7 @@ program                 :   PROGRAM IDENTIFIER ';' decl_list compound_stmt
 decl_list               :   decl_list ';' decl              { q = 0; }
                         |   decl                            { q = 0; }
                         ;
-decl                    :   ident_list ':' type             { installIdentList($3) }
+decl                    :   ident_list ':' type             { installIdentList($3); $$ = $1; }
 ident_list              :   ident_list ',' IDENTIFIER       { id_list[q] = $3; q++; }
                         |   IDENTIFIER                      { id_list[q] = $1; q++; }
                         ;
@@ -155,7 +157,7 @@ variable                :   simple_variable_or_proc
 simple_variable_or_proc :   IDENTIFIER_F
                         |   EOLN
                         ;
-factor_a                :   '-'factor      { printf("\tUnary Minus\n"); }
+factor_a                :   '-'factor
                         |   factor
                         ;
 factor                  :   IDENTIFIER
@@ -180,10 +182,10 @@ tabela de símbolos
 void installIdentList(char* type){
     //   Obs.: o tamanho do array 'id_list' está na variável global 'q'
     int i = 0;
-    printf("%i declaracoes do tipo %s\n", q, type);
+    // printf("%i declaracoes do tipo %s\n", q, type);
 
     for (i = 0; i < q; i++){
-        printf("Instalando %s, do tipo %s\n", id_list[i], type);
+        // printf("Instalando %s, do tipo %s\n", id_list[i], type);
         Instala(id_list[i], type, "");
     }
 }
@@ -196,11 +198,12 @@ void updateVal(char* id, char* value){
     int res_i;
     Get_Entry(id, &res_niv, &res_i);
 
+    // O correto seria:
     // strcpy(TabelaS[res_i].value, value);
 
     // Ainda não avaliamos expressões para conseguir calcular o value
-    // mas podemos testar o updateVal
-    char* num;
+    // mas podemos testar o updateVal, colocando o contador 'novoVal' na tabela
+    char num[200];
     sprintf(num, "%d", novoVal);
     strcpy(TabelaS[res_i].value, num);
     novoVal++;
@@ -221,8 +224,10 @@ int main (void) {
     escopo[nivel] = 0;      
 
     /* Parsing */
+    printf("Parsing...\n");
     if (yyparse() == 0){
-        printf("Parse sucessful\n");
+        printf("Parse sucessful\n\n");
+        printf("Tabela de Simbolos Final:");
         imprimir();     // Imprime a tabela de símbolos ao final
         return 0;
     }else{
@@ -231,4 +236,6 @@ int main (void) {
 	
 }
 
-void yyerror (char *s) {fprintf (stderr, "%s\n", s);} 
+void yyerror (char *s) {
+    fprintf (stderr, "%s\n", s);
+} 

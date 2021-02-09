@@ -79,11 +79,11 @@ void Get_Entry(char x[TNome], int* res_nivel, int* res_i){
 
 
     if (achou == 1){
-        printf("Encontrado %s. ", TabelaS[k].nome);
-        printf("O item está no nível: %d", TabelaS[k].nivel);
-        printf(", indice: %u\n", k);
         *res_nivel =  TabelaS[k].nivel;
         *res_i = k;
+        // printf("Encontrado %s. ", TabelaS[k].nome);
+        // printf("O item está no nível: %d", TabelaS[k].nivel);
+        // printf(", indice: %u\n", k);
     }else{
         Erro(2);
     }

@@ -114,17 +114,17 @@ int tokenId(){
     yylval.string = strdup(yytext);
     if (resWord(yytext, reserved, reservedSize) != -1){
         // Palavra reservada
-        printf("[%4d] Reserved: \t%s\n", yylineno, yytext);
+        // printf("[%4d] Reserved: \t%s\n", yylineno, yytext);
         return resWordId(yytext);
     }else if(resWord(yytext, functs, functsSize) != -1){
         // Nome de função
-        printf("[%4d] Function: \t%s\n", yylineno, yytext);
+        // printf("[%4d] Function: \t%s\n", yylineno, yytext);
         if (strcmp(yytext, "eoln") == 0)
             return EOLN;
         return IDENTIFIER_F;
     }else{
         // Identificador
-        printf("[%4d] Identifier: \t%s\n", yylineno, yytext);
+        // printf("[%4d] Identifier: \t%s\n", yylineno, yytext);
         return IDENTIFIER;
     }
 }

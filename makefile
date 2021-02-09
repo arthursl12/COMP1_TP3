@@ -1,6 +1,6 @@
 all: 
 	gcc -c tab.c -o tab.o 
-	yacc -d -v yysint.y
+	yacc -v -d yysint.y
 	gcc -c aux.c -o aux.o
 	lex yylex.l
 	gcc aux.o tab.o lex.yy.c  y.tab.c -o yysint 
