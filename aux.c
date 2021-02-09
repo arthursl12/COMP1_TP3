@@ -128,5 +128,5 @@ int tokenId(){
 }
 
 void printToken(char* tokenName){
-    printf("[%4d] %s: \t%s\n", yylineno, tokenName, yytext);
+    // printf("[%4d] %s: \t%s\n", yylineno, tokenName, yytext);
 }

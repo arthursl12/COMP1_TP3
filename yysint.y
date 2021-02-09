@@ -155,7 +155,7 @@ variable                :   simple_variable_or_proc
                         ;
 simple_variable_or_proc :   IDENTIFIER_F
                         ;
-factor_a                :   '-'factor                   { printf("Unary minus\n"); }
+factor_a                :   '-'factor                   
                         |   factor
                         ;
 factor                  :   IDENTIFIER
