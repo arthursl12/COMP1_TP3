@@ -2,7 +2,7 @@ program mytest2;
 
 x, k, i: integer;
 y: real;
-z: integer
+z: integer;
 
 begin
     begin
@@ -16,7 +16,7 @@ begin
 
         do  
             z := z-sin(x);
-            k := x - +1E+1;
+            k := x -(+1E+1);
             while (NOT (x <= 5)) do
                 z := z + y;
                 x := x + 1

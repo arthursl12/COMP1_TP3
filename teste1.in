@@ -2,7 +2,7 @@ program mytest1;
 
 x, k, i: integer;
 y: real;
-z: integer;
+z: integer
 
 begin
     begin

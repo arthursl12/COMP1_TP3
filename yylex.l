@@ -23,8 +23,8 @@ ureal           {uint}(\.{digit}*)?({scale_factor})?
 char            \'[\x00-\x7F]\'
 
 /* Constantes Numéricas com Sinal */
-int             {sign}?{uint}
-real            {sign}?{ureal}
+int             {sign}{uint}
+real            {sign}{ureal}
 
 /* Identificadores */
 letter          [A-Za-z] 
@@ -55,7 +55,7 @@ id              {letter}({letter}|{digit})*
     /* ADDOP */
 "+"                 { printToken("Addop"); return ADDOP; }
 "or"                { printToken("Addop"); return ADDOP; }
-    /* Minus: special case */
+    /* Minus: caso especial, passa para o analisador sintático */
 "-"                 { printToken("Minus"); return *yytext; }
 
     /* MULOP */

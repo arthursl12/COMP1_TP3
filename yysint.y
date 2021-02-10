@@ -19,7 +19,7 @@
 
     /* Funções Auxiliares da Tabela de Símbolos */
     void installIdentList(char* type);
-    int novoVal = 10;       /* Global para testar o updateVal */
+    int novoVal = 1;       /* Global para testar o updateVal */
     void updateVal(char* id, char* value);
     int q = 0;              /* Tamanho do ident_list */
     char* id_list[20];      /* Lista de identificadores numa declaração */

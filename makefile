@@ -3,8 +3,11 @@ all:
 	yacc -v -d yysint.y
 	gcc -c aux.c -o aux.o
 	lex yylex.l
-	gcc aux.o tab.o lex.yy.c  y.tab.c -o yysint 
-	# ./yysint < teste1.in
+	gcc aux.o tab.o lex.yy.c  y.tab.c -o yysint
+
+tests: all
+	./yysint < teste0.in
+	./yysint < teste1.in
 	./yysint < teste2.in
 
 clean:
