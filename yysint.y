@@ -31,6 +31,17 @@
     int boolean; 
     char character; 
     char* string; 
+
+    /* Tipos de Não-terminais */
+    struct s1 { 
+        char* type; 
+        union value {
+            int integer; 
+            float real; 
+            int boolean; 
+            char character; 
+        } value; 
+    } expr; 
 }         /* Yacc definitions */
 
 
@@ -74,6 +85,7 @@
 
 /* Tipos de alguns símbolos Não-terminais */
 %type <string> type decl ident_list
+%type <expr> constant
 
 %%
 
@@ -164,10 +176,30 @@ factor                  :   IDENTIFIER
                         |   function_ref
                         |   NOT factor
                         ;
-constant                :   INT_CONSTANT        
+constant                :   INT_CONSTANT            
+                            { 
+                                $$.type = "integer"; 
+                                $$.value.integer = $1; 
+                                printf("Valor [integer]: %d\n", $1);
+                            }
                         |   REAL_CONSTANT
+                            { 
+                                $$.type = "real"; 
+                                $$.value.real = $1; 
+                                printf("Valor [real]: %f\n", $1);
+                            }
                         |   CHAR_CONSTANT
-                        |   BOOL_CONSTANT   
+                            { 
+                                $$.type = "char"; 
+                                $$.value.character = $1; 
+                                printf("Valor [character]: %c\n", $1);
+                            }
+                        |   BOOL_CONSTANT
+                            { 
+                                $$.type = "boolean"; 
+                                $$.value.boolean = $1; 
+                                printf("Valor [boolean]: %i\n", $1);
+                            }
                         ;
 
 
