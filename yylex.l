@@ -44,26 +44,26 @@ id              {letter}({letter}|{digit})*
 "false"             { printToken("Bool"); yylval.boolean = 0; return BOOL_CONSTANT; }
 
     /* RELOP */ 
-">"                 { printToken("Relop"); return RELOP; }
-">="                { printToken("Relop"); return RELOP; }
-"<"                 { printToken("Relop"); return RELOP; }
-"<="                { printToken("Relop"); return RELOP; }
-"="                 { printToken("Relop"); return RELOP; }
-"!="                { printToken("Relop"); return RELOP; }
+">"                 { printToken("Relop"); return GT; }
+">="                { printToken("Relop"); return GTE; }
+"<"                 { printToken("Relop"); return LT; }
+"<="                { printToken("Relop"); return LTE; }
+"="                 { printToken("Relop"); return EQUALS; }
+"!="                { printToken("Relop"); return NEQ; }
 "NOT"               { printToken("NOT"); return NOT; }
 
     /* ADDOP */
-"+"                 { printToken("Addop"); return ADDOP; }
-"or"                { printToken("Addop"); return ADDOP; }
-    /* Minus: caso especial, passa para o analisador sintático */
-"-"                 { printToken("Minus"); return *yytext; }
+"+"                 { printToken("Addop"); return ADD; }
+"or"                { printToken("Addop"); return OR; }
+    /* Minus: caso especial, o analisador sintático decide */
+"-"                 { printToken("Minus"); return MINUS; }
 
     /* MULOP */
-"*"                 { printToken("Mulop"); return MULOP; }
-"/"                 { printToken("Mulop"); return MULOP; }
-"div"               { printToken("Mulop"); return MULOP; }
-"mod"               { printToken("Mulop"); return MULOP; }
-"and"               { printToken("Mulop"); return MULOP; }
+"*"                 { printToken("Mulop"); return MULT; }
+"/"                 { printToken("Mulop"); return DIV; }
+"div"               { printToken("Mulop"); return IDIV; }
+"mod"               { printToken("Mulop"); return MOD; }
+"and"               { printToken("Mulop"); return AND; }
     /* ASSIGN */
 ":="                { printToken("Assign"); return ASSIGN; }
 

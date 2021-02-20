@@ -86,10 +86,12 @@ void Get_Entry(char x[TNome], int* res_nivel, int* res_i){
         // printf(", indice: %u\n", k);
     }else{
         Erro(2);
+        *res_nivel =  -1;
+        *res_i = -1;
     }
 }
 
-void Instala(char X[TNome], char type[TType], char value[TValue]){
+void Instala(char X[TNome], int type, union value value){
     int S, i, k, aux;
     aux = 1;
     S = escopo[nivel];
@@ -118,13 +120,15 @@ void Instala(char X[TNome], char type[TType], char value[TValue]){
         for(k = 0; k <= aux-1; k++)
             TabelaS[L].nome[k] = X[k];
         // Copia o type passado
-        aux = strlen(type);
-        for (k = 0; k <= aux-1; k++)
-            TabelaS[L].type[k] = type[k];
+        TabelaS[L].type = type;
+        // aux = strlen(type);
+        // for (k = 0; k <= aux-1; k++)
+        //     TabelaS[L].type[k] = type[k];
         // Copia o value passado
-        aux = strlen(value);
-        for (k = 0; k <= aux-1; k++)
-            TabelaS[L].value[k] = value[k];
+        TabelaS[L].value = value;
+        // aux = strlen(value);
+        // for (k = 0; k <= aux-1; k++)
+        //     TabelaS[L].value[k] = value[k];
         // Filhos inicializados vazios
         TabelaS[L].esq = TabelaS[L].dir = 0;
 
@@ -145,8 +149,12 @@ void imprimir(){
     for (i = 1; i <= L-1; i++){
         printf("\n\n");
         printf("Nome : %s\n", TabelaS[i].nome);
-        printf("Tipo : %s\n", TabelaS[i].type);
-        printf("Valor : %s\n", TabelaS[i].value);
+        printf("Tipo : %i\n", TabelaS[i].type);
+        printf("Valor : %i, %f, %c, %i\n", 
+                    TabelaS[i].value.integer,
+                    TabelaS[i].value.real,
+                    TabelaS[i].value.character,
+                    TabelaS[i].value.boolean);
         printf("Nivel : %i\n",TabelaS[i].nivel);
         printf("Esquerdo : %i\n",TabelaS[i].esq);
         printf("Direito : %i\n",TabelaS[i].dir);

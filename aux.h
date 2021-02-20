@@ -3,6 +3,12 @@
 #define AUX_H
 
 #include <string.h>
+union value {
+    int integer; 
+    float real; 
+    int boolean; 
+    char character; 
+} value; 
 
 extern int yylex();
 extern int yylineno;
