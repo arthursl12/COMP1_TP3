@@ -72,7 +72,7 @@ id              {letter}({letter}|{digit})*
 
     /* Símbolos especiais */
 ":"                 { return *yytext; }
-";"                 { return *yytext; }
+";"                 { printf("[%4d]\n",yylineno+1); return *yytext; }
 ","                 { return *yytext; }
 ")"                 { return *yytext; }
 "("                 { return *yytext; }

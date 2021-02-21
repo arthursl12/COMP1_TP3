@@ -41,7 +41,7 @@
     char* string; 
 
     /* Tipos de Não-terminais */
-    struct s1 { 
+    struct expr { 
         int type; 
         union value value;
     } expr; 
@@ -100,6 +100,7 @@
 /* Tipos de alguns símbolos Não-terminais */
 %type <string> type decl ident_list
 %type <expr> constant factor factor_a expr simple_expr term
+%type <expr> function_ref
 
 %%
 
@@ -397,14 +398,123 @@ term                    :   factor_a
                                     typeerror();
                             }   
                         ;
-function_ref            :   function_ref_par
-                        ;
-function_ref_par        :   variable '(' expr_list ')'
-                        ;
-variable                :   simple_variable_or_proc
-                        |   function_ref_par
-                        ;
-simple_variable_or_proc :   IDENTIFIER_F
+function_ref            :   SIN '(' expr ')'
+                            {
+                                if ($3.type != TYPE_REAL){
+                                    typeerror();
+                                }
+                                $$.type = TYPE_REAL;
+                                // TODO: criar quádrupla para calcular valor
+                                // $$.value = $1.value; 
+                            }
+                        |   COS '(' expr ')'
+                            {
+                                if ($3.type != TYPE_REAL){
+                                    typeerror();
+                                }
+                                $$.type = TYPE_REAL;
+                                // TODO: criar quádrupla para calcular valor
+                                // $$.value = $1.value; 
+                            }
+                        |   LOG '(' expr ')'
+                            {
+                                // Assumindo logaritmo natural (base e)
+                                if ($3.type != TYPE_REAL){
+                                    typeerror();
+                                }
+                                $$.type = TYPE_REAL;
+                                // TODO: criar quádrupla para calcular valor
+                                // $$.value = $1.value; 
+                            }
+                        |   ABS '(' expr ')'
+                            {
+                                if ($3.type == TYPE_REAL){
+                                    $$.type = TYPE_REAL;
+
+                                }else if($3.type == TYPE_INT){
+                                    $$.type = TYPE_INT;
+
+                                }else{
+                                    typeerror();
+                                }
+
+                                // TODO: criar quádrupla para calcular valor
+                                // $$.value = $1.value; 
+                            }
+                        |   SQRT '(' expr ')'
+                            {
+                                if ($3.type != TYPE_REAL){
+                                    typeerror();
+                                }
+                                $$.type = TYPE_REAL;
+
+                                // Se for negativo, gerará erro de execução
+                                // TODO: criar quádrupla para calcular valor
+                                // $$.value = $1.value; 
+                            }
+                        |   EXP '(' expr ')'
+                            {
+                                // Retorna e^x, sendo x o parâmetro
+                                if ($3.type != TYPE_REAL){
+                                    typeerror();
+                                }
+                                $$.type = TYPE_REAL;
+
+                                // TODO: criar quádrupla para calcular valor
+                                // $$.value = $1.value; 
+                            }
+                        |   ORD '(' expr ')'
+                            {
+                                // Retorna o inteiro do parâmetro
+                                // É um "casting" de inteiro
+
+                                if ($3.type == TYPE_REAL){
+                                    typeerror();
+                                }
+                                $$.type = TYPE_INT;
+
+                                // TODO: criar quádrupla para calcular valor
+                                // $$.value = $1.value; 
+                            }
+                        |   CHR '(' expr ')'
+                            {
+                                // Retorna equivalente char do parâmetro
+                                // É um "casting" de char
+
+                                if ($3.type == TYPE_REAL){
+                                    typeerror();
+                                }
+                                $$.type = TYPE_CHAR;
+
+                                // TODO: criar quádrupla para calcular valor
+                                // $$.value = $1.value; 
+                            }
+                        |   EOLN '(' expr ')'
+                            {
+                                // Verifica EOLn do arquivo nomeado pelo parâmetro
+
+                                if ($3.type != TYPE_CHAR){
+                                    printf("EOLn: %i", $3.type);
+                                    typeerror();
+                                }
+                                $$.type = TYPE_BOOL;
+
+                                // TODO: criar quádrupla para calcular valor
+                                // $$.value = $1.value; 
+                            }
+                        |   EOF_TOKEN '(' expr ')'
+                            {
+                                // Verifica EOF do arquivo nomeado pelo parâmetro
+
+                                if ($3.type != TYPE_CHAR){
+                                    printf("EOF: %i", $3.type);
+                                    typeerror();
+                                }
+                                $$.type = TYPE_BOOL;
+
+                                // TODO: criar quádrupla para calcular valor
+                                // $$.value = $1.value; 
+                            }
                         ;
 factor_a                :   MINUS factor
                             { 
@@ -453,7 +563,7 @@ factor                  :   IDENTIFIER
                                 // TODO: tipo função 
                                 //       + verificação tipos parâmtros
                                 //       + verificaçaõ tipo retorno
-                                $$.type = TYPE_INT;
+                                $$.type = $1.type;
                             }
                         |   NOT factor
                             { 
@@ -515,8 +625,8 @@ void installIdentList(char* type){
             tipo_cst = TYPE_REAL;
         }else if (strcmp(type, "boolean") == 0){
             tipo_cst = TYPE_BOOL;
-        }else if (strcmp(type, "character") == 0){
-            tipo_cst = TYPE_REAL;
+        }else if (strcmp(type, "char") == 0){
+            tipo_cst = TYPE_CHAR;
         }
         Instala(id_list[i], tipo_cst, placeholder);
 

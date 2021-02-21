@@ -7,7 +7,7 @@ f: char
 
 begin
     begin
-        x := sin(30);
+        y := sin(30.0);
         y := (10 * -3.5E10 + -(5*7));
         y := (35 - -45.0 - 10 - 70);
 
@@ -18,7 +18,7 @@ begin
         end;
 
         do  
-            y := z-sin(x);
+            y := z - sin(a);
             y := x -(+1E+1);
             while (NOT (x <= 5)) do
                 a := z + y;
@@ -36,6 +36,7 @@ begin
         begin
             label1: read (file3);
             write (1 + 1156.07257E-10, y);
+            f := 'c';
             if NOT eoln(f) then
                 y := 1
             else
@@ -44,5 +45,5 @@ begin
             goto label2
         end
     end;
-    z := cos(35)
+    a := cos((5*3.14)/4)
 end
