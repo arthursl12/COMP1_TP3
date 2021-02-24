@@ -6,7 +6,7 @@
     #include "aux.h"
     #include "tab.h"
 
-    #define YYDEBUG 1          /* Se ligado, imprime mais informações */
+    #define YYDEBUG 0          /* Se ligado, imprime mais informações */
 
     /* Constantes para tipos */
     #define TYPE_INT    1
@@ -39,6 +39,8 @@
     int boolean; 
     char character; 
     char* string; 
+    char* lexeme_str; 
+
 
     /* Tipos de Não-terminais */
     struct expr { 
@@ -56,8 +58,7 @@
 // Obs.: o analisador sintático decide se é a subtração ou o menos unário
 
 /* Tokens RELOPs */
-%token EQUALS NEQ       // = != 
-%token LT GT LTE GTE    // < > <= >= 
+%token <lexeme_str> RELOP
 
 /* Tokens MULOPs */
 %token MULT DIV         // * /
@@ -190,74 +191,35 @@ expr_list               :   expr
                         |   expr_list ',' expr
                         ;
 expr                    :   simple_expr
-                            { 
-                                $$.type = $1.type; 
-                                $$.value = $1.value; 
-                            }
-                        |   simple_expr EQUALS simple_expr
-                            { 
-                                // Não importa os tipos dos operandos
-                                $$.type = TYPE_BOOL; 
-                            
-                                // TODO: criar quádrupla para calcular valor
-                                // $$.value = $1.value; 
-                            }
-                        |   simple_expr NEQ simple_expr
-                            { 
-                                // Não importa os tipos dos operandos
-                                $$.type = TYPE_BOOL; 
-                                
-                                // TODO: criar quádrupla para calcular valor
-                                // $$.value = $1.value; 
-                            }
-                        |   simple_expr LT simple_expr
-                            { 
-                                if ($1.type != TYPE_INT && $1.type != TYPE_REAL)
-                                    typeerror();
-                                else if ($3.type != TYPE_INT && $3.type != TYPE_REAL)
-                                    typeerror();
-                                
-                                $$.type = TYPE_BOOL; 
+    { 
+        $$.type = $1.type; 
+        $$.value = $1.value; 
+    }
+                        |   simple_expr RELOP simple_expr
+    {
+        // Verificação de Tipos
+        if (strcmp($2,"==") == 0 || strcmp($2,"!=") == 0){
+            // Não importa os tipos dos operandos
+            $$.type = TYPE_BOOL; 
+            
+            // TODO: criar quádrupla para calcular valor
+            // $$.value = $1.value; 
+        }else if (strcmp($2,"<") == 0 || strcmp($2,"<=") == 0 
+               || strcmp($2,">") == 0 || strcmp($2,">=") == 0){
+            if ($1.type != TYPE_INT && $1.type != TYPE_REAL)
+                typeerror();
+            else if ($3.type != TYPE_INT && $3.type != TYPE_REAL)
+                typeerror();
+            
+            $$.type = TYPE_BOOL; 
 
-                                // TODO: criar quádrupla para calcular valor
-                                // $$.value = $1.value; 
-                            }
-                        |   simple_expr LTE simple_expr
-                            { 
-                                if ($1.type != TYPE_INT && $1.type != TYPE_REAL)
-                                    typeerror();
-                                else if ($3.type != TYPE_INT && $3.type != TYPE_REAL)
-                                    typeerror();
-                                
-                                $$.type = TYPE_BOOL; 
-
-                                // TODO: criar quádrupla para calcular valor
-                                // $$.value = $1.value; 
-                            }
-                        |   simple_expr GT simple_expr
-                            { 
-                                if ($1.type != TYPE_INT && $1.type != TYPE_REAL)
-                                    typeerror();
-                                else if ($3.type != TYPE_INT && $3.type != TYPE_REAL)
-                                    typeerror();
-                                
-                                $$.type = TYPE_BOOL; 
-
-                                // TODO: criar quádrupla para calcular valor
-                                // $$.value = $1.value; 
-                            }
-                        |   simple_expr GTE simple_expr
-                            { 
-                                if ($1.type != TYPE_INT && $1.type != TYPE_REAL)
-                                    typeerror();
-                                else if ($3.type != TYPE_INT && $3.type != TYPE_REAL)
-                                    typeerror();
-                                
-                                $$.type = TYPE_BOOL; 
-
-                                // TODO: criar quádrupla para calcular valor
-                                // $$.value = $1.value; 
-                            }
+            // TODO: criar quádrupla para calcular valor
+            // $$.value = $1.value; 
+        }else{
+            printf("Lexema RELOP não encontrado\n");
+            exit(1);
+        }
+    }
                         ;
 simple_expr             :   term
                             { 

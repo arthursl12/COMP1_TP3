@@ -44,12 +44,12 @@ id              {letter}({letter}|{digit})*
 "false"             { printToken("Bool"); yylval.boolean = 0; return BOOL_CONSTANT; }
 
     /* RELOP */ 
-">"                 { printToken("Relop"); return GT; }
-">="                { printToken("Relop"); return GTE; }
-"<"                 { printToken("Relop"); return LT; }
-"<="                { printToken("Relop"); return LTE; }
-"="                 { printToken("Relop"); return EQUALS; }
-"!="                { printToken("Relop"); return NEQ; }
+">"                 { printToken("Relop"); yylval.lexeme_str = strdup(yytext); return RELOP; }
+">="                { printToken("Relop"); yylval.lexeme_str = strdup(yytext); return RELOP; }
+"<"                 { printToken("Relop"); yylval.lexeme_str = strdup(yytext); return RELOP; }
+"<="                { printToken("Relop"); yylval.lexeme_str = strdup(yytext); return RELOP; }
+"="                 { printToken("Relop"); yylval.lexeme_str = strdup(yytext); return RELOP; }
+"!="                { printToken("Relop"); yylval.lexeme_str = strdup(yytext); return RELOP; }
 "NOT"               { printToken("NOT"); return NOT; }
 
     /* ADDOP */
