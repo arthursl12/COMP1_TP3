@@ -53,8 +53,8 @@ id              {letter}({letter}|{digit})*
 "NOT"               { printToken("NOT"); return NOT; }
 
     /* ADDOP */
-"+"                 { printToken("Addop"); return ADD; }
-"or"                { printToken("Addop"); return OR; }
+"+"                 { printToken("Addop"); yylval.lexeme_str = strdup(yytext); return ADDOP; }
+"or"                { printToken("Addop"); yylval.lexeme_str = strdup(yytext); return ADDOP; }
     /* Minus: caso especial, o analisador sintático decide */
 "-"                 { printToken("Minus"); return MINUS; }
 

@@ -53,7 +53,7 @@
 
 /* Tokens */
 /* Tokens ADDOPs */
-%token ADD OR           // + or
+%token <lexeme_str> ADDOP
 %token MINUS            // -
 // Obs.: o analisador sintático decide se é a subtração ou o menos unário
 
@@ -222,69 +222,73 @@ expr                    :   simple_expr
     }
                         ;
 simple_expr             :   term
-                            { 
-                                $$.type = $1.type; 
-                                $$.value = $1.value; 
-                            }
-                        |   simple_expr ADD term
-                            {
-                                if (($1.type == TYPE_INT || $1.type == TYPE_REAL)
-                                    &&
-                                    ($3.type == TYPE_INT || $3.type == TYPE_REAL))
-                                {
-                                    // Estamos operando com números
+    { 
+        $$.type = $1.type; 
+        $$.value = $1.value; 
+    }
+                        |   simple_expr ADDOP term
+    {
+        if (strcmp($2,"+") == 0){
+            
+            if (($1.type == TYPE_INT || $1.type == TYPE_REAL)
+                &&
+                ($3.type == TYPE_INT || $3.type == TYPE_REAL))
+            {
+                // Estamos operando com números
 
-                                    if ($1.type == TYPE_INT 
-                                    && $3.type == TYPE_INT)
-                                    {
-                                        // Dois inteiros
-                                        $$.type = TYPE_INT;
-                                        // TODO: criar quádrupla para calcular valor
-                                        // $$.value = $1.value; 
-                                    }else{
-                                        // Pelo menos um real
-                                        $$.type = TYPE_REAL;
-                                        // TODO: criar quádrupla para calcular valor
-                                        // $$.value = $1.value; 
-                                    }
-                                }else
-                                    typeerror();
-                            }
+                if ($1.type == TYPE_INT 
+                && $3.type == TYPE_INT)
+                {
+                    // Dois inteiros
+                    $$.type = TYPE_INT;
+                    // TODO: criar quádrupla para calcular valor
+                    // $$.value = $1.value; 
+                }else{
+                    // Pelo menos um real
+                    $$.type = TYPE_REAL;
+                    // TODO: criar quádrupla para calcular valor
+                    // $$.value = $1.value; 
+                }
+            }else
+                typeerror();
+        }else if (strcmp($2,"or") == 0){
+            if ($1.type == TYPE_BOOL 
+                && $3.type == TYPE_BOOL){
+                
+                $$.type = TYPE_BOOL;
+                // TODO: criar quádrupla para calcular valor
+                // $$.value = $1.value; 
+            }else
+                typeerror();
+        }else{
+            printf("Lexema ADDOP não encontrado\n");
+            exit(1);
+        }
+    }
                         |   simple_expr MINUS term
-                            {
-                                if (($1.type == TYPE_INT || $1.type == TYPE_REAL)
-                                    &&
-                                    ($3.type == TYPE_INT || $3.type == TYPE_REAL))
-                                {
-                                    // Estamos operando com números
+    {
+        if (($1.type == TYPE_INT || $1.type == TYPE_REAL)
+            &&
+            ($3.type == TYPE_INT || $3.type == TYPE_REAL))
+        {
+            // Estamos operando com números
 
-                                    if ($1.type == TYPE_INT 
-                                    && $3.type == TYPE_INT)
-                                    {
-                                        // Dois inteiros
-                                        $$.type = TYPE_INT;
-                                        // TODO: criar quádrupla para calcular valor
-                                        // $$.value = $1.value; 
-                                    }else{
-                                        // Pelo menos um real
-                                        $$.type = TYPE_REAL;
-                                        // TODO: criar quádrupla para calcular valor
-                                        // $$.value = $1.value; 
-                                    }
-                                }else
-                                    typeerror();
-                            }
-                        |   simple_expr OR term
-                            { 
-                                if ($1.type == TYPE_BOOL 
-                                    && $3.type == TYPE_BOOL){
-                                    
-                                    $$.type = TYPE_BOOL;
-                                    // TODO: criar quádrupla para calcular valor
-                                    // $$.value = $1.value; 
-                                }else
-                                    typeerror();
-                            }   
+            if ($1.type == TYPE_INT 
+            && $3.type == TYPE_INT)
+            {
+                // Dois inteiros
+                $$.type = TYPE_INT;
+                // TODO: criar quádrupla para calcular valor
+                // $$.value = $1.value; 
+            }else{
+                // Pelo menos um real
+                $$.type = TYPE_REAL;
+                // TODO: criar quádrupla para calcular valor
+                // $$.value = $1.value; 
+            }
+        }else
+            typeerror();
+    }
                         ;
 term                    :   factor_a
                             { 
