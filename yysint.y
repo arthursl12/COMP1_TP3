@@ -52,18 +52,12 @@
 
 
 /* Tokens */
-/* Tokens ADDOPs */
+/* Tokens operações */
+%token <lexeme_str> RELOP
+%token <lexeme_str> MULOP
 %token <lexeme_str> ADDOP
 %token MINUS            // -
 // Obs.: o analisador sintático decide se é a subtração ou o menos unário
-
-/* Tokens RELOPs */
-%token <lexeme_str> RELOP
-
-/* Tokens MULOPs */
-%token MULT DIV         // * /
-%token IDIV MOD         // div mod
-%token AND              // and
 
 %token NOT
 %token ASSIGN
@@ -93,8 +87,8 @@
 %start program
 
 /* Associatividade e Precedência */
-%left ADD OR MINUS MULT DIV IDIV MOD AND
-%nonassoc EQUALS NEQ LT GT LTE GTE
+%left ADDOP MINUS MULOP
+%nonassoc RELOP
 %nonassoc THEN
 %nonassoc ELSE
 
@@ -291,78 +285,66 @@ simple_expr             :   term
     }
                         ;
 term                    :   factor_a
-                            { 
-                                $$.type = $1.type; 
-                                $$.value = $1.value; 
-                            } 
-                        |   term MULT factor_a
-                            { 
-                                if (($1.type == TYPE_INT || $1.type == TYPE_REAL)
-                                    &&
-                                    ($3.type == TYPE_INT || $3.type == TYPE_REAL))
-                                {
-                                    // Estamos operando com números
-                                    if ($1.type == TYPE_INT 
-                                    && $3.type == TYPE_INT)
-                                    {
-                                        // Dois inteiros
-                                        $$.type = TYPE_INT;
-                                        // TODO: criar quádrupla para calcular valor
-                                        // $$.value = $1.value; 
-                                    }else{
-                                        // Pelo menos um real
-                                        $$.type = TYPE_REAL;
-                                        // TODO: criar quádrupla para calcular valor
-                                        // $$.value = $1.value; 
-                                    }
-                                }else
-                                    typeerror();
-                            } 
-                        |   term DIV factor_a
-                            { 
-                                if (($1.type == TYPE_INT || $1.type == TYPE_REAL)
-                                    &&
-                                    ($3.type == TYPE_INT || $3.type == TYPE_REAL))
-                                {
-                                    $$.type = TYPE_REAL;
-                                    // TODO: criar quádrupla para calcular valor
-                                    // $$.value = $1.value; 
-                                }else
-                                    typeerror();
-                            } 
-                        |   term IDIV factor_a
-                            { 
-                                if ($1.type == TYPE_INT
-                                    && $3.type == TYPE_INT)
-                                {
-                                    $$.type = TYPE_INT;
-                                    // TODO: criar quádrupla para calcular valor
-                                    // $$.value = $1.value; 
-                                }else
-                                    typeerror();
-                            } 
-                        |   term MOD factor_a
-                            { 
-                                if ($1.type == TYPE_INT 
-                                    && $3.type == TYPE_INT){
-                                    
-                                    $$.type = TYPE_INT;
-                                    // TODO: criar quádrupla para calcular valor
-                                    // $$.value = $1.value; 
-                                }else
-                                    typeerror();
-                            } 
-                        |   term AND factor_a
-                            { 
-                                if ($1.type == TYPE_BOOL 
-                                    && $3.type == TYPE_BOOL){
-                                    
-                                    $$.type = TYPE_BOOL;
-                                    // TODO: criar quádrupla para calcular valor
-                                    // $$.value = $1.value; 
-                                }else
-                                    typeerror();
-                            }   
+    { 
+        $$.type = $1.type; 
+        $$.value = $1.value; 
+    } 
+                        |   term MULOP factor_a
+    {
+        if (strcmp($2,"*") == 0){
+            if (($1.type == TYPE_INT || $1.type == TYPE_REAL)
+                &&
+                ($3.type == TYPE_INT || $3.type == TYPE_REAL))
+            {
+                // Estamos operando com números
+                if ($1.type == TYPE_INT 
+                && $3.type == TYPE_INT)
+                {
+                    // Dois inteiros
+                    $$.type = TYPE_INT;
+                    // TODO: criar quádrupla para calcular valor
+                    // $$.value = $1.value; 
+                }else{
+                    // Pelo menos um real
+                    $$.type = TYPE_REAL;
+                    // TODO: criar quádrupla para calcular valor
+                    // $$.value = $1.value; 
+                }
+            }else
+                typeerror();
+        }else if(strcmp($2,"/") == 0){
+            if (($1.type == TYPE_INT || $1.type == TYPE_REAL)
+                &&
+                ($3.type == TYPE_INT || $3.type == TYPE_REAL))
+            {
+                $$.type = TYPE_REAL;
+                // TODO: criar quádrupla para calcular valor
+                // $$.value = $1.value; 
+            }else
+                typeerror();
+        }else if (strcmp($2,"div") == 0 || strcmp($2,"mod") == 0){
+            if ($1.type == TYPE_INT
+                && $3.type == TYPE_INT)
+            {
+                $$.type = TYPE_INT;
+                // TODO: criar quádrupla para calcular valor
+                // $$.value = $1.value; 
+            }else
+                typeerror();
+        }else if (strcmp($2,"and") == 0){
+            if ($1.type == TYPE_BOOL 
+                && $3.type == TYPE_BOOL){
+                
+                $$.type = TYPE_BOOL;
+                // TODO: criar quádrupla para calcular valor
+                // $$.value = $1.value; 
+            }else
+                typeerror();
+        }else {
+            printf("Lexema MULOP não encontrado\n");
+            exit(1);
+        }
+    }
                         ;
 function_ref            :   SIN '(' expr ')'
                             {

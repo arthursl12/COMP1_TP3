@@ -59,11 +59,11 @@ id              {letter}({letter}|{digit})*
 "-"                 { printToken("Minus"); return MINUS; }
 
     /* MULOP */
-"*"                 { printToken("Mulop"); return MULT; }
-"/"                 { printToken("Mulop"); return DIV; }
-"div"               { printToken("Mulop"); return IDIV; }
-"mod"               { printToken("Mulop"); return MOD; }
-"and"               { printToken("Mulop"); return AND; }
+"*"                 { printToken("Mulop"); yylval.lexeme_str = strdup(yytext); return MULOP; }
+"/"                 { printToken("Mulop"); yylval.lexeme_str = strdup(yytext); return MULOP; }
+"div"               { printToken("Mulop"); yylval.lexeme_str = strdup(yytext); return MULOP; }
+"mod"               { printToken("Mulop"); yylval.lexeme_str = strdup(yytext); return MULOP; }
+"and"               { printToken("Mulop"); yylval.lexeme_str = strdup(yytext); return MULOP; }
     /* ASSIGN */
 ":="                { printToken("Assign"); return ASSIGN; }
 
