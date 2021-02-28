@@ -1,9 +1,11 @@
 all: 
+	gcc -c lists.c -o lists.o 
+	gcc -c codinterm.c -o codinterm.o 
 	gcc -c tab.c -o tab.o 
 	yacc -v -d yysint.y
 	gcc -c aux.c -o aux.o
 	lex yylex.l
-	gcc aux.o tab.o lex.yy.c  y.tab.c -o yysint
+	gcc aux.o tab.o lists.o codinterm.o lex.yy.c  y.tab.c -o yysint
 	./yysint < teste0.in
 
 tests: all

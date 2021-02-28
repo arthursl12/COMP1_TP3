@@ -1,6 +1,7 @@
 %{
     // #include "tokens.h"
     #include "aux.h"
+    #include "codinterm.h"
     #include "y.tab.h"
     #include <stdlib.h>
     #include <stdbool.h>
