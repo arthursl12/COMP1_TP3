@@ -91,7 +91,8 @@ void Get_Entry(char x[TNome], int* res_nivel, int* res_i){
     }
 }
 
-void Instala(char X[TNome], int type, int class, union value value){
+void Instala(char X[TNome], int type, int class, 
+             union value value, boolean_list_t* bool_list){
     int S, i, k, aux;
     aux = 1;
     S = escopo[nivel];
@@ -122,6 +123,7 @@ void Instala(char X[TNome], int type, int class, union value value){
         // Copia o type e classe passados
         TabelaS[L].type = type;
         TabelaS[L].class = class;
+        TabelaS[L].bool_list = bool_list;
 
         // aux = strlen(type);
         // for (k = 0; k <= aux-1; k++)

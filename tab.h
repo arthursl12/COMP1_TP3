@@ -2,6 +2,7 @@
 #ifndef TAB_H
 #define TAB_H
 
+#include "codinterm.h"
 #include "aux.h"
 
 #define NMax 1000
@@ -21,6 +22,7 @@ struct{
     int type;       /* Atributo do símbolo */
     int class;      /* Classe do símbolo */
     union value value; 
+    boolean_list_t* bool_list;  /* Listas do booleano, se for o caso */
     // char value[TValue];     
     int esq;            /* Subárvore da esquerda */
     int dir;            /* Subárvore da direita */
@@ -31,7 +33,7 @@ void Entrada_Bloco();
 void Erro(int numero);
 void Saida_Bloco();
 void Get_Entry(char name[TNome], int* res_nivel, int* res_i);
-void Instala(char name[TNome], int type, int class, union value value);
+void Instala(char name[TNome], int type, int class, union value value, boolean_list_t* bool_list);
 void imprimir();
 
 #endif /* TAB */

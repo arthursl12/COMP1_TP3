@@ -82,7 +82,7 @@
 %token ASSIGN
 %token <integer> INT_CONSTANT
 %token <real> REAL_CONSTANT
-%token <boolean> BOOL_CONSTANT
+%token <boolean> BOOL_CONSTANT TRUE_CST FALSE_CST
 %token <string> IDENTIFIER
 %token <string> IDENTIFIER_F       // Identificador de funções-padrão
 %token <character> CHAR_CONSTANT
@@ -600,6 +600,7 @@ factor                  :   IDENTIFIER
                                 TabelaS[res_i].class = CLS_VARIABLE;
                                 $$->type = TS_ENTRY;
                                 $$->value.TS_idx = res_i;
+                                printf("TODO: truelist e falselist na tabela de símbolos");
                             }
                         |   constant
                             { 
@@ -645,6 +646,7 @@ constant                :   INT_CONSTANT
                                 TabelaS[temp->value.TS_idx].class = CLS_CST;
                                 TabelaS[temp->value.TS_idx].value.integer = $1;
                                 $$ = temp;
+                                $$->list = NULL;
                                 
                                 intmdt_addr_print($$);
                                 printf("\n");
@@ -655,6 +657,7 @@ constant                :   INT_CONSTANT
                                 TabelaS[temp->value.TS_idx].class = CLS_CST;
                                 TabelaS[temp->value.TS_idx].value.real = $1;
                                 $$ = temp;
+                                $$->list = NULL;
                                 
                                 intmdt_addr_print($$);
                                 printf("\n");
@@ -665,20 +668,56 @@ constant                :   INT_CONSTANT
                                 TabelaS[temp->value.TS_idx].class = CLS_CST;
                                 TabelaS[temp->value.TS_idx].value.character = $1;
                                 $$ = temp;
+                                $$->list = NULL;
 
                                 intmdt_addr_print($$);
                                 printf("\n");
                             }
-                        |   BOOL_CONSTANT
-                            { 
-                                intmdt_addr_t *temp = newtemp(TYPE_BOOL);
-                                TabelaS[temp->value.TS_idx].class = CLS_CST;
-                                TabelaS[temp->value.TS_idx].value.boolean = $1;
-                                $$ = temp;
-                                
-                                intmdt_addr_print($$);
-                                printf("\n");
-                            }
+                        |   TRUE_CST
+    { 
+        intmdt_addr_t *temp = newtemp(TYPE_BOOL);
+        TabelaS[temp->value.TS_idx].class = CLS_CST;
+        TabelaS[temp->value.TS_idx].value.boolean = $1;
+        // $$ = temp;
+
+        printf("constant -> true\n");
+        boolean_list_t *list = malloc(sizeof(boolean_list_t));
+        if (list == NULL) {
+            fprintf(stderr, "Malloc of boolean_list_t failed!\n");
+            YYABORT;
+        }
+        /* Generate a goto statement with no destination,
+            then pass it into a list for backpatching. */
+        gen(intermediate_code, "goto", NULL, NULL, NULL);
+        list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+        list->falselist = NULL;
+        $$->list = list;
+
+        intmdt_addr_print($$);
+        printf("\n");
+    }                   |   FALSE_CST
+    { 
+        intmdt_addr_t *temp = newtemp(TYPE_BOOL);
+        TabelaS[temp->value.TS_idx].class = CLS_CST;
+        TabelaS[temp->value.TS_idx].value.boolean = $1;
+        // $$ = temp;
+        
+        printf("constant -> false\n");
+        boolean_list_t *list = malloc(sizeof(boolean_list_t));
+        if (list == NULL) {
+            fprintf(stderr, "Malloc of boolean_list_t failed!\n");
+            YYABORT;
+        }
+        /* Generate a goto statement with no destination,
+            then pass it into a list for backpatching. */
+        gen(intermediate_code, "goto", NULL, NULL, NULL);
+        list->truelist = NULL;
+        list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+        $$->list = list;
+
+        intmdt_addr_print($$);
+        printf("\n");
+    }
                         ;
 
 
@@ -698,6 +737,7 @@ void installIdentList(char* type){
         union value placeholder;
         int tipo_cst = -1;
         int cls = -1;
+        boolean_list_t *blist = NULL;
         if (strcmp(type, "integer") == 0){
             tipo_cst = TYPE_INT;
             cls = CLS_VARIABLE;
@@ -707,11 +747,16 @@ void installIdentList(char* type){
         }else if (strcmp(type, "boolean") == 0){
             cls = CLS_VARIABLE;
             tipo_cst = TYPE_BOOL;
+            blist = malloc(sizeof(boolean_list_t));
+            if (blist == NULL) {
+                fprintf(stderr, "Malloc of boolean_list_t failed!\n");
+                exit(1);
+            }
         }else if (strcmp(type, "char") == 0){
             cls = CLS_VARIABLE;
             tipo_cst = TYPE_CHAR;
         }
-        Instala(id_list[i], tipo_cst, cls, placeholder);
+        Instala(id_list[i], tipo_cst, cls, placeholder, blist);
     }
 }
 

@@ -17,9 +17,15 @@ typedef struct quadruple quadruple_t;
 // } intmdt_value;
 
 typedef struct {
+  list_head_t *truelist;
+  list_head_t *falselist;
+} boolean_list_t;
+
+typedef struct {
   // enum {symbol, TYPE_INT, TYPE_REAL, TYPE_BOOL, TYPE_CHAR, code, temp} type;
   int type;
   union value value;
+  boolean_list_t* list;
 } intmdt_addr_t;
 
 /* Quádrupla */

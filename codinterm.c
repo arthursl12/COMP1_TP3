@@ -75,7 +75,15 @@ intmdt_addr_t *newtemp(int tipo) {
     sprintf(nome, "@%d", temp_num);
 
     /* Guarda na TS */
-    Instala(nome, tipo, CLS_TEMP, val);
+    boolean_list_t *blist = NULL;
+    if (tipo == TYPE_BOOL){
+        blist = malloc(sizeof(boolean_list_t));
+            if (blist == NULL) {
+            fprintf(stderr, "Malloc of boolean_list_t failed!\n");
+            exit(1);
+        }
+    }
+    Instala(nome, tipo, CLS_TEMP, val, blist);
     int resN;
     int resIdx;
     Get_Entry(nome, &resN, &resIdx);

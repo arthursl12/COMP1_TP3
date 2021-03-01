@@ -41,8 +41,8 @@ id              {letter}({letter}|{digit})*
 {real}              { printToken("SReal"); yylval.real = atof(yytext); return REAL_CONSTANT; }
 {char}              { printToken("Char"); yylval.character = *yytext; return CHAR_CONSTANT; }
     /* Constantes Booleanas */
-"true"              { printToken("Bool"); yylval.boolean = 1; return BOOL_CONSTANT; }
-"false"             { printToken("Bool"); yylval.boolean = 0; return BOOL_CONSTANT; }
+"true"              { printToken("Bool"); yylval.boolean = 1; return TRUE_CST; }
+"false"             { printToken("Bool"); yylval.boolean = 0; return FALSE_CST; }
 
     /* RELOP */ 
 ">"                 { printToken("Relop"); yylval.lexeme_str = strdup(yytext); return RELOP; }
