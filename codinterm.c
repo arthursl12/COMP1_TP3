@@ -28,6 +28,72 @@ list_head_t *list_makelist(quadruple_t *instr_ptr) {
 }
 
 /*  
+    Concatenates the lists pointed to by p1 and p2 and returns
+    the concatenated list.
+*/
+list_head_t *list_merge(list_head_t *p1, list_head_t *p2) {
+  
+  if (p1 == NULL) {
+    fprintf(stderr, "list head p1 passed to list_merge() was NULL.\n");
+    return NULL;
+  }
+  if (p2 == NULL) {
+    fprintf(stderr, "list head p2 passed to list_merge() was NULL.\n");
+    return NULL;
+  }
+
+  list_entry_t *current = p1->list;
+  
+  /* Find the end of the first list */
+  while(current->next != NULL) {
+    current = current->next;
+  }
+  
+  current->next = p2->list;
+  
+  free(p2);
+
+  return p1;
+}
+
+
+/*  
+    Takes the list, p, of quadruples, and sets the
+    result of all the quadruples to the given quadruple
+    i. Result should be a pointer to the quadruple that
+    the instruction will jump to.
+    Returns 0 on success, 1 on failure.
+*/
+int backpatch(list_head_t *p, quadruple_t *i) {
+    printf("=================Backpatching...\n");
+    printf("Destination: ");
+    intmdt_addr_print(i->result);
+
+    if (p == NULL) {
+        fprintf(stderr, "list head passed to backpatch() was NULL.\n");
+        return 0;
+    }
+    list_entry_t *current = p->list;
+    
+    while (current != NULL) {
+        intmdt_addr_t *res = malloc(sizeof(intmdt_addr_t));
+        
+        if (res == NULL) {
+            fprintf(stderr, "failed to malloc intmdt_addr_t in backpatch()\n");
+            return 1;
+        }
+        
+        res->type = TYPE_LABEL;
+        res->value.instr_ptr = i;
+        
+        ((quadruple_t*) current->value)->result = res;
+        current = current->next;
+    }
+    return 0;
+}
+
+
+/*  
     creates a quadruple_t containing the op, arguments, and result
     passed to this function. Then, the quadruple_t is inserted into
     the next empty location in the given intmdt_code_t. Returns 0 on
@@ -76,14 +142,9 @@ intmdt_addr_t *newtemp(int tipo) {
 
     /* Guarda na TS */
     boolean_list_t *blist = NULL;
-    if (tipo == TYPE_BOOL){
-        blist = malloc(sizeof(boolean_list_t));
-            if (blist == NULL) {
-            fprintf(stderr, "Malloc of boolean_list_t failed!\n");
-            exit(1);
-        }
-    }
     Instala(nome, tipo, CLS_TEMP, val, blist);
+
+    /* Pega o índice dado pela TS */
     int resN;
     int resIdx;
     Get_Entry(nome, &resN, &resIdx);
@@ -135,9 +196,9 @@ void intmdt_addr_print(intmdt_addr_t *t) {
         // case TYPE_CHAR:
         //     printf("Bool: %d\t", (t->value).character);
         //     break;
-        // case code:
-        //   printf("Code: %p\t", (void*) t->addr.instr_ptr);
-        //   break;
+        case TYPE_LABEL:
+          printf("Code: %p\t", (void*) t->value.instr_ptr);
+          break;
         case TYPE_BOOL:
             printf("Bool: %d\t", (t->value).boolean);
             break;

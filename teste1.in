@@ -37,7 +37,7 @@ begin
             label1: read (file3);
             write (1 + 1156.07257E-10, y);
             f := 'c';
-            if NOT eoln(f) then
+            if (NOT (f = f)) then
                 y := 1
             else
                 y := 2
@@ -45,5 +45,5 @@ begin
             goto label2
         end
     end;
-    a := cos((5*3.14)/4)
+    a := ((5*3.14)/4)
 end

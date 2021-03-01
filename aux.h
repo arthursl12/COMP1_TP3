@@ -11,6 +11,7 @@
 #define TYPE_BOOL   4
 #define TEMP_TYPE   8
 #define TS_ENTRY    9
+#define TYPE_LABEL  10
 
 #define CLS_VARIABLE  1
 #define CLS_PARAM     2

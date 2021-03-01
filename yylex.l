@@ -55,7 +55,7 @@ id              {letter}({letter}|{digit})*
 
     /* ADDOP */
 "+"                 { printToken("Addop"); yylval.lexeme_str = strdup(yytext); return ADDOP; }
-"or"                { printToken("Addop"); yylval.lexeme_str = strdup(yytext); return ADDOP; }
+"or"                { printToken("Addop"); yylval.lexeme_str = strdup(yytext); return OR; }
     /* Minus: caso especial, o analisador sintático decide */
 "-"                 { printToken("Minus"); return MINUS; }
 
@@ -64,7 +64,7 @@ id              {letter}({letter}|{digit})*
 "/"                 { printToken("Mulop"); yylval.lexeme_str = strdup(yytext); return MULOP; }
 "div"               { printToken("Mulop"); yylval.lexeme_str = strdup(yytext); return MULOP; }
 "mod"               { printToken("Mulop"); yylval.lexeme_str = strdup(yytext); return MULOP; }
-"and"               { printToken("Mulop"); yylval.lexeme_str = strdup(yytext); return MULOP; }
+"and"               { printToken("Mulop"); yylval.lexeme_str = strdup(yytext); return AND; }
     /* ASSIGN */
 ":="                { printToken("Assign"); return ASSIGN; }
 
