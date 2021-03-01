@@ -91,7 +91,7 @@ void Get_Entry(char x[TNome], int* res_nivel, int* res_i){
     }
 }
 
-void Instala(char X[TNome], int type, union value value){
+void Instala(char X[TNome], int type, int class, union value value){
     int S, i, k, aux;
     aux = 1;
     S = escopo[nivel];
@@ -119,8 +119,10 @@ void Instala(char X[TNome], int type, union value value){
         aux = strlen(X);
         for(k = 0; k <= aux-1; k++)
             TabelaS[L].nome[k] = X[k];
-        // Copia o type passado
+        // Copia o type e classe passados
         TabelaS[L].type = type;
+        TabelaS[L].class = class;
+
         // aux = strlen(type);
         // for (k = 0; k <= aux-1; k++)
         //     TabelaS[L].type[k] = type[k];
@@ -150,6 +152,8 @@ void imprimir(){
         printf("\n\n");
         printf("Nome : %s\n", TabelaS[i].nome);
         printf("Tipo : %i\n", TabelaS[i].type);
+        printf("Classe : %i\n", TabelaS[i].class);
+
         printf("Valor : %i, %f, %c, %i\n", 
                     TabelaS[i].value.integer,
                     TabelaS[i].value.real,

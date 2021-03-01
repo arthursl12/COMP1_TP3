@@ -10,6 +10,14 @@
 #define TYPE_CHAR   3
 #define TYPE_BOOL   4
 #define TEMP_TYPE   8
+#define TS_ENTRY    9
+
+#define CLS_VARIABLE  1
+#define CLS_PARAM     2
+#define CLS_CST       3
+#define CLS_TEMP      4
+
+
 
 // union value {
 //     int integer; 

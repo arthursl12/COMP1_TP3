@@ -52,6 +52,7 @@ list_head_t *list_merge(list_head_t *p1, list_head_t *p2);
 int backpatch(list_head_t *p, quadruple_t *i);
 
 intmdt_code_t *init_code();
+void intmdt_addr_print(intmdt_addr_t *t);
 void print_intmdt_code(intmdt_code_t *code);
 
 

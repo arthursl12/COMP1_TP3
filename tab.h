@@ -19,6 +19,7 @@ struct{
     char nome[TNome];       /* Nome do símbolo */
     int nivel;              /* Nível do símbolo */
     int type;       /* Atributo do símbolo */
+    int class;      /* Classe do símbolo */
     union value value; 
     // char value[TValue];     
     int esq;            /* Subárvore da esquerda */
@@ -30,7 +31,7 @@ void Entrada_Bloco();
 void Erro(int numero);
 void Saida_Bloco();
 void Get_Entry(char name[TNome], int* res_nivel, int* res_i);
-void Instala(char name[TNome], int type, union value value);
+void Instala(char name[TNome], int type, int class, union value value);
 void imprimir();
 
 #endif /* TAB */

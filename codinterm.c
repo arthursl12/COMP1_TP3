@@ -75,7 +75,7 @@ intmdt_addr_t *newtemp(int tipo) {
     sprintf(nome, "@%d", temp_num);
 
     /* Guarda na TS */
-    Instala(nome, tipo, val);
+    Instala(nome, tipo, CLS_TEMP, val);
     int resN;
     int resIdx;
     Get_Entry(nome, &resN, &resIdx);
@@ -87,7 +87,7 @@ intmdt_addr_t *newtemp(int tipo) {
         fprintf(stderr, "Failed to malloc intmdt_addr_t in newtemp()\n");
         return NULL;
     }
-    addr->type = TEMP_TYPE;
+    addr->type = TS_ENTRY;
     (addr->value).TS_idx = resIdx;
     
     return addr;
@@ -109,35 +109,75 @@ intmdt_code_t *init_code() {
 }
 
 void intmdt_addr_print(intmdt_addr_t *t) {
- 
-  if (t == NULL) {
-    printf("\t\t");
-    return;
-  }
+    if (t == NULL) {
+        printf("\t\t");
+        return;
+    }
   
-  switch(t->type){
-  // case symbol:
-  //   printf("Symbol: %s\t", (char*) (t->addr).entry_ptr->key);
-  //   break;
-  case TYPE_INT:
-    printf("Integer: %d\t", (t->value).integer);
-    break;
-  case TYPE_REAL:
-    printf("Float: %f\t", (t->value).real);
-    break;
-  case TYPE_CHAR:
-    printf("Bool: %d\t", (t->value).character);
-    break;
-  // case code:
-  //   printf("Code: %p\t", (void*) t->addr.instr_ptr);
-  //   break;
-  case TYPE_BOOL:
-    printf("Bool: %d\t", (t->value).boolean);
-    break;
-  case TEMP_TYPE:
-    printf("Temporário");
-    break;
-  }
+    switch(t->type){
+        // case symbol:
+        //   printf("Symbol: %s\t", (char*) (t->addr).entry_ptr->key);
+        //   break;
+        // case TYPE_INT:
+        //     printf("Integer: %d\t", (t->value).integer);
+        //     break;
+        // case TYPE_REAL:
+        //     printf("Float: %f\t", (t->value).real);
+        //     break;
+        // case TYPE_CHAR:
+        //     printf("Bool: %d\t", (t->value).character);
+        //     break;
+        // case code:
+        //   printf("Code: %p\t", (void*) t->addr.instr_ptr);
+        //   break;
+        case TYPE_BOOL:
+            printf("Bool: %d\t", (t->value).boolean);
+            break;
+        case TEMP_TYPE:
+            printf("Temporario: %s\t", TabelaS[t->value.TS_idx].nome);
+            break;
+        case TS_ENTRY:{
+            int idx = t->value.TS_idx;
+            int class = TabelaS[idx].class;
+            switch (class){
+                case CLS_TEMP:
+                    printf("Temporario: %s\t", TabelaS[idx].nome);
+                    break;
+                case CLS_VARIABLE:
+                    printf("Variavel: %s\t", TabelaS[idx].nome);
+                    break;
+                case CLS_PARAM:
+                    printf("Parametro: %s\t", TabelaS[idx].nome);
+                    break;
+                case CLS_CST:{
+                    int tipo = TabelaS[idx].type;
+                    switch (tipo){
+                        case TYPE_INT:
+                            printf("Int: %d (%s)\t", 
+                                    TabelaS[idx].value.integer,
+                                    TabelaS[idx].nome);
+                            break;
+                        case TYPE_REAL:
+                            printf("Real: %f (%s)\t", 
+                                    TabelaS[idx].value.real,
+                                    TabelaS[idx].nome);
+                            break;
+                        case TYPE_CHAR:
+                            printf("Char: %d (%s)\t", 
+                                    TabelaS[idx].value.character,
+                                    TabelaS[idx].nome);
+                            break;
+                        case TYPE_BOOL:
+                            printf("Bool: %d (%s)\t", 
+                                    TabelaS[idx].value.boolean,
+                                    TabelaS[idx].nome);
+                            break;
+                    }
+                    break;
+                }
+            }
+        }
+    }
 }
 
 void print_intmdt_code(intmdt_code_t *code) {

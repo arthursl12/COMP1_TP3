@@ -10,7 +10,7 @@
     #include "aux.h"
 
 
-    #define YYDEBUG 1          /* Se ligado, imprime mais informações */
+    #define YYDEBUG 0          /* Se ligado, imprime mais informações */
 
 
     /* Forward declaration de funções do Lex */
@@ -162,20 +162,49 @@ assign_stmt             :   IDENTIFIER ASSIGN expr
             exit(1);
         }
 
-        if (TabelaS[res_i].type == TYPE_REAL 
+        printf("Assign\n");
+
+        int tipo1 = TabelaS[res_i].type;
+        int tipo2 = $3->type;
+
+
+        printf("Op1: %i\n", tipo1);
+        printf("Op2: %i\n", tipo2);
+
+        if (tipo1 == TS_ENTRY ){
+            int idx = TabelaS[res_i].value.TS_idx;
+            tipo1 = TabelaS[idx].type;
+        }
+        if (tipo2 == TS_ENTRY){
+            int idx = $3->value.TS_idx;
+            tipo2 = TabelaS[idx].type;
+        }
+
+        printf("Op1: %i\n", tipo1);
+        printf("Op2: %i\n", tipo2);
+
+
+
+        if (tipo1 == TYPE_REAL 
             &&
-            $3->type == TYPE_INT){
+            tipo2 == TYPE_INT){
             // Pode colocar int em real
-            TabelaS[res_i].value = $3->value;
-        }else if (TabelaS[res_i].type != $3->type){
+        }else if (tipo1 != tipo2){
             printf("IDType: %i\n", TabelaS[res_i].type);
             printf("ExprType: %i\n", $3->type);
             typeerror();
-        }else{
-            TabelaS[res_i].value = $3->value;
+            YYABORT;
         }
-        // updateVal($1,"updt"); 
 
+        printf("stmt->loc = bool\n");
+       	intmdt_addr_t *dest = malloc (sizeof(intmdt_code_t));
+        if (dest == NULL) {
+            fprintf(stderr,"Error: malloc in ASSIGN");
+            exit(1);
+        }
+        dest->type = TS_ENTRY;
+        dest->value.TS_idx = res_i;
+        gen(intermediate_code, "=", $3, NULL, dest);
     }
                         ;
 cond                    :   expr
@@ -217,11 +246,13 @@ expr                    :   simple_expr
             // $$->value = $1->value; 
         }else if (strcmp($2,"<") == 0 || strcmp($2,"<=") == 0 
                || strcmp($2,">") == 0 || strcmp($2,">=") == 0){
-            if ($1->type != TYPE_INT && $1->type != TYPE_REAL)
+            if ($1->type != TYPE_INT && $1->type != TYPE_REAL){
                 typeerror();
-            else if ($3->type != TYPE_INT && $3->type != TYPE_REAL)
+                YYABORT;
+            }else if ($3->type != TYPE_INT && $3->type != TYPE_REAL){
                 typeerror();
-            
+                YYABORT;
+            }
             $$->type = TYPE_BOOL; 
 
             // TODO: criar quádrupla para calcular valor
@@ -245,16 +276,26 @@ simple_expr             :   term
             int tipo1 = $1->type;
             int tipo2 = $3->type;
 
+
+            // int tipo1 = $1->type;
+            // int tipo2 = $3->type;
+
             printf("Op1: %i\n", tipo1);
             printf("Op2: %i\n", tipo2);
 
-            if (tipo1 == TEMP_TYPE){
+            if (tipo1 == TS_ENTRY){
+
                 int idx = $1->value.TS_idx;
                 tipo1 = TabelaS[idx].type;
+                printf("Cls: %i\n", TabelaS[idx].class);
+
             }
-            if (tipo2 == TEMP_TYPE){
+            if (tipo2 == TS_ENTRY){
+
                 int idx = $3->value.TS_idx;
                 tipo2 = TabelaS[idx].type;
+                printf("Cls: %i\n", TabelaS[idx].class);
+
             }
 
             printf("Op1: %i\n", tipo1);
@@ -283,8 +324,10 @@ simple_expr             :   term
                     // TODO: criar quádrupla para calcular valor
                     // $$->value = $1->value; 
                 }
-            }else
+            }else{
                 typeerror();
+                YYABORT;
+            }
         }else if (strcmp($2,"or") == 0){
             if ($1->type == TYPE_BOOL 
                 && $3->type == TYPE_BOOL){
@@ -292,11 +335,13 @@ simple_expr             :   term
                 $$->type = TYPE_BOOL;
                 // TODO: criar quádrupla para calcular valor
                 // $$->value = $1->value; 
-            }else
+            }else{
                 typeerror();
+                YYABORT;
+            }
         }else{
-            printf("Lexema ADDOP não encontrado\n");
-            exit(1);
+            printf("Lexema ADDOP não encontrado: %s\n", $2);
+            YYABORT;
         }
     }
                         |   simple_expr MINUS term
@@ -320,8 +365,10 @@ simple_expr             :   term
                 // TODO: criar quádrupla para calcular valor
                 // $$->value = $1->value; 
             }
-        }else
+        }else{
             typeerror();
+            YYABORT;
+        }
     }
                         ;
 term                    :   factor_a
@@ -350,8 +397,10 @@ term                    :   factor_a
                     // TODO: criar quádrupla para calcular valor
                     // $$->value = $1->value; 
                 }
-            }else
+            }else{
                 typeerror();
+                YYABORT;
+            }
         }else if(strcmp($2,"/") == 0){
             if (($1->type == TYPE_INT || $1->type == TYPE_REAL)
                 &&
@@ -360,8 +409,10 @@ term                    :   factor_a
                 $$->type = TYPE_REAL;
                 // TODO: criar quádrupla para calcular valor
                 // $$->value = $1->value; 
-            }else
+            }else{
                 typeerror();
+                YYABORT;
+            }
         }else if (strcmp($2,"div") == 0 || strcmp($2,"mod") == 0){
             if ($1->type == TYPE_INT
                 && $3->type == TYPE_INT)
@@ -369,8 +420,10 @@ term                    :   factor_a
                 $$->type = TYPE_INT;
                 // TODO: criar quádrupla para calcular valor
                 // $$->value = $1->value; 
-            }else
+            }else{
                 typeerror();
+                YYABORT;
+            }
         }else if (strcmp($2,"and") == 0){
             if ($1->type == TYPE_BOOL 
                 && $3->type == TYPE_BOOL){
@@ -378,9 +431,11 @@ term                    :   factor_a
                 $$->type = TYPE_BOOL;
                 // TODO: criar quádrupla para calcular valor
                 // $$->value = $1->value; 
-            }else
+            }else{
                 typeerror();
-        }else {
+                YYABORT;
+            }
+        }else{
             printf("Lexema MULOP não encontrado\n");
             exit(1);
         }
@@ -388,8 +443,15 @@ term                    :   factor_a
                         ;
 function_ref            :   SIN '(' expr ')'
                             {
-                                if ($3->type != TYPE_REAL){
+                                int tipo1 = $3->type;
+                                if (tipo1 == TS_ENTRY){
+                                    int idx = $3->value.TS_idx;
+                                    tipo1 = TabelaS[idx].type;
+                                }
+                                
+                                if (tipo1 != TYPE_REAL){
                                     typeerror();
+                                    YYABORT;
                                 }
                                 $$->type = TYPE_REAL;
                                 // TODO: criar quádrupla para calcular valor
@@ -399,6 +461,7 @@ function_ref            :   SIN '(' expr ')'
                             {
                                 if ($3->type != TYPE_REAL){
                                     typeerror();
+                                    YYABORT;
                                 }
                                 $$->type = TYPE_REAL;
                                 // TODO: criar quádrupla para calcular valor
@@ -409,6 +472,7 @@ function_ref            :   SIN '(' expr ')'
                                 // Assumindo logaritmo natural (base e)
                                 if ($3->type != TYPE_REAL){
                                     typeerror();
+                                    YYABORT;
                                 }
                                 $$->type = TYPE_REAL;
                                 // TODO: criar quádrupla para calcular valor
@@ -424,6 +488,7 @@ function_ref            :   SIN '(' expr ')'
 
                                 }else{
                                     typeerror();
+                                    YYABORT;
                                 }
 
                                 // TODO: criar quádrupla para calcular valor
@@ -433,6 +498,7 @@ function_ref            :   SIN '(' expr ')'
                             {
                                 if ($3->type != TYPE_REAL){
                                     typeerror();
+                                    YYABORT;
                                 }
                                 $$->type = TYPE_REAL;
 
@@ -445,6 +511,7 @@ function_ref            :   SIN '(' expr ')'
                                 // Retorna e^x, sendo x o parâmetro
                                 if ($3->type != TYPE_REAL){
                                     typeerror();
+                                    YYABORT;
                                 }
                                 $$->type = TYPE_REAL;
 
@@ -458,6 +525,7 @@ function_ref            :   SIN '(' expr ')'
 
                                 if ($3->type == TYPE_REAL){
                                     typeerror();
+                                    YYABORT;
                                 }
                                 $$->type = TYPE_INT;
 
@@ -471,6 +539,7 @@ function_ref            :   SIN '(' expr ')'
 
                                 if ($3->type == TYPE_REAL){
                                     typeerror();
+                                    YYABORT;
                                 }
                                 $$->type = TYPE_CHAR;
 
@@ -484,6 +553,7 @@ function_ref            :   SIN '(' expr ')'
                                 if ($3->type != TYPE_CHAR){
                                     printf("EOLn: %i", $3->type);
                                     typeerror();
+                                    YYABORT;
                                 }
                                 $$->type = TYPE_BOOL;
 
@@ -497,6 +567,7 @@ function_ref            :   SIN '(' expr ')'
                                 if ($3->type != TYPE_CHAR){
                                     printf("EOF: %i", $3->type);
                                     typeerror();
+                                    YYABORT;
                                 }
                                 $$->type = TYPE_BOOL;
 
@@ -510,9 +581,10 @@ factor_a                :   MINUS factor
                                     $$->type = TYPE_INT;
                                 }else if ($2->type == TYPE_REAL){
                                     $$->type = TYPE_REAL;
-                                }else
+                                }else{
                                     typeerror();
-                                
+                                    YYABORT;
+                                }
                                 // TODO: criar quádrupla para calcular valor
                                 // $$->value = $1->value; 
                             }                      
@@ -533,8 +605,9 @@ factor                  :   IDENTIFIER
                                     // Não encontrou na tabela
                                     exit(1);
                                 }
-                                $$->type = TabelaS[res_i].type;
-                                $$->value = TabelaS[res_i].value;
+                                TabelaS[res_i].class = CLS_VARIABLE;
+                                $$->type = TS_ENTRY;
+                                $$->value.TS_idx = res_i;
                             }
                         |   constant
                             { 
@@ -557,6 +630,7 @@ factor                  :   IDENTIFIER
                             { 
                                 if ($2->type != TYPE_BOOL){
                                     typeerror();
+                                    YYABORT;
                                 }else{
                                     $$->type = TYPE_BOOL;
                                 }
@@ -568,40 +642,42 @@ factor                  :   IDENTIFIER
 constant                :   INT_CONSTANT            
                             {
                                 intmdt_addr_t *temp = newtemp(TYPE_INT);
-                                // temp->type = TYPE_INT;
-                                temp->value.integer = $1;
+                                TabelaS[temp->value.TS_idx].class = CLS_CST;
+                                TabelaS[temp->value.TS_idx].value.integer = $1;
                                 $$ = temp;
+                                
+                                intmdt_addr_print($$);
+                                printf("\n");
                             }
                         |   REAL_CONSTANT
                             { 
                                 intmdt_addr_t *temp = newtemp(TYPE_REAL);
-                                // temp->type = TYPE_REAL;
-                                temp->value.real = $1;
+                                TabelaS[temp->value.TS_idx].class = CLS_CST;
+                                TabelaS[temp->value.TS_idx].value.real = $1;
                                 $$ = temp;
                                 
-                                // $$->type = TYPE_REAL; 
-                                // $$->value.real = $1; 
-                                // printf("Valor [real]: %f\n", $1);
+                                intmdt_addr_print($$);
+                                printf("\n");
                             }
                         |   CHAR_CONSTANT
                             { 
                                 intmdt_addr_t *temp = newtemp(TYPE_CHAR);
-                                // temp->type = TYPE_CHAR;
-                                temp->value.character = $1;
+                                TabelaS[temp->value.TS_idx].class = CLS_CST;
+                                TabelaS[temp->value.TS_idx].value.character = $1;
                                 $$ = temp;
-                                // $$->type = TYPE_CHAR; 
-                                // $$->value.character = $1; 
-                                // printf("Valor [character]: %c\n", $1);
+
+                                intmdt_addr_print($$);
+                                printf("\n");
                             }
                         |   BOOL_CONSTANT
                             { 
                                 intmdt_addr_t *temp = newtemp(TYPE_BOOL);
-                                // temp->type = TYPE_BOOL;
-                                temp->value.boolean = $1;
+                                TabelaS[temp->value.TS_idx].class = CLS_CST;
+                                TabelaS[temp->value.TS_idx].value.boolean = $1;
                                 $$ = temp;
-                                // $$->type = TYPE_BOOL; 
-                                // $$->value.boolean = $1; 
-                                // printf("Valor [boolean]: %i\n", $1);
+                                
+                                intmdt_addr_print($$);
+                                printf("\n");
                             }
                         ;
 
@@ -621,17 +697,21 @@ void installIdentList(char* type){
         // printf("Instalando %s, do tipo %s\n", id_list[i], type);
         union value placeholder;
         int tipo_cst = -1;
+        int cls = -1;
         if (strcmp(type, "integer") == 0){
             tipo_cst = TYPE_INT;
+            cls = CLS_VARIABLE;
         }else if (strcmp(type, "real") == 0){
             tipo_cst = TYPE_REAL;
+            cls = CLS_VARIABLE;
         }else if (strcmp(type, "boolean") == 0){
+            cls = CLS_VARIABLE;
             tipo_cst = TYPE_BOOL;
         }else if (strcmp(type, "char") == 0){
+            cls = CLS_VARIABLE;
             tipo_cst = TYPE_CHAR;
         }
-        Instala(id_list[i], tipo_cst, placeholder);
-
+        Instala(id_list[i], tipo_cst, cls, placeholder);
     }
 }
 
@@ -677,7 +757,7 @@ int main (void) {
     printf("Parsing...\n");
     if (yyparse() == 0){
         printf("Parse sucessful\n\n");
-        printf("Tabela de Simbolos Final:");
+        /* printf("Tabela de Simbolos Final:"); */
         /* imprimir();     // Imprime a tabela de símbolos ao final */
         print_intmdt_code(intermediate_code);
         free_intmdt_code(intermediate_code);
@@ -689,10 +769,10 @@ int main (void) {
 }
 
 void yyerror (char *s) {
-    fprintf (stderr, "%s\n", s);
+    fprintf(stderr, "%s\n", s);
+    fprintf(stderr,"At line %d\n",yylineno);
 }
 
 void typeerror(){
-    printf("Type-error\n");
-    exit(1);
+    yyerror("Type-error!");
 }
