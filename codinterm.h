@@ -30,6 +30,7 @@ typedef struct {
 
 /* Quádrupla */
 struct quadruple {
+  int n;
   char *op;
   intmdt_addr_t *arg1;
   intmdt_addr_t *arg2;
@@ -60,7 +61,8 @@ int backpatch(list_head_t *p, quadruple_t *i);
 intmdt_code_t *init_code();
 void intmdt_addr_print(intmdt_addr_t *t);
 void print_intmdt_code(intmdt_code_t *code);
-
+void printQuad(quadruple_t* quad, int i);
+void printList(list_head_t * lst);
 
 void free_quadruple(quadruple_t *quad);
 void free_intmdt_code(intmdt_code_t *code);

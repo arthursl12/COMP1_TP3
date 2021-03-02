@@ -1,0 +1,19 @@
+program mytest3;
+
+x, y: integer
+
+begin
+    if ((x < y) or (x = y + 2)) then
+        begin
+            x := 1 + 1;
+            x := 2 + 2;
+            x := 3 + 3
+        end
+    ;
+    if x > y then
+        x := x - 1
+    else
+        x := x * x
+    ;
+    y := y - x
+end

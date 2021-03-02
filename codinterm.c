@@ -32,28 +32,45 @@ list_head_t *list_makelist(quadruple_t *instr_ptr) {
     the concatenated list.
 */
 list_head_t *list_merge(list_head_t *p1, list_head_t *p2) {
-  
-  if (p1 == NULL) {
-    fprintf(stderr, "list head p1 passed to list_merge() was NULL.\n");
-    return NULL;
-  }
-  if (p2 == NULL) {
-    fprintf(stderr, "list head p2 passed to list_merge() was NULL.\n");
-    return NULL;
-  }
+    if (p1 == NULL && p2 == NULL){
+        fprintf(stderr, "Both lists are NULL\n");
+        return NULL;
+    }
 
-  list_entry_t *current = p1->list;
-  
-  /* Find the end of the first list */
-  while(current->next != NULL) {
-    current = current->next;
-  }
-  
-  current->next = p2->list;
-  
-  free(p2);
+    if (p1 == NULL) {
+        fprintf(stderr, "list head p1 passed to list_merge() was NULL.\n");
+        return p2;
+    }
+    if (p2 == NULL) {
+        fprintf(stderr, "list head p2 passed to list_merge() was NULL.\n");
+        return p1;
+    }
 
-  return p1;
+    list_entry_t *current = p1->list;
+    
+    /* Find the end of the first list */
+    while(current->next != NULL) {
+        current = current->next;
+    }
+    
+    current->next = p2->list;
+    
+    free(p2);
+
+    return p1;
+}
+void printList(list_head_t * lst){
+    list_entry_t *current = lst->list;
+    while (current != NULL) {
+        printf ("Value: ");
+        quadruple_t* quad = (quadruple_t*) current->value;
+        printQuad(quad, quad->n);
+        current = current->next;
+
+        if (current != NULL){
+            printf("\n");
+        }
+    }
 }
 
 
@@ -66,28 +83,44 @@ list_head_t *list_merge(list_head_t *p1, list_head_t *p2) {
 */
 int backpatch(list_head_t *p, quadruple_t *i) {
     printf("=================Backpatching...\n");
+
+    if (i == NULL){
+        fprintf(stderr, "Quadruple is NULL\n");
+        return 0;
+    }
     printf("Destination: ");
-    intmdt_addr_print(i->result);
+    printQuad(i, i->n);
+    printf("\n");
 
     if (p == NULL) {
         fprintf(stderr, "list head passed to backpatch() was NULL.\n");
         return 0;
     }
+
+    printf("List: \n");
+    printList(p);
+    printf("End of list\n");
+
     list_entry_t *current = p->list;
-    
     while (current != NULL) {
         intmdt_addr_t *res = malloc(sizeof(intmdt_addr_t));
-        
         if (res == NULL) {
             fprintf(stderr, "failed to malloc intmdt_addr_t in backpatch()\n");
             return 1;
         }
+        printf("Patching: ");
+        quadruple_t* quad = (quadruple_t*) current->value;
+        printQuad(quad, quad->n);
+        // intmdt_addr_print(((quadruple_t*)current->value)->result);
         
         res->type = TYPE_LABEL;
         res->value.instr_ptr = i;
         
-        ((quadruple_t*) current->value)->result = res;
+        ((quadruple_t*)current->value)->result = res;
         current = current->next;
+
+        printf("Patched: ");
+        printQuad(quad, quad->n);
     }
     return 0;
 }
@@ -109,6 +142,7 @@ int gen(intmdt_code_t *intermediate_code,
     fprintf(stderr, "Error on malloc in gen();\n");
     return(0);
   }
+  instr->n = intermediate_code->n;
   instr->op = op;
   instr->arg1 = arg1;
   instr->arg2 = arg2;
@@ -196,9 +230,12 @@ void intmdt_addr_print(intmdt_addr_t *t) {
         // case TYPE_CHAR:
         //     printf("Bool: %d\t", (t->value).character);
         //     break;
-        case TYPE_LABEL:
-          printf("Code: %p\t", (void*) t->value.instr_ptr);
-          break;
+        case TYPE_LABEL:{
+            printf("Code: %p => %i", (void*) t->value.instr_ptr,t->value.instr_ptr->n);
+
+            break;
+        }
+          
         case TYPE_BOOL:
             printf("Bool: %d\t", (t->value).boolean);
             break;
@@ -249,11 +286,27 @@ void intmdt_addr_print(intmdt_addr_t *t) {
     }
 }
 
+void printQuad(quadruple_t* quad, int i){
+    printf("%i\t", i);
+
+    printf("%s\t",quad->op);
+    
+    intmdt_addr_print(quad->arg1);
+    
+    intmdt_addr_print(quad->arg2);
+
+    intmdt_addr_print(quad->result);
+    
+    printf("\n");
+}
+
 void print_intmdt_code(intmdt_code_t *code) {
   printf("Intermediate Code:\n");
-  printf("Op\tArg1\t\tArg2\t\tResult\n");
+  printf("i\tOp\tArg1\t\tArg2\t\tResult\n");
   unsigned int i = 0;
   while (i < code->n) {
+    printf("%i\t",i);
+
     printf("%s\t",code->code[i]->op);
     
     intmdt_addr_print(code->code[i]->arg1);

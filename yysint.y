@@ -54,6 +54,10 @@
 
 
     /* Tipos de Não-terminais */
+    list_head_t* lhead;
+    struct stmt_t{
+        list_head_t* next;
+    } stmt_t;
     struct expr { 
         int type; 
         union value value;
@@ -118,7 +122,11 @@
 %type <intmdt_addr> constant factor factor_a expr simple_expr term
 %type <intmdt_addr> function_ref
 %type <expr_lst> expr_list  
+%type <stmt_t> compound_stmt stmt unlabelled_stmt stmt_list
+%type <stmt_t> read_stmt write_stmt goto_stmt if_stmt assign_stmt loop_stmt
+%type <intmdt_addr> cond
 %type <integer> M       /* Token para conseguir número de instrução seguinte */
+%type <stmt_t> N         /* Token para conseguir a quádrupla seguinte */
 
 %%
 
@@ -139,22 +147,47 @@ type                    :   INTEGER
                         ;
     /* ----- Statements ----- */
 compound_stmt           :   BEGIN_STMT stmt_list END
+    {
+        $$.next = $2.next;
+    }
                         ;
-stmt_list               :   stmt_list ';' stmt
+stmt_list               :   stmt_list ';' M stmt
+    {
+        backpatch($1.next, intermediate_code->code[$3]);
+        $$.next = $4.next;
+    }
                         |   stmt
+    {
+        $$.next = $1.next;
+    }
                         ;
 stmt                    :   label ':' unlabelled_stmt
+    {
+        $$.next = $3.next;
+    }
                         |   unlabelled_stmt
+    {
+        $$.next = $1.next;
+    }
                         ;
 label                   :   IDENTIFIER 
                         ;
 unlabelled_stmt         :   assign_stmt
+    {
+        $$.next = $1.next;
+    }
                         |   if_stmt
-                        |   loop_stmt
-                        |   read_stmt
-                        |   write_stmt
-                        |   goto_stmt
-                        |   compound_stmt
+    {
+        printf("unl_stmt -> if_stmt\n");
+        // "Testar uma varíável advinda de uma expressão booleana!"
+        // "Misturar and e or"
+        $$.next = $1.next;
+    }
+                        |   loop_stmt   { $$.next = NULL; }
+                        |   read_stmt   { $$.next = NULL; }
+                        |   write_stmt  { $$.next = NULL; }
+                        |   goto_stmt   { $$.next = NULL; }
+                        |   compound_stmt   { $$.next = $1.next; }
                         ;
 assign_stmt             :   IDENTIFIER ASSIGN expr          
     { 
@@ -200,13 +233,60 @@ assign_stmt             :   IDENTIFIER ASSIGN expr
         dest->type = TS_ENTRY;
         dest->value.TS_idx = res_i;
         gen(intermediate_code, ":=", $3, NULL, dest);
+
+        $$.next = NULL;     // S.next = null
     }
                         ;
 cond                    :   expr
                         ;
-if_stmt                 :   IF cond THEN stmt   %prec THEN
-                        |   IF cond THEN stmt ELSE stmt
+if_stmt                 :   IF cond THEN M stmt M   %prec THEN
+    {
+        printf("if_stmt -> if cond M THEN stmt\n");
+        printf("stmt.next:\n");
+        if ($5.next != NULL)
+            printList($5.next);
+
+        // backpatch(E.trueList, M.quad);
+       	backpatch($2->list->truelist, intermediate_code->code[$4]);
+       	$$.next = list_merge($2->list->falselist, $5.next);
+
+        printf("Other Stmt: %i\n", $6);
+        if ($5.next != NULL){
+            backpatch($5.next, intermediate_code->code[$6]);
+            printf("Done!\n");
+        }
+
+        printf("ss.next:\n");
+        if ($$.next != NULL)
+            printList($$.next);
+    }
+                        |   IF cond THEN M stmt ELSE N M stmt
+    {
+        printf("if_stmt -> if cond THEN M stmt N ELSE M stmt N\n");
+        // backpatch(E.trueList, M1.quad);
+        printf("Backpatch True\n");
+        backpatch($2->list->truelist, intermediate_code->code[$4]);
+        // backpatch(E.falseList,M2.quad);
+        printf("Backpatch False\n");
+        backpatch($2->list->falselist, intermediate_code->code[$8]);
+
+        // temp = merge(S1.nextlist, N.nextlist);
+        list_head_t* temp = list_merge($5.next, $7.next);
+        $$.next = list_merge(temp, $9.next);
+    }
                         ;
+M                       :   /* empty */
+    {
+        printf("Próxima instrução disponível: %i\n", intermediate_code->n);
+        $$ = intermediate_code->n;
+    }
+                        ;
+N                       :   /* empty */
+    {
+        printf("I should be doing stuff right now...\n");
+       	gen(intermediate_code, "gotoN", NULL, NULL, NULL);
+		$$.next = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+    }
 loop_stmt               :   stmt_prefix DO stmt_list stmt_suffix
                         ;
 stmt_prefix             :   WHILE cond
@@ -248,7 +328,7 @@ expr                    :   simple_expr
             }
             gen(intermediate_code, $2, $1, $3, temp);
             temp->list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
-            gen(intermediate_code, "goto", NULL, NULL, NULL);
+            gen(intermediate_code, "gotoRE", NULL, NULL, NULL);
             temp->list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
             $$ = temp;
             // TODO: criar quádrupla para calcular valor
@@ -270,7 +350,7 @@ expr                    :   simple_expr
             }
             gen(intermediate_code, $2, $1, $3, temp);
             temp->list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
-            gen(intermediate_code, "goto", NULL, NULL, NULL);
+            gen(intermediate_code, "gotoRG", NULL, NULL, NULL);
             temp->list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
             $$ = temp;
             // TODO: criar quádrupla para calcular valor
@@ -338,7 +418,7 @@ simple_expr             :   term
                 // Remendo do primeiro do false com o valor do M
                 backpatch($1->list->falselist, intermediate_code->code[$3]);
                 intmdt_addr_t *temp = newtemp(TYPE_BOOL);
-                gen(intermediate_code, "or", $1, $4, temp);
+                // gen(intermediate_code, "or", $1, $4, temp);
 
                 // E.falselist = E2.falselist
                 temp->list = malloc(sizeof(boolean_list_t));
@@ -482,7 +562,7 @@ term                    :   factor_a
                 // Remendo do primeiro do true com o valor do M
                 backpatch($1->list->truelist, intermediate_code->code[$3]);
                 intmdt_addr_t *temp = newtemp(TYPE_BOOL);
-                gen(intermediate_code, "&&", $1, $4, temp);
+                // gen(intermediate_code, "&&", $1, $4, temp);
 
                 // E.truelist = E2.truelist
                 temp->list = malloc(sizeof(boolean_list_t));
@@ -505,12 +585,6 @@ term                    :   factor_a
             yyerror("");
             YYABORT;
         }
-    }
-                        ;
-M                       :   /* empty */
-    {
-        printf("Próxima instrução disponível\n");
-        $$ = intermediate_code->n;
     }
 function_ref            :   SIN '(' expr ')'
                             {
@@ -708,7 +782,7 @@ factor                  :   IDENTIFIER
             intmdt_addr_t *temp = newtemp(TYPE_BOOL);
             gen(intermediate_code, "boolV", dest, NULL, temp);    // if id goto __
             temp->list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
-            gen(intermediate_code, "goto", NULL, NULL, NULL);   // else goto ___
+            gen(intermediate_code, "gotoB", NULL, NULL, NULL);   // else goto ___
             temp->list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
             printf("factor -> id (bool)\n");
             $$ = temp;
@@ -826,7 +900,7 @@ constant                :   INT_CONSTANT
         }
         /* Generate a goto statement with no destination,
             then pass it into a list for backpatching. */
-        gen(intermediate_code, "goto", NULL, NULL, NULL);
+        gen(intermediate_code, "gotoT", NULL, NULL, NULL);
         list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
         list->falselist = NULL;
         $$->list = list;
@@ -848,7 +922,7 @@ constant                :   INT_CONSTANT
         }
         /* Generate a goto statement with no destination,
             then pass it into a list for backpatching. */
-        gen(intermediate_code, "goto", NULL, NULL, NULL);
+        gen(intermediate_code, "gotoF", NULL, NULL, NULL);
         list->truelist = NULL;
         list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
         $$->list = list;
