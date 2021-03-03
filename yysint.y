@@ -308,47 +308,53 @@ N                       :   /* empty */
 loop_stmt               :   M stmt_prefix M DO M stmt_list N M stmt_suffix
     {
         printf(">Estamos num loop\n");
-        
-        // // Tratamento do While
-        // if ($1 == $3){
-        //     // Não possui while
-        // }else{
-        //     // Possui while
-        //     backpatch($6.next, intermediate_code->code[$1]);    // Fazer o loop
-        // }
-        printf(">> Temos WHILE?\n");
-        list_head_t* falseWhile = NULL;
-        // Tratamento do While
-        if ($2.hasPrefix == true){
-            printf(">>> Sim\n");
-            printf(">>> Lista de Falso do WHILE: \n");
-            printList($2.falselist);
-            falseWhile = $2.falselist;     // Para fazer o loop
-            printf(">>> Backpatching para ficar no WHILE se verdadeiro: \n");
-            backpatch($7.next, intermediate_code->code[$1]);    // Ao fim do corpo, faça o loop
-            printf(">>> Backpatching para entrar no loop \n");
-            backpatch($2.truelist, intermediate_code->code[$5]);
-        }else{
-            printf(">>> Não\n");
-            // ignore
-        }
-        
-        
-        printf("loop_stmt -> ?? DO M stmt ?? ;\n");
-        // DO m stmt WHILE '(' bool ')' ';
-        
-        //Tratamento do Until
-        printf(">> Temos UNTIL?\n");
-        if ($9.hasSuffix == true){
-            printf(">>> Sim\n");
-            backpatch($9.falselist, intermediate_code->code[$1]);   // Se cond falso, volte para o loop
-            $$.next = list_merge($9.truelist, $2.falselist);        // Senão, pode sair
-            backpatch($7.next, intermediate_code->code[$8]);    // Ao fim do corpo, faça o loop
+        if (!$2.hasPrefix && !$9.hasSuffix){
+            printf(">> Num loop infinito!\n");
 
+            // Ao fim do corpo, faça o loop infinito
+            backpatch($7.next, intermediate_code->code[$1]); 
+            $$.next = NULL;   
         }else{
-            printf(">>> Não\n");
-            $$.next = $2.falselist;
+            // // Tratamento do While
+            // if ($1 == $3){
+            //     // Não possui while
+            // }else{
+            //     // Possui while
+            //     backpatch($6.next, intermediate_code->code[$1]);    // Fazer o loop
+            // }
+            printf(">> Temos WHILE?\n");
+            list_head_t* falseWhile = NULL;
+            // Tratamento do While
+            if ($2.hasPrefix == true){
+                printf(">>> Sim\n");
+                printf(">>> Lista de Falso do WHILE: \n");
+                printList($2.falselist);
+                falseWhile = $2.falselist;     // Para fazer o loop
+                printf(">>> Backpatching para ficar no WHILE se verdadeiro: \n");
+                backpatch($7.next, intermediate_code->code[$1]);    // Ao fim do corpo, faça o loop
+                printf(">>> Backpatching para entrar no loop \n");
+                backpatch($2.truelist, intermediate_code->code[$5]);
+            }else{
+                printf(">>> Não\n");
+                // ignore
+            }
+            
+            
+            //Tratamento do Until
+            printf(">> Temos UNTIL?\n");
+            if ($9.hasSuffix == true){
+                printf(">>> Sim\n");
+                backpatch($9.falselist, intermediate_code->code[$1]);   // Se cond falso, volte para o loop
+                $$.next = list_merge($9.truelist, $2.falselist);        // Senão, pode sair
+                backpatch($7.next, intermediate_code->code[$8]);    // Ao fim do corpo, faça o loop
+
+            }else{
+                printf(">>> Não\n");
+                $$.next = $2.falselist;
+            }
         }
+        
+        
 
 
         // // Tratamento do Until
