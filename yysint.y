@@ -11,7 +11,7 @@
     #include "aux.h"
 
 
-    #define YYDEBUG 0          /* Se ligado, imprime mais informações */
+    #define YYDEBUG 1          /* Se ligado, imprime mais informações */
 
 
     /* Forward declaration de funções do parser */
@@ -753,6 +753,7 @@ factor_a                :   MINUS factor
                         ;
 factor                  :   IDENTIFIER
     { 
+        printf("factor -> id(1)\n");
         // Pesquisa a entrada na tabela de símbolos
         int res_niv;
         int res_i;
@@ -762,29 +763,31 @@ factor                  :   IDENTIFIER
             exit(1);
         }
 
-        
+        printf("factor -> id(2)\n");
         intmdt_addr_t *dest = malloc (sizeof(intmdt_code_t));
         if (dest == NULL) {
             fprintf(stderr,"Error: could not malloc dest in 'factor -> identifier'");
             YYABORT;
         }
+        printf("factor -> id(3)\n");
         dest->type = TS_ENTRY;
         dest->value.TS_idx = res_i;
 
+        printf("factor -> id(4)\n");
         TabelaS[res_i].class = CLS_VARIABLE;
         boolean_list_t *list = NULL;
         if (TabelaS[res_i].type == TYPE_BOOL){
-            list = malloc(sizeof(boolean_list_t));
-            if (list == NULL) {
+            printf("factor -> id(5)\n");
+            intmdt_addr_t *temp = newtemp(TYPE_BOOL);
+            temp->list = malloc(sizeof(boolean_list_t));
+            if (temp->list == NULL) {
                 fprintf(stderr, "Malloc of boolean_list_t failed! (factor -> id)\n");
                 exit(1);
             }
-            intmdt_addr_t *temp = newtemp(TYPE_BOOL);
             gen(intermediate_code, "boolV", dest, NULL, temp);    // if id goto __
             temp->list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
             gen(intermediate_code, "gotoB", NULL, NULL, NULL);   // else goto ___
             temp->list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
-            printf("factor -> id (bool)\n");
             $$ = temp;
         }else{
             printf("factor -> id\n");
