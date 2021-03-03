@@ -11,7 +11,7 @@
     #include "aux.h"
 
 
-    #define YYDEBUG 1          /* Se ligado, imprime mais informações */
+    #define YYDEBUG 0          /* Se ligado, imprime mais informações */
 
 
     /* Forward declaration de funções do parser */
@@ -41,6 +41,7 @@
 
 %code requires{
     #include "codinterm.h"
+    #include <stdbool.h>
 }
 
 %union {
@@ -58,6 +59,20 @@
     struct stmt_t{
         list_head_t* next;
     } stmt_t;
+    struct loop_aux_stmt_t{
+        list_head_t* loop_main_next_list;
+        list_head_t* next;
+    } loop_aux_stmt_t;
+    struct stmt_pref_t{
+        bool hasPrefix;
+        list_head_t* falselist;
+        list_head_t* truelist;
+    } stmt_pref_t;
+    struct stmt_suff_t{
+        bool hasSuffix;
+        list_head_t* truelist;
+        list_head_t* falselist;
+    } stmt_suff_t;
     struct expr { 
         int type; 
         union value value;
@@ -123,6 +138,9 @@
 %type <intmdt_addr> function_ref
 %type <expr_lst> expr_list  
 %type <stmt_t> compound_stmt stmt unlabelled_stmt stmt_list
+%type <stmt_pref_t> stmt_prefix 
+%type <stmt_suff_t> stmt_suffix
+
 %type <stmt_t> read_stmt write_stmt goto_stmt if_stmt assign_stmt loop_stmt
 %type <intmdt_addr> cond
 %type <integer> M       /* Token para conseguir número de instrução seguinte */
@@ -183,7 +201,7 @@ unlabelled_stmt         :   assign_stmt
         // "Misturar and e or"
         $$.next = $1.next;
     }
-                        |   loop_stmt   { $$.next = NULL; }
+                        |   loop_stmt   { $$.next = $1.next; }
                         |   read_stmt   { $$.next = NULL; }
                         |   write_stmt  { $$.next = NULL; }
                         |   goto_stmt   { $$.next = NULL; }
@@ -287,13 +305,95 @@ N                       :   /* empty */
        	gen(intermediate_code, "gotoN", NULL, NULL, NULL);
 		$$.next = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
     }
-loop_stmt               :   stmt_prefix DO stmt_list stmt_suffix
+loop_stmt               :   M stmt_prefix M DO M stmt_list N stmt_suffix
+    {
+        printf(">Estamos num loop\n");
+        
+        // // Tratamento do While
+        // if ($1 == $3){
+        //     // Não possui while
+        // }else{
+        //     // Possui while
+        //     backpatch($6.next, intermediate_code->code[$1]);    // Fazer o loop
+        // }
+        printf(">> Temos WHILE?\n");
+        list_head_t* falseWhile = NULL;
+        // Tratamento do While
+        if ($2.hasPrefix == true){
+            printf(">>> Sim\n");
+            printf(">>> Lista de Falso do WHILE: \n");
+            printList($2.falselist);
+            falseWhile = $2.falselist;     // Para fazer o loop
+            printf(">>> Backpatching para ficar no WHILE se verdadeiro: \n");
+            backpatch($7.next, intermediate_code->code[$1]);    // Ao fim do corpo, faça o loop
+            printf(">>> Backpatching para entrar no loop \n");
+            backpatch($2.truelist, intermediate_code->code[$5]);
+        }else{
+            printf(">>> Não\n");
+            // ignore
+        }
+        
+        
+        printf("loop_stmt -> ?? DO M stmt ?? ;\n");
+        // DO m stmt WHILE '(' bool ')' ';
+        
+        //Tratamento do Until
+        printf(">> Temos UNTIL?\n");
+        if ($8.hasSuffix == true){
+            printf(">>> Sim\n");
+            backpatch($8.falselist, intermediate_code->code[$1]);
+            $$.next = list_merge($8.truelist, $2.falselist);
+        }else{
+            printf(">>> Não\n");
+            $$.next = $2.falselist;
+        }
+
+
+        // // Tratamento do Until
+        // if ($7.loop_main_next_list == NULL){
+        //     // Não possui UNTIL
+        //     $$.next = list_merge($7.next, $2.loop_main_next_list);
+        // }else{
+        //     // UNTIL está presente
+        //     $$.next = list_merge($7.loop_main_next_list, $2.loop_main_next_list);
+        //     backpatch($7->list->falselist, intermediate_code->code[$$.loop_idx]);
+
+        // }
+    }
                         ;
-stmt_prefix             :   WHILE cond
+stmt_prefix             :   WHILE M cond M
+    {
+        // WHILE m '(' bool ')' m stmt 
+        printf("> Avaliando o WHILE\n");
+
+        $$.hasPrefix = true;
+        $$.falselist = $3->list->falselist;
+        $$.truelist = $3->list->truelist;
+
+        // // Goto para voltar ao início e testar as condições novamente
+        // intmdt_addr_t *temp = malloc(sizeof(intmdt_addr_t));
+        // temp->type = TYPE_LABEL;
+        // temp->value.instr_ptr = intermediate_code->code[$2];
+        // gen(intermediate_code, "gotoW", NULL, NULL, temp);
+    }
                         |   /* vazio */
+    {
+        $$.hasPrefix = false;
+        $$.falselist = NULL;
+    }
                         ;
 stmt_suffix             :   UNTIL cond
+    {
+        $$.truelist = $2->list->truelist;
+        $$.falselist = $2->list->falselist;
+        $$.hasSuffix = true;
+    }
                         |   END
+    {
+        $$.truelist = NULL;
+        $$.falselist = NULL;
+        $$.hasSuffix = false;
+    }
                         ;
 read_stmt               :   READ '(' ident_list ')'
                         ;
@@ -896,17 +996,24 @@ constant                :   INT_CONSTANT
         // $$ = temp;
 
         printf("constant -> true\n");
-        boolean_list_t *list = malloc(sizeof(boolean_list_t));
-        if (list == NULL) {
+        temp->list = malloc(sizeof(boolean_list_t));
+        if (temp->list == NULL) {
             fprintf(stderr, "Malloc of boolean_list_t failed!\n");
             YYABORT;
         }
         /* Generate a goto statement with no destination,
             then pass it into a list for backpatching. */
+
         gen(intermediate_code, "gotoT", NULL, NULL, NULL);
-        list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
-        list->falselist = NULL;
-        $$->list = list;
+        quadruple_t* quad = intermediate_code->code[intermediate_code->n - 1];
+        printQuad(quad, quad->n);
+        temp->list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+
+        temp->list->falselist = NULL;
+
+        $$ = temp;
+        printf("constant -> true 3\n");
+
 
         intmdt_addr_print($$);
         printf("\n");

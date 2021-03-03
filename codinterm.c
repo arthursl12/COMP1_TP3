@@ -20,9 +20,11 @@ int quadruple_cmp(const void *key, const void *value){
     arguments, such as cmp() and *key.
 */
 list_head_t *list_makelist(quadruple_t *instr_ptr) {
-  list_head_t *head =  list_init(quadruple_cmp);
+    printf("Makelist\n");
 
-  list_insert(head, NULL, instr_ptr);
+    list_head_t *head =  list_init(quadruple_cmp);
+    printf("Head ok\n");
+    list_insert(head, NULL, instr_ptr);
 
   return head;
 }

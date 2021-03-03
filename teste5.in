@@ -1,0 +1,12 @@
+program BoolVar;
+
+x, y: integer;
+p, q, r, s, t, u: boolean
+
+begin
+    s := p or u and NOT true;
+    if (p or NOT q) or (r != s) and (t and u) then
+        x := x - 1
+    ;
+    x := x + 1
+end
