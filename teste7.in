@@ -1,0 +1,15 @@
+program LoopsUntil;
+
+x, y: integer
+
+begin
+    x := 1;
+    do
+    begin
+        x := x + 1;
+        x := x * y;
+        y := 35 div 2
+    end
+    until (x > y) and (x < 25);
+    y := 2 + 2
+end

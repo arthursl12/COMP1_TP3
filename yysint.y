@@ -305,7 +305,7 @@ N                       :   /* empty */
        	gen(intermediate_code, "gotoN", NULL, NULL, NULL);
 		$$.next = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
     }
-loop_stmt               :   M stmt_prefix M DO M stmt_list N stmt_suffix
+loop_stmt               :   M stmt_prefix M DO M stmt_list N M stmt_suffix
     {
         printf(">Estamos num loop\n");
         
@@ -339,10 +339,12 @@ loop_stmt               :   M stmt_prefix M DO M stmt_list N stmt_suffix
         
         //Tratamento do Until
         printf(">> Temos UNTIL?\n");
-        if ($8.hasSuffix == true){
+        if ($9.hasSuffix == true){
             printf(">>> Sim\n");
-            backpatch($8.falselist, intermediate_code->code[$1]);
-            $$.next = list_merge($8.truelist, $2.falselist);
+            backpatch($9.falselist, intermediate_code->code[$1]);   // Se cond falso, volte para o loop
+            $$.next = list_merge($9.truelist, $2.falselist);        // Senão, pode sair
+            backpatch($7.next, intermediate_code->code[$8]);    // Ao fim do corpo, faça o loop
+
         }else{
             printf(">>> Não\n");
             $$.next = $2.falselist;

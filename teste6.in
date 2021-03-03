@@ -1,4 +1,4 @@
-program Loops;
+program LoopsWhile;
 
 x, y: integer
 
