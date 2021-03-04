@@ -82,10 +82,10 @@
         struct expr expr;
         struct node* next;
     } node;
-    struct expr_lst { 
-        struct node* first;
+    struct expr_lst_t { 
+        list_head_t* list;
         int qtd_terms;
-    } expr_lst;
+    } expr_lst_t;
 
 }         /* Yacc definitions */
 
@@ -136,7 +136,7 @@
 %type <string> type decl ident_list
 %type <intmdt_addr> constant factor factor_a expr simple_expr term
 %type <intmdt_addr> function_ref
-%type <expr_lst> expr_list  
+%type <expr_lst_t> expr_list  
 %type <stmt_t> compound_stmt stmt unlabelled_stmt stmt_list
 %type <stmt_pref_t> stmt_prefix 
 %type <stmt_suff_t> stmt_suffix
@@ -441,12 +441,38 @@ stmt_suffix             :   UNTIL cond
 read_stmt               :   READ '(' ident_list ')'
                         ;
 write_stmt              :   WRITE '(' expr_list ')'
+    {
+        // Iterar por toda a lista gerando um print para cada expr
+        printListIntmt($3.list);
+        
+        list_entry_t* current = $3.list->list;
+
+        while(current != NULL) {
+            gen(intermediate_code, "print", current->value, NULL, NULL);
+
+
+
+            current = current->next;
+        }
+    }
                         ;
 goto_stmt               :   GOTO IDENTIFIER
                         ;
     /* ----- Expressões ----- */
 expr_list               :   expr
+    {
+        printf("expr_list -> expr\n");
+        $$.list = list_makelist_intmt($1);
+        $$.qtd_terms = 1;
+    }
                         |   expr_list ',' expr
+    {
+        printf("expr_list -> expr_list , expr\n");
+        list_head_t* templist = list_makelist_intmt($3);
+        $$.list = list_merge($1.list, templist);
+        $$.qtd_terms = $1.qtd_terms + 1;
+        printf("Total de termos: %i\n",$$.qtd_terms);
+    }
                         ;
 expr                    :   simple_expr
     { 

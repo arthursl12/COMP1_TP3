@@ -54,7 +54,9 @@ intmdt_addr_t *newtemp(int tipo);
 Funções para TrueList e FalseList de booleanos
 */
 int quadruple_cmp(const void *, const void *);
-list_head_t *list_makelist(quadruple_t *instr_ptr);
+list_head_t *list_makelist(quadruple_t*instr_ptr);
+list_head_t *list_makelist_intmt(intmdt_addr_t* intmt);
+
 list_head_t *list_merge(list_head_t *p1, list_head_t *p2);
 int backpatch(list_head_t *p, quadruple_t *i);
 
@@ -63,6 +65,8 @@ void intmdt_addr_print(intmdt_addr_t *t);
 void print_intmdt_code(intmdt_code_t *code);
 void printQuad(quadruple_t* quad, int i);
 void printList(list_head_t * lst);
+void printListIntmt(list_head_t * lst);
+
 
 void free_quadruple(quadruple_t *quad);
 void free_intmdt_code(intmdt_code_t *code);

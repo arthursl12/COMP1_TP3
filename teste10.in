@@ -1,0 +1,8 @@
+program ExprList;
+
+x, y: integer
+
+begin
+    write(x);
+    write(y, 1 + 1, (x < y), 2E3 * 5)
+end

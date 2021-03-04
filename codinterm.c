@@ -26,8 +26,15 @@ list_head_t *list_makelist(quadruple_t *instr_ptr) {
     printf("Head ok\n");
     list_insert(head, NULL, instr_ptr);
 
-  return head;
+    return head;
 }
+
+list_head_t *list_makelist_intmt(intmdt_addr_t* intmt){
+    list_head_t *head =  list_init(quadruple_cmp);
+    list_insert(head, NULL, intmt);
+    return head;
+}
+
 
 /*  
     Concatenates the lists pointed to by p1 and p2 and returns
@@ -67,6 +74,20 @@ void printList(list_head_t * lst){
         printf ("Value: ");
         quadruple_t* quad = (quadruple_t*) current->value;
         printQuad(quad, quad->n);
+        current = current->next;
+
+        if (current != NULL){
+            printf("\n");
+        }
+    }
+}
+
+void printListIntmt(list_head_t * lst){
+    list_entry_t *current = lst->list;
+    while (current != NULL) {
+        printf ("Value: ");
+        intmdt_addr_t* intmt = (intmdt_addr_t*) current->value;
+        intmdt_addr_print(intmt);
         current = current->next;
 
         if (current != NULL){
