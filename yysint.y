@@ -243,16 +243,51 @@ assign_stmt             :   IDENTIFIER ASSIGN expr
 
         // Geração da Quádrupla
         printf("IDENTIFIER := expr\n");
-       	intmdt_addr_t *dest = malloc (sizeof(intmdt_code_t));
-        if (dest == NULL) {
-            yyerror("Error: malloc in ASSIGN");
-            YYABORT;
-        }
-        dest->type = TS_ENTRY;
-        dest->value.TS_idx = res_i;
-        gen(intermediate_code, ":=", $3, NULL, dest);
+        if (tipo1 != TYPE_BOOL){
+            intmdt_addr_t *dest = malloc (sizeof(intmdt_code_t));
+            if (dest == NULL) {
+                yyerror("Error: malloc in ASSIGN");
+                YYABORT;
+            }
+            dest->type = TS_ENTRY;
+            dest->value.TS_idx = res_i;
+            gen(intermediate_code, ":=", $3, NULL, dest);
+            $$.next = NULL;     // S.next = null
+        }else{
+            printf("> Assign de variável booleana\n");
+            printf(">> Gerando destino da TS\n");
+            intmdt_addr_t *dest = malloc (sizeof(intmdt_code_t));
+            if (dest == NULL) {
+                yyerror("Error: malloc in ASSIGN");
+                YYABORT;
+            }
+            dest->type = TS_ENTRY;
+            dest->value.TS_idx = res_i;
 
-        $$.next = NULL;     // S.next = null
+            printf("> Assign de variável booleana\n");
+            printf(">> Gerando assign true\n");
+            // Gerar um assign true
+            intmdt_addr_t *temp1 = newtemp(TYPE_BOOL);
+            TabelaS[temp1->value.TS_idx].class = CLS_VARIABLE;
+            TabelaS[temp1->value.TS_idx].value.boolean = 1;
+            gen(intermediate_code, ":=", temp1, NULL, dest);
+            printf(">> Backpatch truelist da expr para assign true\n");
+            backpatch($3->list->truelist, 
+                      intermediate_code->code[intermediate_code->n-1]);
+            printf(">> Goto para saltar o assign false\n");
+            gen(intermediate_code, "gotoAB", NULL, NULL, NULL);
+            $$.next = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+
+            printf(">> Gerando assign false\n");
+            // Gerar um assign false
+            intmdt_addr_t *temp2 = newtemp(TYPE_BOOL);
+            TabelaS[temp2->value.TS_idx].class = CLS_VARIABLE;
+            TabelaS[temp2->value.TS_idx].value.boolean = 0;
+            gen(intermediate_code, ":=", temp2, NULL, dest);
+            printf(">> Backpatch false da expr para assign false\n");
+            backpatch($3->list->falselist, 
+                      intermediate_code->code[intermediate_code->n-1]);
+        }
     }
                         ;
 cond                    :   expr
