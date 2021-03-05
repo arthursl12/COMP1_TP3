@@ -5,7 +5,7 @@
 #include "codinterm.h"
 #include "aux.h"
 
-#define NMax 1000
+#define NMax 2048
 #define TNome 20
 #define TType 20
 #define TValue 50

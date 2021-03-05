@@ -17,10 +17,12 @@
     /* Forward declaration de funções do parser */
     void yyerror (char *s);
     void typeerror();
+    void typeerror_msg(char* msg);
     int yylex();
     void tempTipo(int* tipo1, int* tipo2, intmdt_addr_t* s1, intmdt_addr_t* s3);
     bool isNumber(int tipo);
-
+    bool isNumToReal(char* funct);
+    
     /* Globals da Tabela de Símbolos */
     extern int escopo[10];
     extern int nivel;      /* nível atual */
@@ -78,10 +80,6 @@
         union value value;
     } expr;
 
-    struct node_expr_lst {
-        struct expr expr;
-        struct node* next;
-    } node;
     struct expr_lst_t { 
         list_head_t* list;
         int qtd_terms;
@@ -439,6 +437,9 @@ stmt_suffix             :   UNTIL cond
     }
                         ;
 read_stmt               :   READ '(' ident_list ')'
+    {
+        // TODO: necessário ident_list
+    }
                         ;
 write_stmt              :   WRITE '(' expr_list ')'
     {
@@ -449,9 +450,6 @@ write_stmt              :   WRITE '(' expr_list ')'
 
         while(current != NULL) {
             gen(intermediate_code, "print", current->value, NULL, NULL);
-
-
-
             current = current->next;
         }
     }
@@ -676,7 +674,7 @@ term                    :   factor_a
             if (isNumber(tipo1) && isNumber(tipo2)){
                 printf("term -> term / factor_a (real)\n");
                 intmdt_addr_t *temp = newtemp(TYPE_REAL);
-                gen(intermediate_code, "*", $1, $3, temp);
+                gen(intermediate_code, "/", $1, $3, temp);
                 $$ = temp;
             }else{
                 typeerror();
@@ -755,139 +753,149 @@ term                    :   factor_a
             YYABORT;
         }
     }
-function_ref            :   SIN '(' expr ')'
-                            {
-                                int tipo1 = $3->type;
-                                if (tipo1 == TS_ENTRY){
-                                    int idx = $3->value.TS_idx;
-                                    tipo1 = TabelaS[idx].type;
-                                }
-                                
-                                if (tipo1 != TYPE_REAL){
-                                    typeerror();
-                                    YYABORT;
-                                }
-                                $$->type = TYPE_REAL;
-                                // TODO: criar quádrupla para calcular valor
-                                // $$->value = $1->value; 
-                            }
-                        |   COS '(' expr ')'
-                            {
-                                if ($3->type != TYPE_REAL){
-                                    typeerror();
-                                    YYABORT;
-                                }
-                                $$->type = TYPE_REAL;
-                                // TODO: criar quádrupla para calcular valor
-                                // $$->value = $1->value; 
-                            }
-                        |   LOG '(' expr ')'
-                            {
-                                // Assumindo logaritmo natural (base e)
-                                if ($3->type != TYPE_REAL){
-                                    typeerror();
-                                    YYABORT;
-                                }
-                                $$->type = TYPE_REAL;
-                                // TODO: criar quádrupla para calcular valor
-                                // $$->value = $1->value; 
-                            }
-                        |   ABS '(' expr ')'
-                            {
-                                if ($3->type == TYPE_REAL){
-                                    $$->type = TYPE_REAL;
+function_ref            :   IDENTIFIER_F '(' expr_list ')'
+    {
+        // Tratamento Quantidade de Argumentos
+        printf("Tratando Argumentos\n");
+        int args = $3.qtd_terms;
+        char buf[50];
+        if (args > 1){
+            // Nenhuma função tem mais de um argumento
+            sprintf(buf, "Muitos argumentos para %s\n", $1);
+            yyerror(buf);
+            YYABORT;
+        }else if(args == 0 && 
+            !(
+                (strcmp($1,"eoln") == 0)
+                && (strcmp($1,"eof") == 0)
+            )){
+            // Só Eof e Eoln devem ser invocadas sem argumento
+            sprintf(buf, "Poucos argumentos para %s\n", $1);
+            yyerror(buf);
+            YYABORT;
+        }else if(args == 1 && 
+            (
+                (strcmp($1,"eoln") == 0)
+                && (strcmp($1,"eof") == 0)
+            )){
+            // Eof e Eoln devem ser invocadas sem argumento
+            sprintf(buf, "Muitos argumentos para %s\n", $1);
+            yyerror(buf);
+            YYABORT;
+        }
+        
+        printf("Tratando Temporários\n");
+        intmdt_addr_t* arg;
+        int tipo1;
+        if (args == 1){
+            // Argumento passado
+            arg = $3.list->list->value;
 
-                                }else if($3->type == TYPE_INT){
-                                    $$->type = TYPE_INT;
+            // Se ele for temporário, pegue o tipo verdadeiro na TS
+            tipo1 = arg->type;
+            if (tipo1 == TS_ENTRY){
+                int idx = arg->value.TS_idx;
+                tipo1 = TabelaS[idx].type;
+            }
+        }
 
-                                }else{
-                                    typeerror();
-                                    YYABORT;
-                                }
+        printf("Gerando Código\n");
+        // Verificação de Tipos + Geração da Quádrupla
+        if (isNumToReal($1)){
+            if (tipo1 != TYPE_REAL && tipo1 != TYPE_INT){
+                typeerror_msg($1);
+                YYABORT;
+            }
+            intmdt_addr_t *temp = newtemp(TYPE_REAL);
+            gen(intermediate_code, $1, arg, NULL, temp);
+            $$ = temp;
 
-                                // TODO: criar quádrupla para calcular valor
-                                // $$->value = $1->value; 
-                            }
-                        |   SQRT '(' expr ')'
-                            {
-                                if ($3->type != TYPE_REAL){
-                                    typeerror();
-                                    YYABORT;
-                                }
-                                $$->type = TYPE_REAL;
+        }else if (strcmp($1,"abs") == 0){
+            intmdt_addr_t *temp;
+            if (tipo1 == TYPE_REAL){
+                temp = newtemp(TYPE_REAL);
+            }else if(tipo1 == TYPE_INT){
+                temp = newtemp(TYPE_INT);
+            }else{
+                typeerror_msg($1);
+                YYABORT;
+            }
+            gen(intermediate_code, "abs", arg, NULL, temp);
+            $$ = temp;
 
-                                // Se for negativo, gerará erro de execução
-                                // TODO: criar quádrupla para calcular valor
-                                // $$->value = $1->value; 
-                            }
-                        |   EXP '(' expr ')'
-                            {
-                                // Retorna e^x, sendo x o parâmetro
-                                if ($3->type != TYPE_REAL){
-                                    typeerror();
-                                    YYABORT;
-                                }
-                                $$->type = TYPE_REAL;
+        }else if (strcmp($1,"ord") == 0){
+            // Retorna o inteiro do parâmetro
+            // É um "casting" de inteiro
 
-                                // TODO: criar quádrupla para calcular valor
-                                // $$->value = $1->value; 
-                            }
-                        |   ORD '(' expr ')'
-                            {
-                                // Retorna o inteiro do parâmetro
-                                // É um "casting" de inteiro
+            if (tipo1 == TYPE_REAL){
+                typeerror_msg($1);
+                YYABORT;
+            }
+            intmdt_addr_t *temp = newtemp(TYPE_INT);
+            gen(intermediate_code, "ord", arg, NULL, temp);
+            $$ = temp;
 
-                                if ($3->type == TYPE_REAL){
-                                    typeerror();
-                                    YYABORT;
-                                }
-                                $$->type = TYPE_INT;
+        }else if (strcmp($1,"chr") == 0){
+            // Retorna equivalente char do parâmetro
+            // É um "casting" de char
 
-                                // TODO: criar quádrupla para calcular valor
-                                // $$->value = $1->value; 
-                            }
-                        |   CHR '(' expr ')'
-                            {
-                                // Retorna equivalente char do parâmetro
-                                // É um "casting" de char
+            if (tipo1 == TYPE_REAL || tipo1 == TYPE_BOOL){
+                typeerror();
+                YYABORT;
+            }
+            intmdt_addr_t *temp = newtemp(TYPE_CHAR);
+            gen(intermediate_code, "chr", arg, NULL, temp);
+            $$ = temp;
 
-                                if ($3->type == TYPE_REAL){
-                                    typeerror();
-                                    YYABORT;
-                                }
-                                $$->type = TYPE_CHAR;
+        }else if (strcmp($1,"eoln") == 0 || strcmp($1,"eof") == 0){
+            // Verifica EOLn na entrada padrão
+            // Não há tipos a verificar
 
-                                // TODO: criar quádrupla para calcular valor
-                                // $$->value = $1->value; 
-                            }
-                        |   EOLN '(' expr ')'
-                            {
-                                // Verifica EOLn do arquivo nomeado pelo parâmetro
+            // Temporário para resultado + gerência de truelist/falselist
+            intmdt_addr_t *temp = newtemp(TYPE_BOOL);
+            temp->list = malloc(sizeof(boolean_list_t));
+            if (temp->list == NULL) {
+                fprintf(stderr, "Malloc of boolean_list_t failed! (funct)\n");
+                YYABORT;
+            }
 
-                                if ($3->type != TYPE_CHAR){
-                                    printf("EOLn: %i", $3->type);
-                                    typeerror();
-                                    YYABORT;
-                                }
-                                $$->type = TYPE_BOOL;
+            gen(intermediate_code, $1 , NULL, NULL, temp);
+            temp->list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+            gen(intermediate_code, "gotoF", NULL, NULL, NULL);
+            temp->list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+            $$ = temp;
 
-                                // TODO: criar quádrupla para calcular valor
-                                // $$->value = $1->value; 
-                            }
-                        |   EOF_TOKEN '(' expr ')'
-                            {
-                                // Verifica EOF do arquivo nomeado pelo parâmetro
+        }else{
+            printf("Função não encontrada: %s\n", $1);
+            yyerror("");
+            YYABORT;
+        }
+    }
+                        |   IDENTIFIER_F
+    {
+        if (strcmp($1,"eoln") == 0 || strcmp($1,"eof") == 0){
+            // Verifica EOLn na entrada padrão
+            // Não há tipos a verificar
 
-                                if ($3->type != TYPE_CHAR){
-                                    printf("EOF: %i", $3->type);
-                                    typeerror();
-                                    YYABORT;
-                                }
-                                $$->type = TYPE_BOOL;
+            // Temporário para resultado + gerência de truelist/falselist
+            intmdt_addr_t *temp = newtemp(TYPE_BOOL);
+            temp->list = malloc(sizeof(boolean_list_t));
+            if (temp->list == NULL) {
+                fprintf(stderr, "Malloc of boolean_list_t failed! (funct)\n");
+                YYABORT;
+            }
 
-                                // TODO: criar quádrupla para calcular valor
-                                // $$->value = $1->value; 
-                            }
+            gen(intermediate_code, $1 , NULL, NULL, temp);
+            temp->list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+            gen(intermediate_code, "gotoF", NULL, NULL, NULL);
+            temp->list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+            $$ = temp;
+        }else{
+            printf("Função não encontrada: %s\n", $1);
+            yyerror("");
+            YYABORT;
+        }
+    }
                         ;
 factor_a                :   MINUS factor
     { 
@@ -1224,6 +1232,26 @@ bool isNumber(int tipo){
     return (tipo == TYPE_INT || tipo == TYPE_REAL);
 }
 
+/* 
+Verifica se função é simples "número->real"
+Estão nesse conjunto: sin, cos, log, exp, sqrt 
+Isso facilita verificação de tipos
+*/
+bool isNumToReal(char* funct){
+    if (
+        strcmp(funct, "sqrt") == 0
+        ||  strcmp(funct, "sin") == 0
+        ||  strcmp(funct, "cos") == 0
+        ||  strcmp(funct, "log") == 0
+        ||  strcmp(funct, "exp") == 0
+        ||  strcmp(funct, "exp") == 0
+    ){
+        return true;
+    }else{
+        return false;
+    }
+}
+
 void yyerror (char *s) {
     fprintf(stderr, "%s\n", s);
     fprintf(stderr,"At line %d\n",yylineno);
@@ -1231,4 +1259,8 @@ void yyerror (char *s) {
 
 void typeerror(){
     yyerror("Type-error!");
+}
+void typeerror_msg(char* msg){
+    printf("Type-error: %s \n ", msg);
+    yyerror("");
 }

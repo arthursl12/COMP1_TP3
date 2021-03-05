@@ -66,30 +66,30 @@ int resWordId(char* str){
 /*
 Retorna o índice dado pelo YACC ao token da função padrão str
 */
-int functId(char* str){
-    if (strcmp(str, "sin") == 0)
-        return SIN;
-    else if (strcmp(str, "cos") == 0)
-        return COS;
-    else if (strcmp(str, "real") == 0)
-        return LOG;
-    else if (strcmp(str, "boolean") == 0)
-        return ORD;
-    else if (strcmp(str, "char") == 0)
-        return CHR;
-    else if (strcmp(str, "begin") == 0)
-        return ABS;
-    else if (strcmp(str, "end") == 0)
-        return SQRT;
-    else if (strcmp(str, "exp") == 0)
-        return EXP;
-    else if (strcmp(str, "eof") == 0)
-        return EOF_TOKEN;
-    else if (strcmp(str, "eoln") == 0)
-        return EOLN;
-    else
-        return -1;
-}
+// int functId(char* str){
+//     if (strcmp(str, "sin") == 0)
+//         return SIN;
+//     else if (strcmp(str, "cos") == 0)
+//         return COS;
+//     else if (strcmp(str, "log") == 0)
+//         return LOG;
+//     else if (strcmp(str, "ord") == 0)
+//         return ORD;
+//     else if (strcmp(str, "char") == 0)
+//         return CHR;
+//     else if (strcmp(str, "begin") == 0)
+//         return ABS;
+//     else if (strcmp(str, "end") == 0)
+//         return SQRT;
+//     else if (strcmp(str, "exp") == 0)
+//         return EXP;
+//     else if (strcmp(str, "eof") == 0)
+//         return EOF_TOKEN;
+//     else if (strcmp(str, "eoln") == 0)
+//         return EOLN;
+//     else
+//         return -1;
+// }
 
 /* 
 Retorna -1 se 'str' NÃO é está na lista 'list' de tamanho 'size. 
@@ -119,7 +119,7 @@ int tokenId(){
         // Nome de função
         // printf("[%4d] Function: \t%s\n", yylineno, yytext);
         // return IDENTIFIER_F;
-        return functId(yytext);
+        return IDENTIFIER_F;
     }else{
         // Identificador
         // printf("[%4d] Identifier: \t%s\n", yylineno, yytext);
