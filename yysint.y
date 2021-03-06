@@ -224,8 +224,8 @@ unlabelled_stmt         :   assign_stmt
     }
                         |   loop_stmt   { $$.next = $1.next; }
                         |   read_stmt   { $$.next = NULL; }
-                        |   write_stmt  { $$.next = NULL; }
-                        |   goto_stmt   { $$.next = NULL; }
+                        |   write_stmt  { $$.next = $1.next; }
+                        |   goto_stmt   { $$.next = $1.next; }
                         |   compound_stmt   { $$.next = $1.next; }
                         ;
 assign_stmt             :   IDENTIFIER ASSIGN expr          
@@ -475,6 +475,7 @@ write_stmt              :   WRITE '(' expr_list ')'
             gen(intermediate_code, "print", current->value, NULL, NULL);
             current = current->next;
         }
+        $$.next = NULL;
     }
                         ;
 goto_stmt               :   GOTO IDENTIFIER

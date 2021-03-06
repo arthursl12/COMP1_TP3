@@ -1,0 +1,28 @@
+program DanglingElse2;
+
+x, y: integer
+
+begin
+    if x >= y then
+        begin
+        if x <= y then
+            begin
+            if x > 1 then
+                x := x + 1
+            end
+        else
+            if x > 1 then
+                x := x + 2
+        end
+    else
+        if x < y then
+            begin
+            if x > 1 then
+                x := x + 3
+            end
+        else
+            if x > 1 then
+                x := x + 3
+    ;
+    x := 10 * 10
+end
