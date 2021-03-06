@@ -40,7 +40,6 @@
     intmdt_code_t *intermediate_code;
 %}
 
-
 %code requires{
     #include "codinterm.h"
     #include <stdbool.h>
@@ -131,7 +130,7 @@
 %nonassoc ELSE
 
 /* Tipos de alguns símbolos Não-terminais */
-%type <string> type decl ident_list
+%type <string> type decl ident_list label
 %type <intmdt_addr> constant factor factor_a expr simple_expr term
 %type <intmdt_addr> function_ref
 %type <expr_lst_t> expr_list  
@@ -177,9 +176,33 @@ stmt_list               :   stmt_list ';' M stmt
         $$.next = $1.next;
     }
                         ;
-stmt                    :   label ':' unlabelled_stmt
+stmt                    :   label M ':' unlabelled_stmt
     {
-        $$.next = $3.next;
+        // Coloca um '_' ao final, para diferenciar de identificadores comuns
+        printf("Labelled_stmt\n");
+        char* label = strdup($1);
+        strncat(label, "_ _", 1);
+        
+        // Procura label na TS
+        int res_niv;
+        int res_i;
+        Get_Entry(label, &res_niv, &res_i);
+        if (res_niv != -1){
+            yyerror("Label já existente");
+            YYABORT;
+        }
+
+        // Instala o label na TS
+        union value dest;
+        int tipo_cst = TYPE_LABEL;
+        int cls = CLS_LABEL;
+        boolean_list_t *blist = NULL;
+
+        // Pega a quádrupla de destino
+        dest.instr_ptr = intermediate_code->code[$2];
+        Instala(label, tipo_cst, cls, dest, blist);
+        
+        $$.next = $4.next;
     }
                         |   unlabelled_stmt
     {
@@ -455,6 +478,37 @@ write_stmt              :   WRITE '(' expr_list ')'
     }
                         ;
 goto_stmt               :   GOTO IDENTIFIER
+    {
+        // Coloca um '_' ao final, para diferenciar de identificadores comuns
+        printf("Labelled_stmt\n");
+        char* label = strdup($2);
+        strncat(label, "_ _", 1);
+        
+        int res_niv;
+        int res_i;
+        Get_Entry(label, &res_niv, &res_i);
+        if (res_niv == -1){
+            // Não encontrou na tabela
+            yyerror("Label não encontrado");
+            YYABORT;
+        }
+
+        // Pega o destino da TS
+        intmdt_addr_t *dest = malloc(sizeof(intmdt_addr_t));
+        if (dest == NULL) {
+            fprintf(stderr, "failed to malloc intmdt_addr_t in goto_stmt\n");
+            YYABORT;
+        }
+
+        quadruple_t* quad = TabelaS[res_i].value.instr_ptr;
+        printQuad(quad, quad->n);
+        // intmdt_addr_print(((quadruple_t*)current->value)->result);
+        
+        dest->type = TYPE_LABEL;
+        dest->value.instr_ptr = quad;
+        
+        gen(intermediate_code, "goto", NULL, NULL, dest);
+    }
                         ;
     /* ----- Expressões ----- */
 expr_list               :   expr

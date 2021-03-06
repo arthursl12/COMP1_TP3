@@ -1,0 +1,15 @@
+program GotoLabel;
+
+label1, y: integer;
+z: real
+
+begin
+    label1: z := 2;
+    label3: while NOT eof do
+        label2: z := exp(z)
+    until eoln;
+    goto label1;
+    goto label2;
+    goto label3;
+    z := z - 1
+end

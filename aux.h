@@ -17,6 +17,8 @@
 #define CLS_PARAM     2
 #define CLS_CST       3
 #define CLS_TEMP      4
+#define CLS_LABEL     5
+
 
 
 
