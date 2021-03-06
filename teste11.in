@@ -7,6 +7,5 @@ begin
     z := 2 * log(x) + 0.75 * cos (3.14/2);
     while NOT eof do
         z := exp(z)
-    until eoln;
-    z := z - 1
+    until eoln
 end

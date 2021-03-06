@@ -83,6 +83,11 @@ void printList(list_head_t * lst){
 }
 
 void printListIntmt(list_head_t * lst){
+    if (lst == NULL){
+        printf("Lista vazia\n");
+        return;
+    }
+    
     list_entry_t *current = lst->list;
     while (current != NULL) {
         printf ("Value: ");

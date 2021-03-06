@@ -7,6 +7,4 @@ begin
     s := p or u and NOT t;
     if (p or NOT q) or (x != y) and (t and u) then
         x := x - 1
-    ;
-    x := x + 1
 end

@@ -10,6 +10,5 @@ begin
     until eoln;
     goto label1;
     goto label2;
-    goto label3;
-    z := z - 1
+    goto label3
 end

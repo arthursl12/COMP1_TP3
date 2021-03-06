@@ -10,6 +10,5 @@ begin
         x := x * y;
         y := 35 div 2
     end
-    end;
-    y := 2 + 2
+    end
 end

@@ -9,6 +9,4 @@ begin
     ;
     if (p < q) and (r < s) or (t < u) then
         x := x - 2
-    ;
-    x := x + 1
 end

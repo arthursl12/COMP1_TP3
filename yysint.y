@@ -147,7 +147,13 @@
 
 /* descriptions of expected inputs     corresponding actions (in C) */
     /* Header e Declarações */
-program                 :   PROGRAM IDENTIFIER ';' decl_list compound_stmt 
+program                 :   PROGRAM IDENTIFIER ';' decl_list compound_stmt
+    {
+        // Quádrupla para finalizar
+        gen(intermediate_code, "end", NULL, NULL, NULL);
+        backpatch($5.next, intermediate_code->code[intermediate_code->n - 1]);
+        
+    }
 decl_list               :   decl_list ';' decl              { q = 0; }
                         |   decl                            { q = 0; }
                         ;
@@ -224,8 +230,8 @@ unlabelled_stmt         :   assign_stmt
     }
                         |   loop_stmt   { $$.next = $1.next; }
                         |   read_stmt   { $$.next = NULL; }
-                        |   write_stmt  { $$.next = $1.next; }
-                        |   goto_stmt   { $$.next = $1.next; }
+                        |   write_stmt  { $$.next = NULL; }
+                        |   goto_stmt   { $$.next = NULL; }
                         |   compound_stmt   { $$.next = $1.next; }
                         ;
 assign_stmt             :   IDENTIFIER ASSIGN expr          
