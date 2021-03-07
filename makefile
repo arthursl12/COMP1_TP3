@@ -6,7 +6,7 @@ all:
 	gcc -c aux.c -o aux.o
 	lex yylex.l
 	gcc aux.o tab.o lists.o codinterm.o lex.yy.c  y.tab.c -o yysint
-	./yysint < teste17.in
+	./yysint < teste1.in
 
 tests: all
 	./yysint < teste0.in

@@ -56,7 +56,6 @@
 
 
     /* Tipos de Não-terminais */
-    list_head_t* lhead;
     struct stmt_t{
         list_head_t* next;
     } stmt_t;
@@ -78,7 +77,6 @@
         int type; 
         union value value;
     } expr;
-
     struct expr_lst_t { 
         list_head_t* list;
         int qtd_terms;
@@ -430,6 +428,10 @@ loop_stmt               :   M stmt_prefix M DO M stmt_list N M stmt_suffix
             //     // Possui while
             //     backpatch($6.next, intermediate_code->code[$1]);    // Fazer o loop
             // }
+
+            backpatch($6.next, $7.next->list->value);    // Fazer o loop
+
+
             printf(">> Temos WHILE?\n");
             list_head_t* falseWhile = NULL;
             // Tratamento do While
@@ -455,10 +457,13 @@ loop_stmt               :   M stmt_prefix M DO M stmt_list N M stmt_suffix
                 backpatch($9.falselist, intermediate_code->code[$1]);   // Se cond falso, volte para o loop
                 $$.next = list_merge($9.truelist, $2.falselist);        // Senão, pode sair
                 backpatch($7.next, intermediate_code->code[$8]);    // Ao fim do corpo, faça o loop
-
+                printf(">>> Lista do Next\n");
+                printList($$.next);
             }else{
                 printf(">>> Não\n");
                 $$.next = $2.falselist;
+                printf(">>> Lista do Next\n");
+                printList($$.next);
             }
         }
         

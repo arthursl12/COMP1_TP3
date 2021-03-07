@@ -23,7 +23,7 @@ begin
             begin
                 y := z - sin(a);
                 y := x -(+1E+1);
-                while (NOT (x <= 5) and (x >= 1)) do
+                while ((NOT (x <= 5)) and (x >= 1)) do
                     begin
                         a := z + y;
                         if z = y then
