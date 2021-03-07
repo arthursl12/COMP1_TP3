@@ -1,0 +1,10 @@
+program GotoAheadSimples;
+
+x, y: integer;
+z: real
+
+begin
+    goto label4;
+    x := 1 + 1;
+    label4: x := 2
+end

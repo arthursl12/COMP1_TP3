@@ -1,0 +1,18 @@
+program GotoAhead;
+
+label1, y: integer;
+z: real
+
+begin
+    label1: z := 2;
+    goto label4;
+    label3: while NOT eof do
+        begin
+        label2: z := exp(z);
+        goto label3
+        end
+    until eoln;
+    goto label1;
+    goto label2;
+    label4:goto label3
+end

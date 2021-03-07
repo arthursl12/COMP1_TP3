@@ -185,7 +185,7 @@ stmt_list               :   stmt_list ';' M stmt
 stmt                    :   label M ':' unlabelled_stmt
     {
         // Coloca um '_' ao final, para diferenciar de identificadores comuns
-        printf("Labelled_stmt\n");
+        printf("Labelled_stmt: %s\n", $1);
         char* label = strdup($1);
         strncat(label, "_ _", 1);
         
@@ -193,10 +193,65 @@ stmt                    :   label M ':' unlabelled_stmt
         int res_niv;
         int res_i;
         Get_Entry(label, &res_niv, &res_i);
-        if (res_niv != -1){
-            yyerror("Label já existente");
+
+        if (res_i == -1){
+            // Instalar o label na TS
+            union value dest;
+            int tipo_cst = TYPE_LABEL;
+            int cls = CLS_LABEL;
+            boolean_list_t *blist = NULL;
+
+            // Pega a quádrupla de destino
+            dest.instr_ptr = intermediate_code->code[$2];
+            Instala(label, tipo_cst, cls, dest, blist);
+        }else if(res_i != -1 
+            && TabelaS[res_i].value.instr_ptr != NULL 
+            && TabelaS[res_i].value.instr_ptr->result != NULL){
+            quadruple_t* quad = TabelaS[res_i].value.instr_ptr;
+
+            printQuad(quad, quad->n);
+            // intmdt_addr_print(((quadruple_t*)current->value)->result);
+            printf("Label %s já declarado e já definido\n", $1);
+            yyerror(" ");
             YYABORT;
+        }else{
+            printf("Label %s na tabela, mas não definido\n", $1);
+            intmdt_addr_t *dest = malloc(sizeof(intmdt_addr_t));
+            if (dest == NULL) {
+                fprintf(stderr, "failed to malloc intmdt_addr_t in goto_stmt\n");
+                YYABORT;
+            }
+            quadruple_t* quad = intermediate_code->code[$2];
+            printf("Dest: ");
+            printQuad(quad, quad->n);
+            dest->type = TYPE_LABEL;
+            dest->value.instr_ptr = quad;
+
+
+
+            printf("Antes: ");
+            quadruple_t* quad1 = TabelaS[res_i].value.instr_ptr;
+            printQuad(quad1, quad1->n);
+
+            if (TabelaS[res_i].value.instr_ptr->result == NULL){
+                printf("Result é NULL\n");
+            }
+            quad1->result = dest;
+
+
+            printf("Depois: ");
+            quad1 = TabelaS[res_i].value.instr_ptr;
+            printQuad(quad1, quad1->n);
+
         }
+        
+        
+        $$.next = $4.next;
+
+
+
+
+
 
         // Instala o label na TS
         union value dest;
@@ -217,21 +272,12 @@ stmt                    :   label M ':' unlabelled_stmt
                         ;
 label                   :   IDENTIFIER 
                         ;
-unlabelled_stmt         :   assign_stmt
-    {
-        $$.next = $1.next;
-    }
-                        |   if_stmt
-    {
-        printf("unl_stmt -> if_stmt\n");
-        // "Testar uma varíável advinda de uma expressão booleana!"
-        // "Misturar and e or"
-        $$.next = $1.next;
-    }
+unlabelled_stmt         :   assign_stmt { $$.next = $1.next; }
+                        |   if_stmt { $$.next = $1.next; }
                         |   loop_stmt   { $$.next = $1.next; }
                         |   read_stmt   { $$.next = NULL; }
                         |   write_stmt  { $$.next = NULL; }
-                        |   goto_stmt   { $$.next = NULL; }
+                        |   goto_stmt   { $$.next = $1.next; }
                         |   compound_stmt   { $$.next = $1.next; }
                         ;
 assign_stmt             :   IDENTIFIER ASSIGN expr          
@@ -468,6 +514,8 @@ stmt_suffix             :   UNTIL cond
 read_stmt               :   READ '(' ident_list ')'
     {
         // TODO: necessário ident_list
+        gen(intermediate_code, "TODO:read", NULL, NULL, NULL);
+
     }
                         ;
 write_stmt              :   WRITE '(' expr_list ')'
@@ -487,34 +535,68 @@ write_stmt              :   WRITE '(' expr_list ')'
 goto_stmt               :   GOTO IDENTIFIER
     {
         // Coloca um '_' ao final, para diferenciar de identificadores comuns
-        printf("Labelled_stmt\n");
+        printf("GOTO_stmt: %s\n",$2);
         char* label = strdup($2);
         strncat(label, "_ _", 1);
         
+        // Procurar na TS
         int res_niv;
         int res_i;
         Get_Entry(label, &res_niv, &res_i);
-        if (res_niv == -1){
-            // Não encontrou na tabela
-            yyerror("Label não encontrado");
-            YYABORT;
-        }
 
-        // Pega o destino da TS
-        intmdt_addr_t *dest = malloc(sizeof(intmdt_addr_t));
-        if (dest == NULL) {
-            fprintf(stderr, "failed to malloc intmdt_addr_t in goto_stmt\n");
-            YYABORT;
-        }
+        if (res_i != -1 
+            && TabelaS[res_i].value.instr_ptr != NULL 
+            && TabelaS[res_i].value.instr_ptr->result != NULL){            // Label está na TS
+            // Destino é um label definido, basta gerar código para lá
+            printf("Label %s já na tabela e definido\n", $2);
+            
+            // Pega o destino da TS
+            intmdt_addr_t *dest = malloc(sizeof(intmdt_addr_t));
+            if (dest == NULL) {
+                fprintf(stderr, "failed to malloc intmdt_addr_t in goto_stmt\n");
+                YYABORT;
+            }
 
-        quadruple_t* quad = TabelaS[res_i].value.instr_ptr;
-        printQuad(quad, quad->n);
-        // intmdt_addr_print(((quadruple_t*)current->value)->result);
-        
-        dest->type = TYPE_LABEL;
-        dest->value.instr_ptr = quad;
-        
-        gen(intermediate_code, "goto", NULL, NULL, dest);
+            quadruple_t* quad = TabelaS[res_i].value.instr_ptr;
+
+            printQuad(quad, quad->n);
+            // intmdt_addr_print(((quadruple_t*)current->value)->result);
+            
+            dest->type = TYPE_LABEL;
+            dest->value.instr_ptr = quad;
+            
+            gen(intermediate_code, "goto", NULL, NULL, dest);
+        }else{
+            printf("Label %s ou não definido ou não está na tabela\n", $2);
+
+            if (res_i == -1){
+                // Instala o label na TS
+                union value dest;
+                int tipo_cst = TYPE_LABEL;
+                int cls = CLS_LABEL;
+                boolean_list_t *blist = NULL;
+
+                // Gera quádrupla para ser remendada depois
+                gen(intermediate_code, "gotoV1", NULL, NULL, NULL);
+                dest.instr_ptr = intermediate_code->code[intermediate_code->n-1];
+                Instala(label, tipo_cst, cls, dest, blist);
+                printf("Label %s instalado agora\n", $2);
+            }else{
+                printf("Label %s: colocando label vazio\n", $2);
+                
+                // Coloca um goto vazio para ser remendado depois
+                intmdt_addr_t *dest = malloc(sizeof(intmdt_addr_t));
+                if (dest == NULL) {
+                    fprintf(stderr, "failed to malloc intmdt_addr_t in goto_stmt\n");
+                    YYABORT;
+                }
+                
+                gen(intermediate_code, "gotoV2", NULL, NULL, NULL);
+                TabelaS[res_i].value.instr_ptr = intermediate_code->code[intermediate_code->n-1];
+            }
+        }
+        // $$.next = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+        $$.next = NULL;
     }
                         ;
     /* ----- Expressões ----- */
