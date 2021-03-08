@@ -147,7 +147,8 @@
     /* Header e Declarações */
 program                 :   PROGRAM IDENTIFIER ';' decl_list compound_stmt
     {
-        // Quádrupla para finalizar
+        // Quádrupla para finalizar: é útil quando comandos de controle são
+        // os últimos ou só há um comando no programa. Não possui ação prática.
         gen(intermediate_code, "end", NULL, NULL, NULL);
         backpatch($5.next, intermediate_code->code[intermediate_code->n - 1]);
         
@@ -165,25 +166,20 @@ type                    :   INTEGER
                         |   CHAR
                         ;
     /* ----- Statements ----- */
-compound_stmt           :   BEGIN_STMT stmt_list END
-    {
-        $$.next = $2.next;
-    }
+compound_stmt           :   BEGIN_STMT stmt_list END { $$.next = $2.next; }
                         ;
 stmt_list               :   stmt_list ';' M stmt
     {
+        // Remenda o próximo do stmt_list para o primeiro do stmt
         backpatch($1.next, intermediate_code->code[$3]);
         $$.next = $4.next;
     }
-                        |   stmt
-    {
-        $$.next = $1.next;
-    }
+                        |   stmt { $$.next = $1.next; }
                         ;
 stmt                    :   label M ':' unlabelled_stmt
     {
-        // Coloca um '_' ao final, para diferenciar de identificadores comuns
-        printf("Labelled_stmt: %s\n", $1);
+        // Coloca um '_' ao final do label
+        // Para diferenciar de identificadores comuns, por exemplo
         char* label = strdup($1);
         strncat(label, "_ _", 1);
         
@@ -193,80 +189,51 @@ stmt                    :   label M ':' unlabelled_stmt
         Get_Entry(label, &res_niv, &res_i);
 
         if (res_i == -1){
+            // Label não está na TS
             // Instalar o label na TS
             union value dest;
             int tipo_cst = TYPE_LABEL;
             int cls = CLS_LABEL;
             boolean_list_t *blist = NULL;
 
-            // Pega a quádrupla de destino
+            // Já instala com a quádrupla de destino (quádrupla atual)
             dest.instr_ptr = intermediate_code->code[$2];
             Instala(label, tipo_cst, cls, dest, blist);
         }else if(res_i != -1 
             && TabelaS[res_i].value.instr_ptr != NULL 
             && TabelaS[res_i].value.instr_ptr->result != NULL){
             quadruple_t* quad = TabelaS[res_i].value.instr_ptr;
-
-            printQuad(quad, quad->n);
-            // intmdt_addr_print(((quadruple_t*)current->value)->result);
+            // Label está na TS e já possui um destino definido
+            // Temos que acusar um erro
+            
             printf("Label %s já declarado e já definido\n", $1);
+            printf("Destino atual: ");
+            printQuad(quad, quad->n);
             yyerror(" ");
             YYABORT;
         }else{
-            printf("Label %s na tabela, mas não definido\n", $1);
+            // Label está na TS mas não possui um destino definido
+            // Vamos definir seu destino (quádrupla atual)
+
+            // Cria estrutura para quádrupla de destino
             intmdt_addr_t *dest = malloc(sizeof(intmdt_addr_t));
             if (dest == NULL) {
                 fprintf(stderr, "failed to malloc intmdt_addr_t in goto_stmt\n");
                 YYABORT;
             }
             quadruple_t* quad = intermediate_code->code[$2];
-            printf("Dest: ");
-            printQuad(quad, quad->n);
             dest->type = TYPE_LABEL;
             dest->value.instr_ptr = quad;
 
-
-
-            printf("Antes: ");
+            // Altera o campo do label na TS
             quadruple_t* quad1 = TabelaS[res_i].value.instr_ptr;
-            printQuad(quad1, quad1->n);
-
-            if (TabelaS[res_i].value.instr_ptr->result == NULL){
-                printf("Result é NULL\n");
-            }
             quad1->result = dest;
-
-
-            printf("Depois: ");
-            quad1 = TabelaS[res_i].value.instr_ptr;
-            printQuad(quad1, quad1->n);
-
         }
         
-        
-        $$.next = $4.next;
-
-
-
-
-
-
-        // Instala o label na TS
-        union value dest;
-        int tipo_cst = TYPE_LABEL;
-        int cls = CLS_LABEL;
-        boolean_list_t *blist = NULL;
-
-        // Pega a quádrupla de destino
-        dest.instr_ptr = intermediate_code->code[$2];
-        Instala(label, tipo_cst, cls, dest, blist);
-        
+        // Passa o next para cima o não-terminal da esquerda
         $$.next = $4.next;
     }
-                        |   unlabelled_stmt
-    {
-        $$.next = $1.next;
-    }
+                        |   unlabelled_stmt { $$.next = $1.next; }
                         ;
 label                   :   IDENTIFIER 
                         ;
@@ -286,9 +253,11 @@ assign_stmt             :   IDENTIFIER ASSIGN expr
         Get_Entry($1, &res_niv, &res_i);
         if (res_niv == -1){
             // Não encontrou na tabela
-            exit(1);
+            yyerror("Identifier não encontrado\n");
+            YYABORT;
         }
 
+        // Tipo dos operandos (para verificação de tipos)
         int tipo1 = TabelaS[res_i].type;
         int tipo2 = $3->type;
 
@@ -306,15 +275,15 @@ assign_stmt             :   IDENTIFIER ASSIGN expr
         if (tipo1 == TYPE_REAL && tipo2 == TYPE_INT){
             // Pode colocar int em real, nada a ser feito
         }else if (tipo1 != tipo2){
-            printf("IDType: %i\n", TabelaS[res_i].type);
-            printf("ExprType: %i\n", $3->type);
-            typeerror();
+            // Tentando colocar real em int, acusar erro
+            typeerror_msg("Tipos incompatíveis na atribuição\n");
             YYABORT;
         }
 
         // Geração da Quádrupla
-        printf("IDENTIFIER := expr\n");
         if (tipo1 != TYPE_BOOL){
+            // Variáveis do tipo inteiro, real e char
+            // Guarde o resultado da expressão na entrada do identificador na TS
             intmdt_addr_t *dest = malloc (sizeof(intmdt_code_t));
             if (dest == NULL) {
                 yyerror("Error: malloc in ASSIGN");
@@ -323,10 +292,12 @@ assign_stmt             :   IDENTIFIER ASSIGN expr
             dest->type = TS_ENTRY;
             dest->value.TS_idx = res_i;
             gen(intermediate_code, ":=", $3, NULL, dest);
-            $$.next = NULL;     // S.next = null
+            $$.next = NULL;
         }else{
-            printf("> Assign de variável booleana\n");
-            printf(">> Gerando destino da TS\n");
+            // Variáveis do tipo booleano:
+
+            // Guarde o resultado da expressão na entrada do identificador na TS
+            // Mas tem um porém quanto ao resultado da expressão!
             intmdt_addr_t *dest = malloc (sizeof(intmdt_code_t));
             if (dest == NULL) {
                 yyerror("Error: malloc in ASSIGN");
@@ -335,29 +306,46 @@ assign_stmt             :   IDENTIFIER ASSIGN expr
             dest->type = TS_ENTRY;
             dest->value.TS_idx = res_i;
 
-            printf("> Assign de variável booleana\n");
-            printf(">> Gerando assign true\n");
-            // Gerar um assign true
+            // Existe um "if escondido" nessa atribuição:
+            //      if (expr)
+            //          id = true
+            //      else
+            //          id = false
+            // As quádruplas geradas a seguir são para simular isso
+
+            // Gerar um temporário 'true'
+            // Ele será atribuído ao id se expr for verdadeiro
             intmdt_addr_t *temp1 = newtemp(TYPE_BOOL);
             TabelaS[temp1->value.TS_idx].class = CLS_VARIABLE;
             TabelaS[temp1->value.TS_idx].value.boolean = 1;
+
+            // Quádrupla para atribuir verdadeiro ao identifier
             gen(intermediate_code, ":=", temp1, NULL, dest);
-            printf(">> Backpatch truelist da expr para assign true\n");
+
+            // Remendo: caso a expressão passada seja true, atribuamos true
+            // i.e. a truelist deve ir para o atribuir true 
             backpatch($3->list->truelist, 
                       intermediate_code->code[intermediate_code->n-1]);
-            printf(">> Goto para saltar o assign false\n");
+
+            // Após atribuir verdadeiro, pule o atribuir falso
             gen(intermediate_code, "gotoAB", NULL, NULL, NULL);
             $$.next = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 
-            printf(">> Gerando assign false\n");
-            // Gerar um assign false
+            // Gerar um temporário 'false'
+            // Ele será atribuído ao id se expr for falso
             intmdt_addr_t *temp2 = newtemp(TYPE_BOOL);
             TabelaS[temp2->value.TS_idx].class = CLS_VARIABLE;
             TabelaS[temp2->value.TS_idx].value.boolean = 0;
+            
+            // Quádrupla para atribuir falso ao identifier
             gen(intermediate_code, ":=", temp2, NULL, dest);
-            printf(">> Backpatch false da expr para assign false\n");
+
+            // Remendo: caso a expressão passada seja false, atribuamos false
+            // i.e. a falselist deve ir para o atribuir false 
             backpatch($3->list->falselist, 
                       intermediate_code->code[intermediate_code->n-1]);
+
+            // Não precisamos pular quádruplas agora, basta seguir a execução
         }
     }
                         ;

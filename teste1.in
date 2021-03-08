@@ -3,7 +3,8 @@ program mytest1;
 x, k, i: integer;
 y, a: real;
 z: integer;
-f: char
+f: char;
+b,t: boolean
 
 begin
     begin
@@ -45,16 +46,19 @@ begin
     begin
         goto label1;
         begin
-            label1: read (file3);
-            write (1 + 1156.07257E-10, y);
+            read (file3);
+            while (x != y) do
+                write (1 + 1156.07257E-10, y)
+            end;
             f := 'c';
             if (NOT (f = f)) then
                 y := 1
             else
-                y := 2
+                label1: y := 2 + (5*5)
             ;
             goto label2
         end
     end;
-    a := ((5*3.14)/4)
+    a := ((5*3.14)/4);
+    b := (x < y) or t and (z >= y + 2)
 end
