@@ -353,49 +353,52 @@ cond                    :   expr
                         ;
 if_stmt                 :   IF cond THEN M stmt M   %prec THEN
     {
-        printf("if_stmt -> if cond M THEN stmt\n");
-        printf("stmt.next:\n");
-        if ($5.next != NULL)
-            printList($5.next);
-
-        // backpatch(E.trueList, M.quad);
+        // Se cond é verdadeiro, devemos ir para o stmt
+        // i.e. remende a truelist de cond para ir para o stmt
        	backpatch($2->list->truelist, intermediate_code->code[$4]);
-       	$$.next = list_merge($2->list->falselist, $5.next);
 
-        printf("Other Stmt: %i\n", $6);
+        // Se cond é falso, devemos ir para depois do stmt
+        // i.e. devemos ir para a quádrupla seguinte ao stmt
+        // Após o comando if, devemos ir para lá também,
+        // por isso a atribuição a $$.next
+       	$$.next = list_merge($2->list->falselist, $5.next);
+        // Essa falselist será remendada quando o $$.next for remendado,
+        // por exemplo no stmt_list
+
+        // Se conhecemos a quádrupla seguinte ao stmt,
+        // podemos fazer o remendo dela para seguir após o if_stmt
         if ($5.next != NULL){
             backpatch($5.next, intermediate_code->code[$6]);
             printf("Done!\n");
         }
-
-        printf("ss.next:\n");
-        if ($$.next != NULL)
-            printList($$.next);
     }
                         |   IF cond THEN M stmt ELSE N M stmt
     {
-        printf("if_stmt -> if cond THEN M stmt N ELSE M stmt N\n");
-        // backpatch(E.trueList, M1.quad);
-        printf("Backpatch True\n");
+        // Se cond é verdadeiro, devemos ir para o stmt
+        // i.e. remende a truelist de cond para ir para o stmt
         backpatch($2->list->truelist, intermediate_code->code[$4]);
-        // backpatch(E.falseList,M2.quad);
-        printf("Backpatch False\n");
+
+        // Se cond é falso, devemos ir para o stmt do else
+        // i.e. remende a falselist de cond para ir para o stmt
         backpatch($2->list->falselist, intermediate_code->code[$8]);
 
-        // temp = merge(S1.nextlist, N.nextlist);
+        // Após o stmt (do then), o stmt (do else) 
+        // e o N vamos para a quádrupla após o if_stmt
         list_head_t* temp = list_merge($5.next, $7.next);
         $$.next = list_merge(temp, $9.next);
     }
                         ;
 M                       :   /* empty */
     {
-        printf("Próxima instrução disponível: %i\n", intermediate_code->n);
+        // Agora já sabemos o número da próxima quádrupla
+        // Ele está em 'intermediate_code->n'
         $$ = intermediate_code->n;
     }
                         ;
 N                       :   /* empty */
     {
-        printf("I should be doing stuff right now...\n");
+        // Cria-se o goto para saltar um trecho de código à frente
+        // Saberemos o destino posteriormente e o remendaremos
        	gen(intermediate_code, "gotoN", NULL, NULL, NULL);
 		$$.next = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
     }
