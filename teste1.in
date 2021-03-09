@@ -61,6 +61,6 @@ begin
             goto label2
         end
     end;
-    a := ((5*3.14)/4);
-    b := (x < y) or t and (false or true) or (h and eof)
+    a := (5 + 3.14 + 10/4);
+    b := (x < y) and (x > y) and (x != y)
 end

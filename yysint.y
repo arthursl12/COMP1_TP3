@@ -92,13 +92,11 @@
 %token MINUS            // -
 // Obs.: o analisador sintático decide se é a subtração ou o menos unário
 
-
-
 %token NOT
 %token ASSIGN
 %token <integer> INT_CONSTANT
 %token <real> REAL_CONSTANT
-%token <boolean> BOOL_CONSTANT TRUE_CST FALSE_CST
+%token <boolean> TRUE_CST FALSE_CST
 %token <string> IDENTIFIER
 %token <string> IDENTIFIER_F       // Identificador de funções-padrão
 %token <character> CHAR_CONSTANT
@@ -116,8 +114,11 @@
 %start program
 
 /* Associatividade e Precedência */
-%left ADDOP MINUS MULOP AND OR
+%right AND OR
 %nonassoc RELOP
+%left ADDOP MINUS 
+%left MULOP
+%right NOT
 %nonassoc THEN
 %nonassoc ELSE
 
@@ -133,7 +134,7 @@
 %type <stmt_t> read_stmt write_stmt goto_stmt if_stmt assign_stmt loop_stmt
 %type <intmdt_addr> cond
 %type <integer> M       /* Token para conseguir número de instrução seguinte */
-%type <stmt_t> N         /* Token para conseguir a quádrupla seguinte */
+%type <stmt_t> N        /* Token para conseguir a quádrupla seguinte */
 
 %%
 
