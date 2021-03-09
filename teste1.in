@@ -62,5 +62,5 @@ begin
         end
     end;
     a := (5 + 3.14 + 10/4);
-    b := (x < y) and (x > y) and (x != y)
+    b := (x < y) and (true or false) and (x != y)
 end

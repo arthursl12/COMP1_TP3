@@ -124,7 +124,7 @@
 
 /* Tipos de alguns símbolos Não-terminais */
 %type <string> type decl ident_list label
-%type <intmdt_addr> constant factor factor_a expr simple_expr term
+%type <intmdt_addr> boolean_constant constant factor factor_a expr simple_expr term
 %type <intmdt_addr> function_ref
 %type <expr_lst_t> expr_list  
 %type <stmt_t> compound_stmt stmt unlabelled_stmt stmt_list
@@ -1131,7 +1131,9 @@ constant                :   INT_CONSTANT
                                 $$ = temp;
                                 $$->list = NULL;
                             }
-                        |   TRUE_CST
+                        |   boolean_constant { $$ = $1; }
+                        ;
+boolean_constant        :   TRUE_CST
     { 
         // Temporário que será o não-terminal da esquerda
         // Ele guarda o booleano true
