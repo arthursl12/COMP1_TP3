@@ -9,7 +9,8 @@ begin
     label3: while NOT eof do
         begin
         label2: z := exp(z);
-        goto label3
+        goto label3;
+        goto label4
         end
     until eoln;
     goto label1;

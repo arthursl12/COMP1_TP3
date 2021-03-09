@@ -18,22 +18,23 @@ begin
                 y := z + y;
                 x := x + 1
             end
-        end;
+        until(z > x);
 
         do  
-            begin
-                y := z - sin(a);
-                y := x -(+1E+1);
-                while ((NOT (x <= 5)) and (x >= 1)) do
-                    begin
-                        a := z + y;
-                        if z = y then
-                            z := z - 1
-                        ;
-                        x := x + 1
-                    end
+        begin
+            y := z - sin(a);
+            y := x -(+1E+1);
+            while ((NOT (x <= 5)) and (x >= 1)) do
+                begin
+                    a := z + y;
+                    if z = y then
+                        z := z - 1
+                    ;
+                    x := x + 1
                 end
-            end
+            end;
+            goto label1
+        end
         until (x <= 0);
 
         do  

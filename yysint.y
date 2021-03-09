@@ -190,24 +190,37 @@ stmt                    :   label M ':' unlabelled_stmt
 
         if (res_i == -1){
             // Label não está na TS
-            // Instalar o label na TS
+            // Primeiro, temos que instalá-lo na TS
             union value dest;
             int tipo_cst = TYPE_LABEL;
             int cls = CLS_LABEL;
             boolean_list_t *blist = NULL;
+            dest.gotoT = (goto_t*) malloc(sizeof(goto_t));
+            if (dest.gotoT == NULL){
+                fprintf(stderr, "Failed to malloc gotoT in label_stmt\n");
+                YYABORT;
+            }
 
-            // Já instala com a quádrupla de destino (quádrupla atual)
-            dest.instr_ptr = intermediate_code->code[$2];
+            // Define a quádrupla de destino (quádrupla atual)
+            dest.gotoT->instr_ptr = intermediate_code->code[$2];
+
+            // Cria a lista de gotos que serão remendados
+            // (por enquanto não há nenhum)
+            dest.gotoT->goto_list = NULL;
+
+            // dest.goto_list = list_makelist(intermediate_code->code[$2]);
+
+            // Instala de fato na TS
             Instala(label, tipo_cst, cls, dest, blist);
         }else if(res_i != -1 
-            && TabelaS[res_i].value.instr_ptr != NULL 
-            && TabelaS[res_i].value.instr_ptr->result != NULL){
-            quadruple_t* quad = TabelaS[res_i].value.instr_ptr;
+            && TabelaS[res_i].value.gotoT != NULL 
+            && TabelaS[res_i].value.gotoT->instr_ptr != NULL){
             // Label está na TS e já possui um destino definido
             // Temos que acusar um erro
             
             printf("Label %s já declarado e já definido\n", $1);
             printf("Destino atual: ");
+            quadruple_t* quad = TabelaS[res_i].value.gotoT->instr_ptr;
             printQuad(quad, quad->n);
             yyerror(" ");
             YYABORT;
@@ -215,19 +228,12 @@ stmt                    :   label M ':' unlabelled_stmt
             // Label está na TS mas não possui um destino definido
             // Vamos definir seu destino (quádrupla atual)
 
-            // Cria estrutura para quádrupla de destino
-            intmdt_addr_t *dest = malloc(sizeof(intmdt_addr_t));
-            if (dest == NULL) {
-                fprintf(stderr, "failed to malloc intmdt_addr_t in goto_stmt\n");
-                YYABORT;
-            }
-            quadruple_t* quad = intermediate_code->code[$2];
-            dest->type = TYPE_LABEL;
-            dest->value.instr_ptr = quad;
+            // Define a quádrupla de destino (quádrupla atual)
+            TabelaS[res_i].value.gotoT->instr_ptr = intermediate_code->code[$2];
 
-            // Altera o campo do label na TS
-            quadruple_t* quad1 = TabelaS[res_i].value.instr_ptr;
-            quad1->result = dest;
+            // Faz o remendo nos gotos, se houver
+            list_head_t* list = TabelaS[res_i].value.gotoT->goto_list;
+            backpatch(list, intermediate_code->code[$2]);
         }
         
         // Passa o next para cima o não-terminal da esquerda
@@ -404,89 +410,69 @@ N                       :   /* empty */
     }
 loop_stmt               :   M stmt_prefix M DO M stmt_list N M stmt_suffix
     {
-        printf(">Estamos num loop\n");
         if (!$2.hasPrefix && !$9.hasSuffix){
-            printf(">> Num loop infinito!\n");
+            // Sem prefixo e sufixo, temos um loop infinito
 
             // Ao fim do corpo, faça o loop infinito
             backpatch($7.next, intermediate_code->code[$1]); 
             $$.next = NULL;   
         }else{
-            // // Tratamento do While
-            // if ($1 == $3){
-            //     // Não possui while
-            // }else{
-            //     // Possui while
-            //     backpatch($6.next, intermediate_code->code[$1]);    // Fazer o loop
-            // }
+            // Após o corpo do loop, vá para onde N diz para ir.
+            // N pode ou voltar para a condição do while 
+            // ou avançar para verificar a condição do until
+            backpatch($6.next, $7.next->list->value);
 
-            backpatch($6.next, $7.next->list->value);    // Fazer o loop
-
-
-            printf(">> Temos WHILE?\n");
+            // Tratamento do While, se ele existir
             list_head_t* falseWhile = NULL;
-            // Tratamento do While
             if ($2.hasPrefix == true){
-                printf(">>> Sim\n");
-                printf(">>> Lista de Falso do WHILE: \n");
-                printList($2.falselist);
-                falseWhile = $2.falselist;     // Para fazer o loop
-                printf(">>> Backpatching para ficar no WHILE se verdadeiro: \n");
-                backpatch($7.next, intermediate_code->code[$1]);    // Ao fim do corpo, faça o loop
-                printf(">>> Backpatching para entrar no loop \n");
+                // Lista de falso do condicional será usado para sair do loop
+                // Será tratado posteriormente, no Until (ou na falta dele)
+
+                // Backpatching para ficar no loop após o corpo
+                // i.e. volte para analisar o condicional do while após o corpo
+                backpatch($7.next, intermediate_code->code[$1]);
+
+                // Backpatching para entrar no loop após avaliar verdadeiro
+                // i.e. a truelist do condicional vai para a primeira quádrupla
+                // do stmt_list do corpo do loop
                 backpatch($2.truelist, intermediate_code->code[$5]);
-            }else{
-                printf(">>> Não\n");
-                // ignore
             }
-            
             
             //Tratamento do Until
-            printf(">> Temos UNTIL?\n");
             if ($9.hasSuffix == true){
-                printf(">>> Sim\n");
-                backpatch($9.falselist, intermediate_code->code[$1]);   // Se cond falso, volte para o loop
-                $$.next = list_merge($9.truelist, $2.falselist);        // Senão, pode sair
-                backpatch($7.next, intermediate_code->code[$8]);    // Ao fim do corpo, faça o loop
-                printf(">>> Lista do Next\n");
-                printList($$.next);
+                // Temos Until
+
+                // Se condicional do Until for falso, fique no loop
+                // i.e. volte para a quádrupla do condicional do While
+                // (se não tiver while, ele cai na primeira instrução do corpo)
+                backpatch($9.falselist, intermediate_code->code[$1]);
+
+                // Se condicional do Until for verdadeiro, saia do loop
+                // Se houver o While, junte a lista de quando ele for falso
+                // para formar a lista que devemos ir após o loop_stmt
+                $$.next = list_merge($9.truelist, $2.falselist);
+
+                // Ao final do corpo, verifique o condicional do Until
+                // Note que isso sobrescreve o remendo feito no While 
+                // (caso tenha sido feito) que ia para verificar o condicional
+                // do While
+                backpatch($7.next, intermediate_code->code[$8]);
             }else{
-                printf(">>> Não\n");
+                // Não temos Until, mas temos While 
+                // (senão teria caído no loop infinito)
+
+                // Saímos do loop quando o condicional do While for falso
+                // Saberemos o destino num backpatch futuro
                 $$.next = $2.falselist;
-                printf(">>> Lista do Next\n");
-                printList($$.next);
             }
         }
-        
-        
-
-
-        // // Tratamento do Until
-        // if ($7.loop_main_next_list == NULL){
-        //     // Não possui UNTIL
-        //     $$.next = list_merge($7.next, $2.loop_main_next_list);
-        // }else{
-        //     // UNTIL está presente
-        //     $$.next = list_merge($7.loop_main_next_list, $2.loop_main_next_list);
-        //     backpatch($7->list->falselist, intermediate_code->code[$$.loop_idx]);
-
-        // }
     }
                         ;
 stmt_prefix             :   WHILE M cond M
     {
-        // WHILE m '(' bool ')' m stmt 
-        printf("> Avaliando o WHILE\n");
-
         $$.hasPrefix = true;
         $$.falselist = $3->list->falselist;
         $$.truelist = $3->list->truelist;
-
-        // // Goto para voltar ao início e testar as condições novamente
-        // intmdt_addr_t *temp = malloc(sizeof(intmdt_addr_t));
-        // temp->type = TYPE_LABEL;
-        // temp->value.instr_ptr = intermediate_code->code[$2];
-        // gen(intermediate_code, "gotoW", NULL, NULL, temp);
     }
                         |   /* vazio */
     {
@@ -517,10 +503,7 @@ read_stmt               :   READ '(' ident_list ')'
 write_stmt              :   WRITE '(' expr_list ')'
     {
         // Iterar por toda a lista gerando um print para cada expr
-        printListIntmt($3.list);
-        
         list_entry_t* current = $3.list->list;
-
         while(current != NULL) {
             gen(intermediate_code, "print", current->value, NULL, NULL);
             current = current->next;
@@ -530,65 +513,77 @@ write_stmt              :   WRITE '(' expr_list ')'
                         ;
 goto_stmt               :   GOTO IDENTIFIER
     {
-        // Coloca um '_' ao final, para diferenciar de identificadores comuns
-        printf("GOTO_stmt: %s\n",$2);
+        // Coloca um '_' ao final do label
+        // Para diferenciar de identificadores comuns, por exemplo
         char* label = strdup($2);
         strncat(label, "_ _", 1);
         
-        // Procurar na TS
+        // Procurar label na TS
         int res_niv;
         int res_i;
         Get_Entry(label, &res_niv, &res_i);
 
         if (res_i != -1 
-            && TabelaS[res_i].value.instr_ptr != NULL 
-            && TabelaS[res_i].value.instr_ptr->result != NULL){            // Label está na TS
+            && TabelaS[res_i].value.gotoT != NULL 
+            && TabelaS[res_i].value.gotoT->instr_ptr != NULL){            
+            // Label está na TS
             // Destino é um label definido, basta gerar código para lá
-            printf("Label %s já na tabela e definido\n", $2);
-            
-            // Pega o destino da TS
+
+            // Pega a quádrupla destino da TS
             intmdt_addr_t *dest = malloc(sizeof(intmdt_addr_t));
             if (dest == NULL) {
-                fprintf(stderr, "failed to malloc intmdt_addr_t in goto_stmt\n");
+                fprintf(stderr, "Failed to malloc intmdt_addr_t in goto_stmt\n");
                 YYABORT;
             }
-
-            quadruple_t* quad = TabelaS[res_i].value.instr_ptr;
-
-            printQuad(quad, quad->n);
-            // intmdt_addr_print(((quadruple_t*)current->value)->result);
-            
+            quadruple_t* quad = TabelaS[res_i].value.gotoT->instr_ptr;
             dest->type = TYPE_LABEL;
             dest->value.instr_ptr = quad;
             
+            // Cria o goto para lá
             gen(intermediate_code, "goto", NULL, NULL, dest);
         }else{
-            printf("Label %s ou não definido ou não está na tabela\n", $2);
+            // Label ou não definido ou não está na tabela
 
             if (res_i == -1){
-                // Instala o label na TS
+                // Label não está na TS
+                // Primeiro, temos que instalá-lo na TS
                 union value dest;
                 int tipo_cst = TYPE_LABEL;
                 int cls = CLS_LABEL;
                 boolean_list_t *blist = NULL;
-
-                // Gera quádrupla para ser remendada depois
-                gen(intermediate_code, "gotoV1", NULL, NULL, NULL);
-                dest.instr_ptr = intermediate_code->code[intermediate_code->n-1];
-                Instala(label, tipo_cst, cls, dest, blist);
-                printf("Label %s instalado agora\n", $2);
-            }else{
-                printf("Label %s: colocando label vazio\n", $2);
-                
-                // Coloca um goto vazio para ser remendado depois
-                intmdt_addr_t *dest = malloc(sizeof(intmdt_addr_t));
-                if (dest == NULL) {
-                    fprintf(stderr, "failed to malloc intmdt_addr_t in goto_stmt\n");
+                dest.gotoT = (goto_t*) malloc(sizeof(goto_t));
+                if (dest.gotoT == NULL){
+                    fprintf(stderr, "Failed to malloc gotoT in goto_stmt\n");
                     YYABORT;
                 }
+
+                // Gera quádrupla com goto
+                // Ela será remendada depois (quando o label for definido)
+                gen(intermediate_code, "gotoV1", NULL, NULL, NULL);
+
+                // Cria a lista de gotos que serão remendados
+                // O único elemento, por enquanto, é o goto desse stmt
+                dest.gotoT->goto_list = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
                 
+                // A quádrupla de destino será definida posteriormente
+                dest.gotoT->instr_ptr = NULL;
+
+                // Instala de fato na TS
+                Instala(label, tipo_cst, cls, dest, blist);
+            }else{
+                // Está na tabela, mas não está definido
+
+                // Coloca um goto vazio para ser remendado depois
+                // Será remendada quando o label for definido
                 gen(intermediate_code, "gotoV2", NULL, NULL, NULL);
-                TabelaS[res_i].value.instr_ptr = intermediate_code->code[intermediate_code->n-1];
+
+                // Adiciona esse goto na lista ser remendada depois
+                list_head_t* temp_list1 = TabelaS[res_i].value.gotoT->goto_list;
+                list_head_t* temp_list2 = list_makelist(intermediate_code->code[intermediate_code->n-1]);
+
+                TabelaS[res_i].value.gotoT->goto_list = 
+                                            list_merge(temp_list1, temp_list2);
+                // TabelaS[res_i].value.instr_ptr = intermediate_code->code[intermediate_code->n-1];
             }
         }
         // $$.next = list_makelist(intermediate_code->code[intermediate_code->n - 1]);

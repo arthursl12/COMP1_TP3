@@ -3,6 +3,7 @@
 #define AUX_H
 
 #include <string.h>
+#include "lists.h"
 
 /* Constantes para tipos */
 #define TYPE_INT    1
@@ -30,6 +31,11 @@
 // } value; 
 typedef struct quadruple quadruple_t;
 
+typedef struct goto_t{
+    list_head_t* goto_list;     // Gotos com esse label
+    quadruple_t* instr_ptr;     // Quádrupla destino
+}goto_t;
+
 union value {
   int integer;
   float real;
@@ -37,7 +43,8 @@ union value {
   char character;
 
   int TS_idx;
-  quadruple_t *instr_ptr;
+  quadruple_t* instr_ptr;
+  goto_t* gotoT;
 } value;
 
 extern int yylex();
