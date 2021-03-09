@@ -20,12 +20,8 @@ int quadruple_cmp(const void *key, const void *value){
     arguments, such as cmp() and *key.
 */
 list_head_t *list_makelist(quadruple_t *instr_ptr) {
-    printf("Makelist\n");
-
     list_head_t *head =  list_init(quadruple_cmp);
-    printf("Head ok\n");
     list_insert(head, NULL, instr_ptr);
-
     return head;
 }
 
@@ -42,16 +38,16 @@ list_head_t *list_makelist_intmt(intmdt_addr_t* intmt){
 */
 list_head_t *list_merge(list_head_t *p1, list_head_t *p2) {
     if (p1 == NULL && p2 == NULL){
-        fprintf(stderr, "Both lists are NULL\n");
+        // fprintf(stderr, "Both lists are NULL\n");
         return NULL;
     }
 
     if (p1 == NULL) {
-        fprintf(stderr, "list head p1 passed to list_merge() was NULL.\n");
+        // fprintf(stderr, "list head p1 passed to list_merge() was NULL.\n");
         return p2;
     }
     if (p2 == NULL) {
-        fprintf(stderr, "list head p2 passed to list_merge() was NULL.\n");
+        // fprintf(stderr, "list head p2 passed to list_merge() was NULL.\n");
         return p1;
     }
 
@@ -110,24 +106,15 @@ void printListIntmt(list_head_t * lst){
     Returns 0 on success, 1 on failure.
 */
 int backpatch(list_head_t *p, quadruple_t *i) {
-    printf("=================Backpatching...\n");
-
     if (i == NULL){
-        fprintf(stderr, "Quadruple is NULL\n");
+        // fprintf(stderr, "Quadruple is NULL\n");
         return 0;
     }
-    printf("Destination: ");
-    printQuad(i, i->n);
-    printf("\n");
 
     if (p == NULL) {
-        fprintf(stderr, "list head passed to backpatch() was NULL.\n");
+        // fprintf(stderr, "list head passed to backpatch() was NULL.\n");
         return 0;
     }
-
-    printf("List: \n");
-    printList(p);
-    printf("End of list\n");
 
     list_entry_t *current = p->list;
     while (current != NULL) {
@@ -136,19 +123,12 @@ int backpatch(list_head_t *p, quadruple_t *i) {
             fprintf(stderr, "failed to malloc intmdt_addr_t in backpatch()\n");
             return 1;
         }
-        printf("Patching: ");
         quadruple_t* quad = (quadruple_t*) current->value;
-        printQuad(quad, quad->n);
-        // intmdt_addr_print(((quadruple_t*)current->value)->result);
-        
         res->type = TYPE_LABEL;
         res->value.instr_ptr = i;
         
         ((quadruple_t*)current->value)->result = res;
         current = current->next;
-
-        printf("Patched: ");
-        printQuad(quad, quad->n);
     }
     return 0;
 }
@@ -246,18 +226,6 @@ void intmdt_addr_print(intmdt_addr_t *t) {
     }
   
     switch(t->type){
-        // case symbol:
-        //   printf("Symbol: %s\t", (char*) (t->addr).entry_ptr->key);
-        //   break;
-        // case TYPE_INT:
-        //     printf("Integer: %d\t", (t->value).integer);
-        //     break;
-        // case TYPE_REAL:
-        //     printf("Float: %f\t", (t->value).real);
-        //     break;
-        // case TYPE_CHAR:
-        //     printf("Bool: %d\t", (t->value).character);
-        //     break;
         case TYPE_LABEL:{
             printf("Code: %p => %i", (void*) t->value.instr_ptr,t->value.instr_ptr->n);
 
