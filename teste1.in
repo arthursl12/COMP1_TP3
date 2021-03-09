@@ -4,7 +4,7 @@ x, k, i: integer;
 y, a: real;
 z: integer;
 f: char;
-b,t: boolean
+b,t,h: boolean
 
 begin
     begin
@@ -16,7 +16,8 @@ begin
         label2: while (x <= +4.0002) do
             begin
                 y := z + y;
-                x := x + 1
+                x := x + 1;
+                f := chr(x)
             end
         until(z > x);
 
@@ -61,5 +62,5 @@ begin
         end
     end;
     a := ((5*3.14)/4);
-    b := (x < y) or t and (z >= y + 2)
+    b := (x < y) or t and (false or true) or (h and eof)
 end

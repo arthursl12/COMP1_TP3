@@ -112,12 +112,6 @@
 %token UNTIL
 %token READ WRITE GOTO
 
-/* Tokens de Funções Padrão */
-%token SIN LOG COS
-%token ORD CHR
-%token ABS SQRT EXP
-%token EOF_TOKEN EOLN
-
 /* Símbolo de partida */
 %start program
 
@@ -208,8 +202,6 @@ stmt                    :   label M ':' unlabelled_stmt
             // (por enquanto não há nenhum)
             dest.gotoT->goto_list = NULL;
 
-            // dest.goto_list = list_makelist(intermediate_code->code[$2]);
-
             // Instala de fato na TS
             Instala(label, tipo_cst, cls, dest, blist);
         }else if(res_i != -1 
@@ -231,7 +223,7 @@ stmt                    :   label M ':' unlabelled_stmt
             // Define a quádrupla de destino (quádrupla atual)
             TabelaS[res_i].value.gotoT->instr_ptr = intermediate_code->code[$2];
 
-            // Faz o remendo nos gotos, se houver
+            // Faz o remendo nos gotos da lista, se houver
             list_head_t* list = TabelaS[res_i].value.gotoT->goto_list;
             backpatch(list, intermediate_code->code[$2]);
         }
@@ -375,7 +367,6 @@ if_stmt                 :   IF cond THEN M stmt M   %prec THEN
         // podemos fazer o remendo dela para seguir após o if_stmt
         if ($5.next != NULL){
             backpatch($5.next, intermediate_code->code[$6]);
-            printf("Done!\n");
         }
     }
                         |   IF cond THEN M stmt ELSE N M stmt
@@ -406,7 +397,7 @@ N                       :   /* empty */
         // Cria-se o goto para saltar um trecho de código à frente
         // Saberemos o destino posteriormente e o remendaremos
        	gen(intermediate_code, "gotoN", NULL, NULL, NULL);
-		$$.next = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+		$$.next = list_makelist(intermediate_code->code[intermediate_code->n-1]);
     }
 loop_stmt               :   M stmt_prefix M DO M stmt_list N M stmt_suffix
     {
@@ -529,12 +520,14 @@ goto_stmt               :   GOTO IDENTIFIER
             // Label está na TS
             // Destino é um label definido, basta gerar código para lá
 
-            // Pega a quádrupla destino da TS
+            // Cria estrutura para a quádrupla de destino
             intmdt_addr_t *dest = malloc(sizeof(intmdt_addr_t));
             if (dest == NULL) {
                 fprintf(stderr, "Failed to malloc intmdt_addr_t in goto_stmt\n");
                 YYABORT;
             }
+
+            // Pega a quádrupla destino da TS
             quadruple_t* quad = TabelaS[res_i].value.gotoT->instr_ptr;
             dest->type = TYPE_LABEL;
             dest->value.instr_ptr = quad;
@@ -562,7 +555,7 @@ goto_stmt               :   GOTO IDENTIFIER
                 gen(intermediate_code, "gotoV1", NULL, NULL, NULL);
 
                 // Cria a lista de gotos que serão remendados
-                // O único elemento, por enquanto, é o goto desse stmt
+                // O único elemento é o goto desse stmt (criado acima)
                 dest.gotoT->goto_list = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
                 
                 // A quádrupla de destino será definida posteriormente
@@ -580,39 +573,31 @@ goto_stmt               :   GOTO IDENTIFIER
                 // Adiciona esse goto na lista ser remendada depois
                 list_head_t* temp_list1 = TabelaS[res_i].value.gotoT->goto_list;
                 list_head_t* temp_list2 = list_makelist(intermediate_code->code[intermediate_code->n-1]);
-
                 TabelaS[res_i].value.gotoT->goto_list = 
                                             list_merge(temp_list1, temp_list2);
-                // TabelaS[res_i].value.instr_ptr = intermediate_code->code[intermediate_code->n-1];
             }
         }
-        // $$.next = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
         $$.next = NULL;
     }
                         ;
     /* ----- Expressões ----- */
 expr_list               :   expr
     {
-        printf("expr_list -> expr\n");
         $$.list = list_makelist_intmt($1);
         $$.qtd_terms = 1;
     }
                         |   expr_list ',' expr
     {
-        printf("expr_list -> expr_list , expr\n");
         list_head_t* templist = list_makelist_intmt($3);
         $$.list = list_merge($1.list, templist);
         $$.qtd_terms = $1.qtd_terms + 1;
-        printf("Total de termos: %i\n",$$.qtd_terms);
     }
                         ;
-expr                    :   simple_expr
-    { 
-        $$ = $1; 
-    }
+expr                    :   simple_expr { $$ = $1; }
                         |   simple_expr RELOP simple_expr
     {
-        // Se algum for temporário, procure na tabela seu tipo de verdade
+        // Se algum operando for temporário,
+        // então procure na tabela seu tipo de verdade
         int tipo1 = $1->type;
         int tipo2 = $3->type;
         tempTipo(&tipo1, &tipo2, $1, $3);
@@ -620,52 +605,70 @@ expr                    :   simple_expr
         // Verificação de Tipos
         if (strcmp($2,"=") == 0 || strcmp($2,"!=") == 0){
             // Não importa os tipos dos operandos
-            printf("simple_expr RELOP (%s) simple_expr\n", $2);
+
+            // Cria um temporário para o resultado (será substituído depois)
             intmdt_addr_t *temp = newtemp(TYPE_BOOL);
             temp->list = malloc(sizeof(boolean_list_t));
             if (temp->list == NULL) {
                 fprintf(stderr, "Malloc of boolean_list_t failed! (RELOP)\n");
                 YYABORT;
             }
+
+            // "If Escondido"
+            //      if (op1 RELOP op2)
+            //          expr = true
+            //      else
+            //          expr = false
+            // As quádruplas geradas a seguir são para simular isso
+
+            // Quádrupla para avaliar o RELOP
+            // Depois o resultado virará um destino para ir se for verdadeiro
             gen(intermediate_code, $2, $1, $3, temp);
             temp->list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+            
+            // GOTO caso seja falso
             gen(intermediate_code, "gotoRE", NULL, NULL, NULL);
             temp->list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
             $$ = temp;
-            // TODO: criar quádrupla para calcular valor
-            // $$->value = $1->value; 
         }else if (strcmp($2,"<") == 0 || strcmp($2,"<=") == 0 
                || strcmp($2,">") == 0 || strcmp($2,">=") == 0){
+            // Operandos devem ser números
             if (!isNumber(tipo1) && !isNumber(tipo2)){
                 typeerror();
                 YYABORT;
             }
-
-            // $$->type = TYPE_BOOL; 
-            printf("simple_expr RELOP (%s) simple_expr\n", $2);
+            
+            // Cria um temporário para o resultado (será substituído depois)
             intmdt_addr_t *temp = newtemp(TYPE_BOOL);
             temp->list = malloc(sizeof(boolean_list_t));
             if (temp->list == NULL) {
                 fprintf(stderr, "Malloc of boolean_list_t failed! (RELOP)\n");
                 YYABORT;
             }
+
+            // "If Escondido"
+            //      if (op1 RELOP op2)
+            //          expr = true
+            //      else
+            //          expr = false
+            // As quádruplas geradas a seguir são para simular isso
+
+            // Quádrupla para avaliar o RELOP
+            // Depois o resultado virará um destino para ir se for verdadeiro
             gen(intermediate_code, $2, $1, $3, temp);
             temp->list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+            
+            // GOTO caso seja falso
             gen(intermediate_code, "gotoRG", NULL, NULL, NULL);
             temp->list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
             $$ = temp;
-            // TODO: criar quádrupla para calcular valor
-            // $$->value = $1->value; 
         }else{
             printf("Lexema RELOP não encontrado\n");
             YYABORT;
         }
     }
                         ;
-simple_expr             :   term
-    { 
-        $$ = $1;
-    }
+simple_expr             :   term { $$ = $1; }
                         |   simple_expr ADDOP term
     {
         if (strcmp($2,"+") == 0){
@@ -677,14 +680,12 @@ simple_expr             :   term
             // Verificação de Tipos + Geração da Quádrupla
             if (isNumber(tipo1) && isNumber(tipo2)){
                 if (tipo1 == TYPE_INT && tipo2 == TYPE_INT){
-                    // Dois inteiros
-                    printf("simple_expr -> simple_expr + term (int,int)\n");
+                    // Dois inteiros => resultado inteiro
        	     		intmdt_addr_t *temp = newtemp(TYPE_INT);
                     gen(intermediate_code, "+", $1, $3, temp);
                     $$ = temp;
                 }else{
-                    // Pelo menos um real
-                    printf("simple_expr -> simple_expr + term (real)\n");
+                    // Pelo menos um real => resultado real
        	     		intmdt_addr_t *temp = newtemp(TYPE_REAL);
                     gen(intermediate_code, "+", $1, $3, temp);
                     $$ = temp;
@@ -701,45 +702,36 @@ simple_expr             :   term
     }
                         |   simple_expr OR M term
     {
-        if (strcmp($2,"or") == 0){
-            // Se algum for temporário, procure na tabela seu tipo de verdade
-            int tipo1 = $1->type;
-            int tipo2 = $4->type;
-            tempTipo(&tipo1, &tipo2, $1, $4);
+        // Se algum for temporário, procure na tabela seu tipo de verdade
+        int tipo1 = $1->type;
+        int tipo2 = $4->type;
+        tempTipo(&tipo1, &tipo2, $1, $4);
+        
+        // Verificação de Tipos + Geração da Quádrupla
+        if (tipo1 == TYPE_BOOL && tipo2 == TYPE_BOOL){
+            // Remendo do falselist do primeiro 
+            // com a primeira quádrupla do segundo 
+            // i.e. se o primeiro for falso, avalie o segundo
+            backpatch($1->list->falselist, intermediate_code->code[$3]);
             
-            // Verificação de Tipos + Geração da Quádrupla
-            if (tipo1 == TYPE_BOOL && tipo2 == TYPE_BOOL){
-                // printf("simple_expr -> simple_expr or term\n");
-                // intmdt_addr_t *temp = newtemp(TYPE_BOOL);
-                // printf("TODO: truelist e falselist\n");
-                // gen(intermediate_code, "or", $1, $4, temp);
-                // $$ = temp;
-                printf("simple_expr -> simple_expr or term\n");
-
-                // Remendo do primeiro do false com o valor do M
-                backpatch($1->list->falselist, intermediate_code->code[$3]);
-                intmdt_addr_t *temp = newtemp(TYPE_BOOL);
-                // gen(intermediate_code, "or", $1, $4, temp);
-
-                // E.falselist = E2.falselist
-                temp->list = malloc(sizeof(boolean_list_t));
-                if (temp->list == NULL) {
-                    fprintf(stderr, "Malloc of boolean_list_t failed! (OR)\n");
-                    YYABORT;
-                }
-                temp->list->falselist = $4->list->falselist;
-
-                // E.truelist = merge(E1.truelist, E2.truelist)
-                temp->list->truelist = list_merge($1->list->truelist,
-                                                  $4->list->truelist);
-                $$ = temp;
-            }else{
-                typeerror();
+            // Se o segundo também for falso, a expressão é falsa
+            // i.e. E.falselist = E2.falselist
+            // (o temp virará o $$ logo em seguida)
+            intmdt_addr_t *temp = newtemp(TYPE_BOOL);
+            temp->list = malloc(sizeof(boolean_list_t));
+            if (temp->list == NULL) {
+                fprintf(stderr, "Malloc of boolean_list_t failed! (OR)\n");
                 YYABORT;
             }
+            temp->list->falselist = $4->list->falselist;
+
+            // Se algum for verdadeiro, a expressão é verdadeira
+            // i.e. E.truelist = merge(E1.truelist, E2.truelist)
+            temp->list->truelist = list_merge($1->list->truelist,
+                                                $4->list->truelist);
+            $$ = temp;
         }else{
-            printf("Lexema OR não encontrado: %s\n", $2);
-            yyerror("");
+            typeerror();
             YYABORT;
         }
     }
@@ -753,14 +745,12 @@ simple_expr             :   term
         // Verificação de Tipos + Geração da Quádrupla
         if (isNumber(tipo1) && isNumber(tipo2)){
             if (tipo1 == TYPE_INT && tipo2 == TYPE_INT){
-                // Dois inteiros
-                printf("simple_expr -> simple_expr - term (int,int)\n");
+                // Dois inteiros => resultado inteiro
                 intmdt_addr_t *temp = newtemp(TYPE_INT);
                 gen(intermediate_code, "-", $1, $3, temp);
                 $$ = temp;
             }else{
-                // Pelo menos um real
-                printf("simple_expr -> simple_expr - term (real)\n");
+                // Pelo menos um real => resultado real
                 intmdt_addr_t *temp = newtemp(TYPE_REAL);
                 gen(intermediate_code, "-", $1, $3, temp);
                 $$ = temp;
@@ -771,11 +761,7 @@ simple_expr             :   term
         }
     }
                         ;
-term                    :   factor_a
-    { 
-        printf("term -> factor_a\n");
-        $$ = $1; 
-    } 
+term                    :   factor_a { $$ = $1; } 
                         |   term MULOP factor_a
     {
         // Se algum for temporário, procure na tabela seu tipo de verdade
@@ -787,14 +773,12 @@ term                    :   factor_a
             // Verificação de Tipos + Geração da Quádrupla
             if (isNumber(tipo1) && isNumber(tipo2)){
                 if (tipo1 == TYPE_INT && tipo2 == TYPE_INT){
-                    // Dois inteiros
-                    printf("term -> term * factor_a (int,int)\n");
+                    // Dois inteiros => resultado inteiro
                     intmdt_addr_t *temp = newtemp(TYPE_INT);
                     gen(intermediate_code, "*", $1, $3, temp);
                     $$ = temp;
                 }else{
-                    // Pelo menos um real
-                    printf("term -> term * factor_a (real)\n");
+                    // Pelo menos um real => resultado real
                     intmdt_addr_t *temp = newtemp(TYPE_REAL);
                     gen(intermediate_code, "*", $1, $3, temp);
                     $$ = temp;
@@ -806,7 +790,7 @@ term                    :   factor_a
         }else if(strcmp($2,"/") == 0){
             // Verificação de Tipos + Geração da Quádrupla
             if (isNumber(tipo1) && isNumber(tipo2)){
-                printf("term -> term / factor_a (real)\n");
+                // Resultado sempre é real
                 intmdt_addr_t *temp = newtemp(TYPE_REAL);
                 gen(intermediate_code, "/", $1, $3, temp);
                 $$ = temp;
@@ -817,7 +801,7 @@ term                    :   factor_a
         }else if (strcmp($2,"div") == 0){
             // Verificação de Tipos + Geração da Quádrupla
             if (tipo1 == TYPE_INT && tipo2 == TYPE_INT){
-                printf("term -> term div factor_a (int,int)\n");
+                // Divisão inteira => resultado inteiro
                 intmdt_addr_t *temp = newtemp(TYPE_INT);
                 gen(intermediate_code, "div", $1, $3, temp);
                 $$ = temp;
@@ -828,7 +812,7 @@ term                    :   factor_a
         }else if (strcmp($2,"mod") == 0){
             // Verificação de Tipos + Geração da Quádrupla
             if (tipo1 == TYPE_INT && tipo2 == TYPE_INT){
-                printf("term -> term mod factor_a (int,int)\n");
+                // Resultado sempre é inteiro
                 intmdt_addr_t *temp = newtemp(TYPE_INT);
                 gen(intermediate_code, "mod", $1, $3, temp);
                 $$ = temp;
@@ -844,53 +828,42 @@ term                    :   factor_a
     }
                         |   term AND M factor_a
     {
-        if (strcmp($2,"and") == 0){
-            // Se algum for temporário, procure na tabela seu tipo de verdade
-            int tipo1 = $1->type;
-            int tipo2 = $4->type;
-            tempTipo(&tipo1, &tipo2, $1, $4);
-            
-            // Verificação de Tipos + Geração da Quádrupla
-            if (tipo1 == TYPE_BOOL && tipo2 == TYPE_BOOL){
-                // printf("term -> term and factor_a\n");
-                // intmdt_addr_t *temp = newtemp(TYPE_BOOL);
-                // printf("TODO: truelist e falselist\n");
-                // gen(intermediate_code, "and", $1, $3, temp);
-                // $$ = temp;
+        // Se algum for temporário, procure na tabela seu tipo de verdade
+        int tipo1 = $1->type;
+        int tipo2 = $4->type;
+        tempTipo(&tipo1, &tipo2, $1, $4);
+        
+        // Verificação de Tipos + Geração da Quádrupla
+        if (tipo1 == TYPE_BOOL && tipo2 == TYPE_BOOL){
+            // Se o primeiro for verdadeiro, avalie o segundo
+            // i.e. remende o truelist do primeiro 
+            // com a primeira quádrupla do segundo
+            backpatch($1->list->truelist, intermediate_code->code[$3]);
 
-                printf("term -> term and factor_a\n");
-
-                // Remendo do primeiro do true com o valor do M
-                backpatch($1->list->truelist, intermediate_code->code[$3]);
-                intmdt_addr_t *temp = newtemp(TYPE_BOOL);
-                // gen(intermediate_code, "&&", $1, $4, temp);
-
-                // E.truelist = E2.truelist
-                temp->list = malloc(sizeof(boolean_list_t));
-                if (temp->list == NULL) {
-                    fprintf(stderr, "Malloc of boolean_list_t failed! (AND)\n");
-                    YYABORT;
-                }
-                temp->list->truelist = $4->list->truelist;
-
-                // E.falselist = merge(E1.falselist, E2.falselist)
-                temp->list->falselist = list_merge($1->list->falselist,
-                                                   $4->list->falselist);
-                $$ = temp;
-            }else{
-                typeerror();
+            // Se o segundo também for verdadeiro, o resultado é verdadeiro
+            // i.e. E.truelist = E2.truelist
+            // (o temp virará o $$ logo em seguida)
+            intmdt_addr_t *temp = newtemp(TYPE_BOOL);
+            temp->list = malloc(sizeof(boolean_list_t));
+            if (temp->list == NULL) {
+                fprintf(stderr, "Malloc of boolean_list_t failed! (AND)\n");
                 YYABORT;
             }
+            temp->list->truelist = $4->list->truelist;
+
+            // Se algum for falso, a expressão é falsa
+            // i.e. E.falselist = merge(E1.falselist, E2.falselist)
+            temp->list->falselist = list_merge($1->list->falselist,
+                                                $4->list->falselist);
+            $$ = temp;
         }else{
-            printf("Lexema MULOP não encontrado: %s\n", $2);
-            yyerror("");
+            typeerror();
             YYABORT;
         }
     }
 function_ref            :   IDENTIFIER_F '(' expr_list ')'
     {
         // Tratamento Quantidade de Argumentos
-        printf("Tratando Argumentos\n");
         int args = $3.qtd_terms;
         char buf[50];
         if (args > 1){
@@ -910,7 +883,7 @@ function_ref            :   IDENTIFIER_F '(' expr_list ')'
         }else if(args == 1 && 
             (
                 (strcmp($1,"eoln") == 0)
-                && (strcmp($1,"eof") == 0)
+                || (strcmp($1,"eof") == 0)
             )){
             // Eof e Eoln devem ser invocadas sem argumento
             sprintf(buf, "Muitos argumentos para %s\n", $1);
@@ -918,7 +891,8 @@ function_ref            :   IDENTIFIER_F '(' expr_list ')'
             YYABORT;
         }
         
-        printf("Tratando Temporários\n");
+        // Tratando argumentos que são temporários, se houver, 
+        // para a verificação de tipos
         intmdt_addr_t* arg;
         int tipo1;
         if (args == 1){
@@ -933,9 +907,9 @@ function_ref            :   IDENTIFIER_F '(' expr_list ')'
             }
         }
 
-        printf("Gerando Código\n");
         // Verificação de Tipos + Geração da Quádrupla
         if (isNumToReal($1)){
+            // Funções que recebem um número (int ou real) e produzem um real
             if (tipo1 != TYPE_REAL && tipo1 != TYPE_INT){
                 typeerror_msg($1);
                 YYABORT;
@@ -981,24 +955,6 @@ function_ref            :   IDENTIFIER_F '(' expr_list ')'
             gen(intermediate_code, "chr", arg, NULL, temp);
             $$ = temp;
 
-        }else if (strcmp($1,"eoln") == 0 || strcmp($1,"eof") == 0){
-            // Verifica EOLn na entrada padrão
-            // Não há tipos a verificar
-
-            // Temporário para resultado + gerência de truelist/falselist
-            intmdt_addr_t *temp = newtemp(TYPE_BOOL);
-            temp->list = malloc(sizeof(boolean_list_t));
-            if (temp->list == NULL) {
-                fprintf(stderr, "Malloc of boolean_list_t failed! (funct)\n");
-                YYABORT;
-            }
-
-            gen(intermediate_code, $1 , NULL, NULL, temp);
-            temp->list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
-            gen(intermediate_code, "gotoF", NULL, NULL, NULL);
-            temp->list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
-            $$ = temp;
-
         }else{
             printf("Função não encontrada: %s\n", $1);
             yyerror("");
@@ -1007,28 +963,34 @@ function_ref            :   IDENTIFIER_F '(' expr_list ')'
     }
                         |   IDENTIFIER_F
     {
-        if (strcmp($1,"eoln") == 0 || strcmp($1,"eof") == 0){
-            // Verifica EOLn na entrada padrão
-            // Não há tipos a verificar
+        // EOF e EOLN
 
-            // Temporário para resultado + gerência de truelist/falselist
-            intmdt_addr_t *temp = newtemp(TYPE_BOOL);
-            temp->list = malloc(sizeof(boolean_list_t));
-            if (temp->list == NULL) {
-                fprintf(stderr, "Malloc of boolean_list_t failed! (funct)\n");
-                YYABORT;
-            }
+        // Não há tipos a verificar, pois não há parâmetros
 
-            gen(intermediate_code, $1 , NULL, NULL, temp);
-            temp->list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
-            gen(intermediate_code, "gotoF", NULL, NULL, NULL);
-            temp->list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
-            $$ = temp;
-        }else{
-            printf("Função não encontrada: %s\n", $1);
-            yyerror("");
+        // Temporário para resultado + gerência de truelist/falselist
+        intmdt_addr_t *temp = newtemp(TYPE_BOOL);
+        temp->list = malloc(sizeof(boolean_list_t));
+        if (temp->list == NULL) {
+            fprintf(stderr, "Malloc of boolean_list_t failed! (funct)\n");
             YYABORT;
         }
+        
+        // "If Escondido"
+        //      if (eof)
+        //          function_ref = true
+        //      else
+        //          function_ref = false
+        // As quádruplas geradas a seguir são para simular isso
+
+        // Quádrupla para avaliar o resultado da função
+        // Depois o resultado virará um destino para ir se for verdadeiro
+        gen(intermediate_code, $1 , NULL, NULL, temp);
+        temp->list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+        
+        // GOTO caso seja falso
+        gen(intermediate_code, "gotoF", NULL, NULL, NULL);
+        temp->list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+        $$ = temp;
     }
                         ;
 factor_a                :   MINUS factor
@@ -1041,89 +1003,93 @@ factor_a                :   MINUS factor
         }
         
         // Verificação de Tipos
-        printf("factor_a -> - factor \n");
         intmdt_addr_t *temp;
         if (tipo1 == TYPE_INT){
             temp = newtemp(TYPE_INT);
         }else if (tipo1 == TYPE_REAL){
-            temp = newtemp(TYPE_INT);
+            temp = newtemp(TYPE_REAL);
         }else{
             typeerror();
             YYABORT;
         }
 
         // Geração da Quádrupla
-        gen(intermediate_code, "1-", $2, NULL, temp);
+        gen(intermediate_code, "-1", $2, NULL, temp);
         $$ = temp;
     }                      
-                        |   factor
-    { 
-        printf("factor_a -> factor\n");
-        $$ = $1;
-    }
+                        |   factor { $$ = $1; }
                         ;
 factor                  :   IDENTIFIER
     { 
-        printf("factor -> id(1)\n");
-        // Pesquisa a entrada na tabela de símbolos
+        // Pesquisa a entrada na tabela de símbolos (TS)
         int res_niv;
         int res_i;
         Get_Entry($1, &res_niv, &res_i);
         if (res_niv == -1){
             // Não encontrou na tabela
-            exit(1);
+            YYABORT;
         }
 
-        printf("factor -> id(2)\n");
+        // Estrutura para carregar o identificador da TS
         intmdt_addr_t *dest = malloc (sizeof(intmdt_code_t));
         if (dest == NULL) {
             fprintf(stderr,"Error: could not malloc dest in 'factor -> identifier'");
             YYABORT;
         }
-        printf("factor -> id(3)\n");
         dest->type = TS_ENTRY;
         dest->value.TS_idx = res_i;
 
-        printf("factor -> id(4)\n");
         TabelaS[res_i].class = CLS_VARIABLE;
         boolean_list_t *list = NULL;
         if (TabelaS[res_i].type == TYPE_BOOL){
-            printf("factor -> id(5)\n");
+            // Se for booleano, temos que tomar mais cuidado
+
+            // Cria um temporário para a avaliação do valor da variável booleana
+            // (será substituído depois)
             intmdt_addr_t *temp = newtemp(TYPE_BOOL);
             temp->list = malloc(sizeof(boolean_list_t));
             if (temp->list == NULL) {
                 fprintf(stderr, "Malloc of boolean_list_t failed! (factor -> id)\n");
                 exit(1);
             }
-            gen(intermediate_code, "boolV", dest, NULL, temp);    // if id goto __
+            // "If Escondido"
+            //      if (id)
+            //          factor = true
+            //      else
+            //          factor = false
+            // As quádruplas geradas a seguir são para simular isso
+
+            // Quádrupla para avaliar o valor que está na TS
+            // Depois o resultado virará um destino para ir se for verdadeiro
+            gen(intermediate_code, "boolV", dest, NULL, temp); 
             temp->list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
-            gen(intermediate_code, "gotoB", NULL, NULL, NULL);   // else goto ___
+            
+            // GOTO caso seja falso
+            gen(intermediate_code, "gotoB", NULL, NULL, NULL);
             temp->list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
             $$ = temp;
         }else{
-            printf("factor -> id\n");
+            // Simplesmente passa ele para o factor
             $$ = dest;
         }
     }
-                        |   constant
-                            { 
-                                $$ = $1; 
-                            }
-                        |   '(' expr ')'
-                            { 
-                                $$ = $2; 
-                            }
-                        |   function_ref
-                            { 
-                                // TODO: tipo função 
-                                //       + verificação tipos parâmtros
-                                //       + verificaçaõ tipo retorno
-                                $$ = $1;
-                            }
+                        |   constant        { $$ = $1; }
+                        |   '(' expr ')'    { $$ = $2; }
+                        |   function_ref    { $$ = $1; }
                         |   NOT factor
     { 
-        // Basta inverter as listas
-        printf("factor -> NOT factor\n");
+        // Verificação de Tipos
+        int tipo1 = $2->type;
+        if (tipo1 == TS_ENTRY){
+            int idx = $2->value.TS_idx;
+            tipo1 = TabelaS[idx].type;
+        }
+        if (tipo1 != TYPE_BOOL){
+            typeerror();
+            YYABORT;
+        }
+        
+        // Temporário para ser colocado no não-terminal da esquerda
         intmdt_addr_t *temp = newtemp(TYPE_BOOL);
         temp->list = malloc(sizeof(boolean_list_t));
         if (temp->list == NULL) {
@@ -1131,125 +1097,91 @@ factor                  :   IDENTIFIER
             YYABORT;
         }
 
-        int tipo1 = $2->type;
-        if (tipo1 == TS_ENTRY){
-            int idx = $2->value.TS_idx;
-            tipo1 = TabelaS[idx].type;
-        }
-
-        if (tipo1 != TYPE_BOOL){
-            typeerror();
-            YYABORT;
-        }
+        // Basta inverter as listas truelist e falselist
         temp->list->truelist = $2->list->falselist;
         temp->list->falselist = $2->list->truelist;
         $$ = temp;
-      
-        // // Se algum for temporário, procure na tabela seu tipo de verdade
-        // int tipo1 = $2->type;
-        // if (tipo1 == TS_ENTRY){
-        //     int idx = $2->value.TS_idx;
-        //     tipo1 = TabelaS[idx].type;
-        // }
-        
-        // // Verificação de Tipos                         
-        // if (tipo1 != TYPE_BOOL){
-        //     typeerror();
-        //     YYABORT;
-        // }
-
-        // // Geração da Quádrupla
-        // printf("factor -> NOT factor\n");
-        // intmdt_addr_t *temp = newtemp(TYPE_BOOL);
-        // printf("TODO: truelist e falselist\n");
-        // gen(intermediate_code, "NOT", $2, NULL, temp);
-        // $$ = temp;
     }
                         ;
 constant                :   INT_CONSTANT            
                             {
+                                // Busca na TS e coloca no não-terminal
                                 intmdt_addr_t *temp = newtemp(TYPE_INT);
                                 TabelaS[temp->value.TS_idx].class = CLS_CST;
                                 TabelaS[temp->value.TS_idx].value.integer = $1;
                                 $$ = temp;
                                 $$->list = NULL;
-                                
-                                intmdt_addr_print($$);
-                                printf("\n");
                             }
                         |   REAL_CONSTANT
                             { 
+                                // Busca na TS e coloca no não-terminal
                                 intmdt_addr_t *temp = newtemp(TYPE_REAL);
                                 TabelaS[temp->value.TS_idx].class = CLS_CST;
                                 TabelaS[temp->value.TS_idx].value.real = $1;
                                 $$ = temp;
                                 $$->list = NULL;
-                                
-                                intmdt_addr_print($$);
-                                printf("\n");
                             }
                         |   CHAR_CONSTANT
                             { 
+                                // Busca na TS e coloca no não-terminal
                                 intmdt_addr_t *temp = newtemp(TYPE_CHAR);
                                 TabelaS[temp->value.TS_idx].class = CLS_CST;
                                 TabelaS[temp->value.TS_idx].value.character = $1;
                                 $$ = temp;
                                 $$->list = NULL;
-
-                                intmdt_addr_print($$);
-                                printf("\n");
                             }
                         |   TRUE_CST
     { 
+        // Temporário que será o não-terminal da esquerda
+        // Ele guarda o booleano true
         intmdt_addr_t *temp = newtemp(TYPE_BOOL);
         TabelaS[temp->value.TS_idx].class = CLS_CST;
         TabelaS[temp->value.TS_idx].value.boolean = $1;
-        // $$ = temp;
-
-        printf("constant -> true\n");
         temp->list = malloc(sizeof(boolean_list_t));
         if (temp->list == NULL) {
             fprintf(stderr, "Malloc of boolean_list_t failed!\n");
             YYABORT;
         }
-        /* Generate a goto statement with no destination,
-            then pass it into a list for backpatching. */
+
+        // Quádrupla do "If escondido":
+        //      if (true)
+        //          constant = true
+        //      /* não existe else! */
 
         gen(intermediate_code, "gotoT", NULL, NULL, NULL);
         quadruple_t* quad = intermediate_code->code[intermediate_code->n - 1];
-        printQuad(quad, quad->n);
+        
+        // Ele só possui uma truelist
         temp->list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
-
         temp->list->falselist = NULL;
-
         $$ = temp;
-        printf("constant -> true 3\n");
-
-
-        intmdt_addr_print($$);
-        printf("\n");
-    }                   |   FALSE_CST
+    }                   
+                        |   FALSE_CST
     { 
         intmdt_addr_t *temp = newtemp(TYPE_BOOL);
         TabelaS[temp->value.TS_idx].class = CLS_CST;
         TabelaS[temp->value.TS_idx].value.boolean = $1;
-        // $$ = temp;
-        
         printf("constant -> false\n");
-        boolean_list_t *list = malloc(sizeof(boolean_list_t));
-        if (list == NULL) {
+        temp->list = malloc(sizeof(boolean_list_t));
+        if (temp->list == NULL) {
             fprintf(stderr, "Malloc of boolean_list_t failed!\n");
             YYABORT;
         }
-        /* Generate a goto statement with no destination,
-            then pass it into a list for backpatching. */
-        gen(intermediate_code, "gotoF", NULL, NULL, NULL);
-        list->truelist = NULL;
-        list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
-        $$->list = list;
 
-        intmdt_addr_print($$);
-        printf("\n");
+        // Quádrupla do "If escondido":
+        //      if (true)
+        //          /* não existe */
+        //      else
+        //          constant = false
+        //      
+
+        gen(intermediate_code, "gotoF", NULL, NULL, NULL);
+        quadruple_t* quad = intermediate_code->code[intermediate_code->n - 1];
+        
+        // Ele só possui uma falselist
+        temp->list->truelist = NULL;
+        temp->list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
+        $$ = temp;
     }
                         ;
 
