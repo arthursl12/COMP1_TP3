@@ -31,6 +31,12 @@ list_head_t *list_makelist_intmt(intmdt_addr_t* intmt){
     return head;
 }
 
+list_head_t *list_makelist_string(char* string){
+    list_head_t *head =  list_init(quadruple_cmp);
+    list_insert(head, NULL, string);
+    return head;
+}
+
 
 /*  
     Concatenates the lists pointed to by p1 and p2 and returns
