@@ -30,7 +30,7 @@
     extern int Raiz;   
 
     /* Funções Auxiliares da Tabela de Símbolos */
-    void installIdentList(char* type);
+    void installIdentList(char* type, list_head_t* list);
     int novoVal = 1;       /* Global para testar o updateVal */
     void updateVal(char* id, char* value);
     int q = 0;              /* Tamanho do ident_list */
@@ -81,6 +81,10 @@
         list_head_t* list;
         int qtd_terms;
     } expr_lst_t;
+    struct ident_list { 
+        list_head_t* list;
+        int qtd_terms;
+    } ident_list_t;
 
 }         /* Yacc definitions */
 
@@ -123,7 +127,8 @@
 %nonassoc ELSE
 
 /* Tipos de alguns símbolos Não-terminais */
-%type <string> type decl ident_list label
+%type <string> type decl label
+%type <ident_list_t> ident_list
 %type <intmdt_addr> boolean_constant constant factor factor_a expr simple_expr term
 %type <intmdt_addr> function_ref
 %type <expr_lst_t> expr_list  
@@ -151,9 +156,12 @@ program                 :   PROGRAM IDENTIFIER ';' decl_list compound_stmt
 decl_list               :   decl_list ';' decl              { q = 0; }
                         |   decl                            { q = 0; }
                         ;
-decl                    :   ident_list ':' type             { installIdentList($3); $$ = $1; }
-ident_list              :   ident_list ',' IDENTIFIER       { id_list[q] = $3; q++; }
-                        |   IDENTIFIER                      { id_list[q] = $1; q++; }
+decl                    :   ident_list ':' type             { installIdentList($3, $1.list); }
+ident_list              :   ident_list ',' IDENTIFIER       { list_head_t* templist = list_makelist_string($3);
+                                                                $$.list = list_merge($1.list, templist);
+                                                                $$.qtd_terms = $1.qtd_terms + 1; }
+                        |   IDENTIFIER                      { $$.list = list_makelist_string($1);
+                                                            $$.qtd_terms = 1; }
                         ;
 type                    :   INTEGER
                         |   REAL
@@ -1194,12 +1202,12 @@ boolean_constant        :   TRUE_CST
 Instala a lista de identificadores 'id_list' (global) de tipo 'type' na 
 tabela de símbolos
 */
-void installIdentList(char* type){
+void installIdentList(char* type, list_head_t* list){
     //   Obs.: o tamanho do array 'id_list' está na variável global 'q'
     int i = 0;
     // printf("%i declaracoes do tipo %s\n", q, type);
-
-    for (i = 0; i < q; i++){
+    list_entry_t* current = list->list;
+    while (current != NULL){
         // printf("Instalando %s, do tipo %s\n", id_list[i], type);
         union value placeholder;
         int tipo_cst = -1;
@@ -1223,7 +1231,8 @@ void installIdentList(char* type){
             cls = CLS_VARIABLE;
             tipo_cst = TYPE_CHAR;
         }
-        Instala(id_list[i], tipo_cst, cls, placeholder, blist);
+        Instala(current->value, tipo_cst, cls, placeholder, blist);
+        current = current->next;
     }
 }
 
@@ -1270,7 +1279,7 @@ int main (void) {
     if (yyparse() == 0){
         printf("Parse sucessful\n\n");
         /* printf("Tabela de Simbolos Final:"); */
-        /* imprimir();     // Imprime a tabela de símbolos ao final */
+        imprimir();     // Imprime a tabela de símbolos ao final
         print_intmdt_code(intermediate_code);
         free_intmdt_code(intermediate_code);
         return 0;
