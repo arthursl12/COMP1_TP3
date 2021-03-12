@@ -495,8 +495,27 @@ stmt_suffix             :   UNTIL cond
                         ;
 read_stmt               :   READ '(' ident_list ')'
     {
-        // TODO: necessário ident_list
-        gen(intermediate_code, "TODO:read", NULL, NULL, NULL);
+       list_entry_t* current = $3.list->list;
+        while(current != NULL) {
+            int res_niv;
+            int res_i;
+            Get_Entry(current->value, &res_niv, &res_i);
+            if (res_niv == -1){
+                // Não encontrou na tabela
+                yyerror("Identifier não encontrado\n");
+                YYABORT;
+            }
+            intmdt_addr_t *dest = malloc (sizeof(intmdt_code_t));
+            if (dest == NULL) {
+                yyerror("Error: malloc in READ");
+                YYABORT;
+            }
+            dest->type = TS_ENTRY;
+            dest->value.TS_idx = res_i;
+            gen(intermediate_code, "read", NULL, NULL, dest);
+            current = current->next;
+        }
+        $$.next = NULL;
 
     }
                         ;

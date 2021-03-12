@@ -1,8 +1,10 @@
 program mytest0;
 
-x: integer
+x: integer;
+y: real
 
 begin
+    read (x, y);
     x := 1 + 1;
     x := x + 2
 end

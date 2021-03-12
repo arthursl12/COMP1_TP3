@@ -48,8 +48,8 @@ begin
     begin
         goto label1;
         begin
-            read (file3);
             while (x != y) do
+                read (x, y, z);
                 write (1 + 1156.07257E-10, y)
             end;
             f := 'c';
