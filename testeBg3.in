@@ -1,0 +1,14 @@
+program BeginEnd3;
+
+x, y: integer
+
+begin
+    if (x < y) then
+        begin
+        x := 1 + 1;
+        x := 2 + 2;
+        x := 3 + 3
+        end
+    ;
+    x := 4 + 4
+end

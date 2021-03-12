@@ -1298,7 +1298,7 @@ int main (void) {
     if (yyparse() == 0){
         printf("Parse sucessful\n\n");
         /* printf("Tabela de Simbolos Final:"); */
-        imprimir();     // Imprime a tabela de símbolos ao final
+        /* imprimir();     // Imprime a tabela de símbolos ao final */
         print_intmdt_code(intermediate_code);
         free_intmdt_code(intermediate_code);
         return 0;

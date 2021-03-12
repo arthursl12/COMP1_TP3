@@ -1,0 +1,20 @@
+program LoopsWhile;
+
+x, k, i: integer;
+y, a: real;
+z: integer;
+f: char
+
+begin
+    do  
+        y := z - sin(a);
+        y := x -(+1E+1);
+        while (x <= 5) do
+            a := z + y;
+            if z = y then
+                z := z - 1
+            ;
+            x := x + 1
+        end
+    until (x <= 0)
+end
