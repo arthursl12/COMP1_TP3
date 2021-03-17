@@ -7,7 +7,7 @@
     #include "tab.h"
     #include "lists.h"
     #include "codinterm.h"
-
+    #include "interpr.h"
     #include "aux.h"
 
 
@@ -1218,11 +1218,9 @@ boolean_constant        :   TRUE_CST
 %%                     
 
 /*
-Instala a lista de identificadores 'id_list' (global) de tipo 'type' na 
-tabela de símbolos
+Instala a lista de identificadores de tipo 'type' na tabela de símbolos
 */
 void installIdentList(char* type, list_head_t* list){
-    //   Obs.: o tamanho do array 'id_list' está na variável global 'q'
     int i = 0;
     // printf("%i declaracoes do tipo %s\n", q, type);
     list_entry_t* current = list->list;
@@ -1300,8 +1298,15 @@ int main (void) {
         /* printf("Tabela de Simbolos Final:"); */
         /* imprimir();     // Imprime a tabela de símbolos ao final */
         print_intmdt_code(intermediate_code);
-        free_intmdt_code(intermediate_code);
-        return 0;
+
+        printf("\nEvaluating...\n");
+        if (evaluate(intermediate_code) == 0){
+            free_intmdt_code(intermediate_code);
+            return 0;
+        }else {
+            free_intmdt_code(intermediate_code);
+            return 1;
+        }
     }else{
         free_intmdt_code(intermediate_code);
         return 1;

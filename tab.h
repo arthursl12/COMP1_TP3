@@ -16,7 +16,7 @@ int L;          /* índice do último elemento da tabela */
 
 int Raiz;       
 
-struct{
+struct Tabela_s_t {
     char nome[TNome];       /* Nome do símbolo */
     int nivel;              /* Nível do símbolo */
     int type;       /* Atributo do símbolo */
@@ -26,7 +26,10 @@ struct{
     // char value[TValue];     
     int esq;            /* Subárvore da esquerda */
     int dir;            /* Subárvore da direita */
-}TabelaS[300];          /* Array que contém a tabela de Símbolos */
+} Tabela_s_t;
+
+
+struct Tabela_s_t TabelaS[500];          /* Array que contém a tabela de Símbolos */
 
 
 void Entrada_Bloco();
