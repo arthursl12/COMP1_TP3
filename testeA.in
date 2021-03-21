@@ -1,6 +1,7 @@
 program TesteBasico;
 
 x: integer;
+y: real;
 b: boolean
 
 begin
@@ -11,8 +12,10 @@ begin
     x := 1 + 1;
 
     x := x + 2;
+    y := -x;
+    write(y);
     x := 3;
-    while (x <= 5) do
+    while (x <= 10) do
         x := x + 1;
         write(x)
     end;

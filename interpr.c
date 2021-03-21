@@ -357,6 +357,21 @@ int evaluate(intmdt_code_t* intermediate_code){
 
             }
         }
+        /* Operador menos unário */
+        else if (strcmp("-1",opcode) == 0){
+            int tipo1, idx1;
+            int tipoR, idxR;
+            tsQuery(&idx1, &tipo1, arg1);
+            tsQuery(&idxR, &tipoR, result);
+
+            if (tipo1 == TYPE_INT){
+                TabelaS[idxR].value.integer = -1 * TabelaS[idx1].value.integer;
+            }else{
+                TabelaS[idxR].value.real = -1 * TabelaS[idx1].value.real;
+            }
+        }
+
+
         /* Operações de funções padrão */
         else if (resWord(opcode, functs, functsSize) != -1 
                  && strcmp("eof",opcode) != 0 && strcmp("eoln",opcode) != 0){
