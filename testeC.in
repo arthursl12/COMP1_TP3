@@ -31,12 +31,12 @@ begin
                     if z = y then
                         z := z - 1
                     ;
-                    x := x + 1
+                    x := x - 1
                 end
             end;
             goto label1
         end
-        until (x <= 0);
+        until (x > 10);
 
         do  
             begin
@@ -48,17 +48,16 @@ begin
     begin
         goto label1;
         begin
+            read (x, y, z);
             while (x != y) do
-                read (x, y, z);
-                write (1 + 1156.07257E-10, y)
+                write (1 + 1156.07257E-10, y);
+                x := 2 * x
             end;
             f := 'c';
             if (NOT (f = f)) then
                 y := 1
             else
                 label1: y := 2 + (5*5)
-            ;
-            goto label2
         end
     end;
     a := (5 + 3.14 + 10/4);

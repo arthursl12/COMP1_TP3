@@ -208,7 +208,8 @@ bool isGoto(char* opcode){
     if (strcmp("goto",opcode) == 0 || strcmp("gotoAB",opcode) == 0
         || strcmp("gotoN",opcode) == 0 || strcmp("gotoF",opcode) == 0
         || strcmp("gotoRE",opcode) == 0 || strcmp("gotoRG",opcode) == 0
-        || strcmp("gotoT",opcode) == 0 || strcmp("gotoB",opcode) == 0)
+        || strcmp("gotoT",opcode) == 0 || strcmp("gotoB",opcode) == 0
+        || strcmp("gotoV1",opcode) == 0 || strcmp("gotoV2",opcode) == 0)
     {
         return true;
     }else{

@@ -12,8 +12,8 @@ begin
     x := 1 + 1;
 
     x := x + 2;
-    read(y);
-    write(y);
+    read(y,x);
+    write(y,x);
     x := 3;
     while (x <= 10) do
         x := x + 1;
