@@ -1166,7 +1166,7 @@ boolean_constant        :   TRUE_CST
         // Ele guarda o booleano true
         intmdt_addr_t *temp = newtemp(TYPE_BOOL);
         TabelaS[temp->value.TS_idx].class = CLS_CST;
-        TabelaS[temp->value.TS_idx].value.boolean = $1;
+        TabelaS[temp->value.TS_idx].value.boolean = 1;
         temp->list = malloc(sizeof(boolean_list_t));
         if (temp->list == NULL) {
             fprintf(stderr, "Malloc of boolean_list_t failed!\n");
@@ -1190,7 +1190,7 @@ boolean_constant        :   TRUE_CST
     { 
         intmdt_addr_t *temp = newtemp(TYPE_BOOL);
         TabelaS[temp->value.TS_idx].class = CLS_CST;
-        TabelaS[temp->value.TS_idx].value.boolean = $1;
+        TabelaS[temp->value.TS_idx].value.boolean = 0;
         temp->list = malloc(sizeof(boolean_list_t));
         if (temp->list == NULL) {
             fprintf(stderr, "Malloc of boolean_list_t failed!\n");

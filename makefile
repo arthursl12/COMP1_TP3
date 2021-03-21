@@ -2,12 +2,12 @@ all:
 	gcc -c lists.c -o lists.o 
 	gcc -c codinterm.c -o codinterm.o 
 	gcc -c tab.c -o tab.o 
-	gcc -c interpr.c -o interpr.o 
+	gcc -c interpr.c -o interpr.o -lm
 
 	yacc -v -d yysint.y
 	gcc -c aux.c -o aux.o
 	lex yylex.l
-	gcc aux.o tab.o lists.o codinterm.o interpr.o lex.yy.c  y.tab.c -o yysint
+	gcc aux.o tab.o lists.o codinterm.o interpr.o lex.yy.c  y.tab.c -o yysint -lm
 	./yysint < testeB.in
 
 clean:

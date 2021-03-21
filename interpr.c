@@ -1,5 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
 #include "interpr.h"
+#include "aux.h"
 
 /* 
 Se algum tipo for temporário (apontar para a tabela de símbolos) busca na 
@@ -24,10 +28,98 @@ void tsQuery(int* idx, int* tipo, intmdt_addr_t* addr){
         *tipo = TabelaS[*idx].type;
     }
 }
+/* Operações de função padrão, exceto eof e eoln */
+void functOps(char* opcode, intmdt_addr_t* arg1, intmdt_addr_t* result){
+    int tipo1, idx1;
+    int tipoR, idxR;
+    tsQuery(&idx1, &tipo1, arg1);
+    tsQuery(&idxR, &tipoR, result);
 
-/*
-Avaliação de operações aritméticas
-*/
+    /* numToReal: inteiro ou real vira real*/
+    if (strcmp(opcode, "sqrt") == 0){
+        if (tipo1 == TYPE_INT){
+            // op(int) = real
+            TabelaS[idxR].value.real = sqrt(TabelaS[idx1].value.integer);
+        }else{
+            // op(real) = real
+            TabelaS[idxR].value.real = sqrt(TabelaS[idx1].value.real);
+        }
+    }else if (strcmp(opcode, "sin") == 0){
+        if (tipo1 == TYPE_INT){
+            // op(int) = real
+            TabelaS[idxR].value.real = sin(TabelaS[idx1].value.integer);
+        }else{
+            // op(real) = real
+            TabelaS[idxR].value.real = sin(TabelaS[idx1].value.real);
+        }
+    }else if (strcmp(opcode, "cos") == 0){
+        if (tipo1 == TYPE_INT){
+            // op(int) = real
+            TabelaS[idxR].value.real = cos(TabelaS[idx1].value.integer);
+        }else{
+            // op(real) = real
+            TabelaS[idxR].value.real = cos(TabelaS[idx1].value.real);
+        }
+    }else if (strcmp(opcode, "log") == 0){
+        if (tipo1 == TYPE_INT){
+            // op(int) = real
+            TabelaS[idxR].value.real = log(TabelaS[idx1].value.integer);
+        }else{
+            // op(real) = real
+            TabelaS[idxR].value.real = log(TabelaS[idx1].value.real);
+        }
+    }else if (strcmp(opcode, "exp") == 0){
+        if (tipo1 == TYPE_INT){
+            // op(int) = real
+            TabelaS[idxR].value.real = exp(TabelaS[idx1].value.integer);
+        }else{
+            // op(real) = real
+            TabelaS[idxR].value.real = exp(TabelaS[idx1].value.real);
+        }
+    }else if (strcmp(opcode, "exp") == 0){
+        if (tipo1 == TYPE_INT){
+            // op(int) = real
+            TabelaS[idxR].value.real = exp(TabelaS[idx1].value.integer);
+        }else{
+            // op(real) = real
+            TabelaS[idxR].value.real = exp(TabelaS[idx1].value.real);
+        }
+    }
+
+    /* Outras funções: abs, ord, chr  */
+    else if (strcmp(opcode, "abs") == 0){
+        if (tipo1 == TYPE_INT){
+            // op(int) = int
+            TabelaS[idxR].value.integer = abs(TabelaS[idx1].value.integer);
+        }else{
+            // op(real) = real
+            TabelaS[idxR].value.real = fabs(TabelaS[idx1].value.real);
+        }
+    }else if (strcmp(opcode, "ord") == 0){
+        // Casting de inteiro
+        if (tipo1 == TYPE_BOOL){
+            // op(true) = 1
+            // op(false) = 0
+            TabelaS[idxR].value.integer = TabelaS[idx1].value.boolean;
+        }else if (tipo1 == TYPE_CHAR){
+            // op(char) = (int)char
+            TabelaS[idxR].value.integer = (int)TabelaS[idx1].value.character;
+        }else if (tipo1 == TYPE_INT){
+            // Valor já é inteiro, nada a ser feito
+        }
+    }else if (strcmp(opcode, "chr") == 0){
+        // Casting de inteiro
+        if (tipo1 == TYPE_CHAR){
+            // Já é char, nada a ser feito
+        }else if (tipo1 == TYPE_INT){
+            TabelaS[idxR].value.character = (char)TabelaS[idx1].value.integer;
+        }
+    }
+    // EOF e EOLN retorna bool, devem ser tratados em outro lugar
+}
+
+
+/* Avaliação de operações aritméticas */
 void arithmeticOps(char* opcode, 
                    intmdt_addr_t* arg1, 
                    intmdt_addr_t* arg2, 
@@ -86,12 +178,24 @@ void ioOps(char* opcode, intmdt_addr_t* arg1, intmdt_addr_t* result){
         }else if (tipo1 == TYPE_CHAR){
             printf("%c\n", TabelaS[idx1].value.character);
         }else if (tipo1 == TYPE_BOOL){
+            printf("Print: var(%i)=%i\n", idx1, TabelaS[idx1].value.boolean);
             printf("%i\n", TabelaS[idx1].value.boolean);
         }
     }else if (strcmp("read",opcode) == 0){
         // TODO: read (sugestão: scanf)
         printf("TODO: read\n");
     }   
+}
+
+bool isGoto(char* opcode){
+    if (strcmp("goto",opcode) == 0 || strcmp("gotoAB",opcode) == 0
+        || strcmp("gotoN",opcode) == 0 || strcmp("gotoF",opcode) == 0
+        || strcmp("gotoT",opcode) == 0 || strcmp("gotoB",opcode) == 0)
+    {
+        return true;
+    }else{
+        return false;
+    }
 }
 
 /* 
@@ -111,7 +215,7 @@ int evaluate(intmdt_code_t* intermediate_code){
         intmdt_addr_t* arg1 = atual->arg1;
         intmdt_addr_t* arg2 = atual->arg2;
         intmdt_addr_t* result = atual->result;
-        // printf("Opcode: %s, PC=%i\n", opcode, PC);
+        printf("PC=%i, Opcode: %s\n", PC, opcode);
 
         // "Switch" com a operação da quádrupla
         if (strcmp("+",opcode) == 0 || strcmp("-",opcode) == 0
@@ -134,17 +238,76 @@ int evaluate(intmdt_code_t* intermediate_code){
             }else if (tipo1 == TYPE_CHAR){
                 TabelaS[idxR].value.character = TabelaS[idx1].value.character;
             }else if (tipo1 == TYPE_BOOL){
+                printf("Antes: var(%i)=%i, val=%i\n", idxR, TabelaS[idxR].value.boolean, TabelaS[idx1].value.boolean);
                 TabelaS[idxR].value.boolean = TabelaS[idx1].value.boolean;
+                printf("Depois: var(%i)=%i, val=%i\n", idxR, TabelaS[idxR].value.boolean, TabelaS[idx1].value.boolean);
+
+            }
+        }
+        /* Operações de funções padrão */
+        else if (resWord(opcode, functs, functsSize) != -1 
+                 && strcmp("eof",opcode) != 0 && strcmp("eoln",opcode) != 0){
+            functOps(opcode, arg1, result);
+        }else if (strcmp("eof",opcode) == 0){
+            if (feof(stdin)){
+                // Temos que ir para onde result manda
+                PC = result->value.instr_ptr->n;
+                atual = intermediate_code->code[PC];
+                continue;
+            }else{
+                // Vamos andar o PC em 1 e ir para onde o goto dali manda
+                PC++;
+                atual = intermediate_code->code[PC];
+                continue;
             }
         }
         
         /* Operações de IO */
         else if (strcmp("print",opcode) == 0 || strcmp("write",opcode) == 0){
             ioOps(opcode, arg1, result);
+        }
+        
+        /* GOTO's */
+        else if (isGoto(opcode) && strcmp("gotoB",opcode) != 0){
+            // Temos que ir para onde result manda
+            PC = result->value.instr_ptr->n;
+            atual = intermediate_code->code[PC];
+            continue;
+        }else if (strcmp("gotoB",opcode) == 0){
+            if (result == NULL){
+                // gotoB foi gerado para um print, por exemplo, não precisamos dele
+            }else{
+                // gotoB foi gerado para uma operação que usa o valor booleano 
+                // de uma variável booleana, agora precisamos dele
+
+                // Temos que ir para onde result manda
+                PC = result->value.instr_ptr->n;
+                atual = intermediate_code->code[PC];
+                continue;
+            }
+        }else if (strcmp("boolV",opcode) == 0){
+            if (result->type != TYPE_LABEL){
+                // boolV foi gerado para um print, por exemplo,
+                // Funciona como uma atribuição para um temporário
+                int tipo1, idx1;
+                int tipoR, idxR;
+                tsQuery(&idxR, &tipoR, result);
+                tsQuery(&idx1, &tipo1, arg1);
+                TabelaS[idxR].value.boolean = TabelaS[idx1].value.boolean;
+            }else{
+                // boolV funciona como um goto, 
+                // para avaliação de expressões booleanas
+                // Temos que ir para onde result manda
+                PC = result->value.instr_ptr->n;
+                atual = intermediate_code->code[PC];
+                continue;
+            }
+        }
+        
         /* Comando end */
-        }else if (strcmp("end", opcode) == 0){
+        else if (strcmp("end", opcode) == 0){
             break;
-        /* Comando end */
+        /* Guarda para operações eventualmente não encontradas */
         }else{
             printf("Operação não encontrada: %s\n", opcode);
             return 1;

@@ -3,20 +3,7 @@
 #include "aux.h"
 #include "y.tab.h"
 
-char* reserved[] = {NULL, "program",
-                    "integer","real", "boolean","char",
-                    "begin","end",
-                    "if","then","else",
-                    "do","while",
-                    "until","end",
-                    "read","write","goto"};
-#define reservedSize 18
 
-char* functs[] = {NULL, "sin", "log", "cos", 
-                  "ord", "chr", 
-                  "abs", "sqrt", "exp", 
-                  "eof", "eoln"};
-#define functsSize 11
 
 int yywrap (void){
     return 1;

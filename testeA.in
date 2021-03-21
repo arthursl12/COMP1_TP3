@@ -1,8 +1,12 @@
 program TesteBasico;
 
-x: integer
+x: integer;
+b: boolean
 
 begin
+    b := (1 = 2);
+    write(ord(b));
+    b := b or (1 != 2);
     write(1);
     x := 1 + 1;
     write(x);
