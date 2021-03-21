@@ -5,11 +5,16 @@ b: boolean
 
 begin
     b := (1 = 2);
-    write(ord(b));
     b := b or (1 != 2);
-    write(1);
+
+
     x := 1 + 1;
-    write(x);
+
     x := x + 2;
+    x := 3;
+    while (x <= 5) do
+        x := x + 1;
+        write(x)
+    end;
     write(x)
 end

@@ -190,12 +190,125 @@ void ioOps(char* opcode, intmdt_addr_t* arg1, intmdt_addr_t* result){
 bool isGoto(char* opcode){
     if (strcmp("goto",opcode) == 0 || strcmp("gotoAB",opcode) == 0
         || strcmp("gotoN",opcode) == 0 || strcmp("gotoF",opcode) == 0
+        || strcmp("gotoRE",opcode) == 0 || strcmp("gotoRG",opcode) == 0
         || strcmp("gotoT",opcode) == 0 || strcmp("gotoB",opcode) == 0)
     {
         return true;
     }else{
         return false;
     }
+}
+
+int simpleRelop(char* opcode, int tipo1, int idx1, int tipo2, int idx2){
+    int compRes = 0;
+    if (strcmp(">", opcode) == 0){
+        if (tipo1 == TYPE_INT && tipo2 == TYPE_INT){
+            compRes = \
+            (TabelaS[idx1].value.integer > TabelaS[idx2].value.integer);
+        }else if (tipo1 == TYPE_REAL && tipo2 == TYPE_REAL){
+            compRes = \
+            (TabelaS[idx1].value.real > TabelaS[idx2].value.real);
+        }else if (tipo1 == TYPE_REAL && tipo2 == TYPE_INT){
+            compRes = \
+            (TabelaS[idx1].value.real > TabelaS[idx2].value.integer);
+        }else if (tipo1 == TYPE_INT && tipo2 == TYPE_REAL){
+            compRes = \
+            (TabelaS[idx1].value.integer > TabelaS[idx2].value.real);
+        }
+    }else if (strcmp(">=", opcode) == 0){
+        if (tipo1 == TYPE_INT && tipo2 == TYPE_INT){
+            compRes = \
+            (TabelaS[idx1].value.integer >= TabelaS[idx2].value.integer);
+        }else if (tipo1 == TYPE_REAL && tipo2 == TYPE_REAL){
+            compRes = \
+            (TabelaS[idx1].value.real >= TabelaS[idx2].value.real);
+        }else if (tipo1 == TYPE_REAL && tipo2 == TYPE_INT){
+            compRes = \
+            (TabelaS[idx1].value.real >= TabelaS[idx2].value.integer);
+        }else if (tipo1 == TYPE_INT && tipo2 == TYPE_REAL){
+            compRes = \
+            (TabelaS[idx1].value.integer >= TabelaS[idx2].value.real);
+        }
+    }else if (strcmp("<", opcode) == 0){
+        if (tipo1 == TYPE_INT && tipo2 == TYPE_INT){
+            compRes = \
+            (TabelaS[idx1].value.integer < TabelaS[idx2].value.integer);
+        }else if (tipo1 == TYPE_REAL && tipo2 == TYPE_REAL){
+            compRes = \
+            (TabelaS[idx1].value.real < TabelaS[idx2].value.real);
+        }else if (tipo1 == TYPE_REAL && tipo2 == TYPE_INT){
+            compRes = \
+            (TabelaS[idx1].value.real < TabelaS[idx2].value.integer);
+        }else if (tipo1 == TYPE_INT && tipo2 == TYPE_REAL){
+            compRes = \
+            (TabelaS[idx1].value.integer < TabelaS[idx2].value.real);
+        }
+    }else if (strcmp("<=", opcode) == 0){
+        if (tipo1 == TYPE_INT && tipo2 == TYPE_INT){
+            compRes = \
+            (TabelaS[idx1].value.integer <= TabelaS[idx2].value.integer);
+        }else if (tipo1 == TYPE_REAL && tipo2 == TYPE_REAL){
+            compRes = \
+            (TabelaS[idx1].value.real <= TabelaS[idx2].value.real);
+        }else if (tipo1 == TYPE_REAL && tipo2 == TYPE_INT){
+            compRes = \
+            (TabelaS[idx1].value.real <= TabelaS[idx2].value.integer);
+        }else if (tipo1 == TYPE_INT && tipo2 == TYPE_REAL){
+            compRes = \
+            (TabelaS[idx1].value.integer <= TabelaS[idx2].value.real);
+        }
+    }
+    return compRes;
+}
+
+int eqRelop(char* opcode, int tipo1, int idx1, int tipo2, int idx2){
+    int compRes = 0;
+    if (strcmp("=", opcode) == 0){
+        if (tipo1 == TYPE_INT && tipo2 == TYPE_INT){
+            compRes = \
+            (TabelaS[idx1].value.integer == TabelaS[idx2].value.integer);
+        }else if (tipo1 == TYPE_REAL && tipo2 == TYPE_REAL){
+            compRes = \
+            (TabelaS[idx1].value.real == TabelaS[idx2].value.real);
+        }else if (tipo1 == TYPE_REAL && tipo2 == TYPE_INT){
+            compRes = \
+            (TabelaS[idx1].value.real == TabelaS[idx2].value.integer);
+        }else if (tipo1 == TYPE_INT && tipo2 == TYPE_REAL){
+            compRes = \
+            (TabelaS[idx1].value.integer == TabelaS[idx2].value.real);
+        }else if (tipo1 != tipo2){
+            compRes = 0;
+        }else if (tipo1 == TYPE_CHAR && tipo2 == TYPE_CHAR){
+            compRes = \
+            (TabelaS[idx1].value.character == TabelaS[idx2].value.character);
+        }else if (tipo1 == TYPE_BOOL && tipo2 == TYPE_BOOL){
+            compRes = \
+            (TabelaS[idx1].value.boolean == TabelaS[idx2].value.boolean);
+        }
+    }else if (strcmp("!=", opcode) == 0){
+        if (tipo1 == TYPE_INT && tipo2 == TYPE_INT){
+            compRes = \
+            (TabelaS[idx1].value.integer != TabelaS[idx2].value.integer);
+        }else if (tipo1 == TYPE_REAL && tipo2 == TYPE_REAL){
+            compRes = \
+            (TabelaS[idx1].value.real != TabelaS[idx2].value.real);
+        }else if (tipo1 == TYPE_REAL && tipo2 == TYPE_INT){
+            compRes = \
+            (TabelaS[idx1].value.real != TabelaS[idx2].value.integer);
+        }else if (tipo1 == TYPE_INT && tipo2 == TYPE_REAL){
+            compRes = \
+            (TabelaS[idx1].value.integer != TabelaS[idx2].value.real);
+        }else if (tipo1 != tipo2){
+            compRes = 0;
+        }else if (tipo1 == TYPE_CHAR && tipo2 == TYPE_CHAR){
+            compRes = \
+            (TabelaS[idx1].value.character != TabelaS[idx2].value.character);
+        }else if (tipo1 == TYPE_BOOL && tipo2 == TYPE_BOOL){
+            compRes = \
+            (TabelaS[idx1].value.boolean != TabelaS[idx2].value.boolean);
+        }
+    }
+    return compRes;
 }
 
 /* 
@@ -215,7 +328,7 @@ int evaluate(intmdt_code_t* intermediate_code){
         intmdt_addr_t* arg1 = atual->arg1;
         intmdt_addr_t* arg2 = atual->arg2;
         intmdt_addr_t* result = atual->result;
-        printf("PC=%i, Opcode: %s\n", PC, opcode);
+        // printf("PC=%i, Opcode: %s\n", PC, opcode);
 
         // "Switch" com a operação da quádrupla
         if (strcmp("+",opcode) == 0 || strcmp("-",opcode) == 0
@@ -238,9 +351,9 @@ int evaluate(intmdt_code_t* intermediate_code){
             }else if (tipo1 == TYPE_CHAR){
                 TabelaS[idxR].value.character = TabelaS[idx1].value.character;
             }else if (tipo1 == TYPE_BOOL){
-                printf("Antes: var(%i)=%i, val=%i\n", idxR, TabelaS[idxR].value.boolean, TabelaS[idx1].value.boolean);
+                // printf("Antes: var(%i)=%i, val=%i\n", idxR, TabelaS[idxR].value.boolean, TabelaS[idx1].value.boolean);
                 TabelaS[idxR].value.boolean = TabelaS[idx1].value.boolean;
-                printf("Depois: var(%i)=%i, val=%i\n", idxR, TabelaS[idxR].value.boolean, TabelaS[idx1].value.boolean);
+                // printf("Depois: var(%i)=%i, val=%i\n", idxR, TabelaS[idxR].value.boolean, TabelaS[idx1].value.boolean);
 
             }
         }
@@ -265,6 +378,45 @@ int evaluate(intmdt_code_t* intermediate_code){
         /* Operações de IO */
         else if (strcmp("print",opcode) == 0 || strcmp("write",opcode) == 0){
             ioOps(opcode, arg1, result);
+        }
+
+
+        /* RELOP's */
+        else if (strcmp(">", opcode) == 0 || strcmp(">=", opcode) == 0 ||
+                 strcmp("<", opcode) == 0 || strcmp("<=", opcode) == 0 ||
+                 strcmp("=", opcode) == 0 || strcmp("!=", opcode) == 0)
+        {
+            int tipo1, idx1;
+            int tipo2, idx2;
+            int tipoR, idxR;
+            tsQuery(&idx1, &tipo1, arg1);
+            tsQuery(&idx2, &tipo2, arg2);
+
+            int compRes = 0;
+            if (strcmp(">", opcode) == 0 || strcmp(">=", opcode) == 0 ||
+                strcmp("<", opcode) == 0 || strcmp("<=", opcode) == 0)
+            {
+                compRes = simpleRelop(opcode, tipo1, idx1, tipo2, idx2);
+            }else{
+                compRes = eqRelop(opcode, tipo1, idx1, tipo2, idx2);
+            }
+
+            if (result->type != TYPE_LABEL){
+                tsQuery(&idxR, &tipoR, result);
+                TabelaS[idxR].value.boolean = compRes;
+            }else{
+                if (compRes){
+                    // Temos que ir para onde result manda
+                    PC = result->value.instr_ptr->n;
+                    atual = intermediate_code->code[PC];
+                    continue;
+                }else{
+                    // Vamos andar o PC em 1 e ir para onde o goto dali manda
+                    PC++;
+                    atual = intermediate_code->code[PC];
+                    continue;
+                }
+            }
         }
         
         /* GOTO's */

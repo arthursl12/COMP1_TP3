@@ -11,6 +11,7 @@ begin
         write(y);
         y := z - sin(a);
         y := x -(+1E+1);
+        x := 3;
         while (x <= 5) do
             a := z + y;
             if z = y then
