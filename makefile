@@ -8,7 +8,7 @@ all:
 	gcc -c aux.c -o aux.o
 	lex yylex.l
 	gcc aux.o tab.o lists.o codinterm.o interpr.o lex.yy.c  y.tab.c -o yysint -lm
-	./yysint < testeB.in
+	./yysint testeA.in
 
 clean:
 	rm *.o

@@ -1,7 +1,7 @@
 program TesteBasico;
 
 x: integer;
-y: real;
+y: boolean;
 b: boolean
 
 begin
@@ -12,7 +12,7 @@ begin
     x := 1 + 1;
 
     x := x + 2;
-    y := -x;
+    read(y);
     write(y);
     x := 3;
     while (x <= 10) do

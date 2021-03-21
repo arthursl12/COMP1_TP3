@@ -178,12 +178,29 @@ void ioOps(char* opcode, intmdt_addr_t* arg1, intmdt_addr_t* result){
         }else if (tipo1 == TYPE_CHAR){
             printf("%c\n", TabelaS[idx1].value.character);
         }else if (tipo1 == TYPE_BOOL){
-            printf("Print: var(%i)=%i\n", idx1, TabelaS[idx1].value.boolean);
             printf("%i\n", TabelaS[idx1].value.boolean);
         }
     }else if (strcmp("read",opcode) == 0){
-        // TODO: read (sugestão: scanf)
-        printf("TODO: read\n");
+        int tipoR, idxR;
+        tsQuery(&idxR, &tipoR, result);
+        char buf[128];
+        fgets(buf, sizeof(buf), stdin);
+
+        if (tipoR == TYPE_INT){
+            sscanf(buf,"%i", &TabelaS[idxR].value.integer);
+        }else if (tipoR == TYPE_REAL){
+            sscanf(buf,"%f", &TabelaS[idxR].value.real);
+        }else if (tipoR == TYPE_CHAR){
+            sscanf(buf,"%c", &TabelaS[idxR].value.character);
+        }else if (tipoR == TYPE_BOOL){
+            int temp;
+            sscanf(buf,"%i", &temp);
+            if (temp >= 1){
+               TabelaS[idxR].value.boolean = 1;
+            }else{
+                TabelaS[idxR].value.boolean = 0;
+            }
+        }
     }   
 }
 
@@ -391,7 +408,7 @@ int evaluate(intmdt_code_t* intermediate_code){
         }
         
         /* Operações de IO */
-        else if (strcmp("print",opcode) == 0 || strcmp("write",opcode) == 0){
+        else if (strcmp("print",opcode) == 0 || strcmp("read",opcode) == 0){
             ioOps(opcode, arg1, result);
         }
 

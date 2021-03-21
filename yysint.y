@@ -12,7 +12,7 @@
 
 
     #define YYDEBUG 0          /* Se ligado, imprime mais informações */
-
+    extern FILE* yyin;         // Arquivo com o programa de entrada 
 
     /* Forward declaration de funções do parser */
     void yyerror (char *s);
@@ -1274,7 +1274,7 @@ void updateVal(char* id, char* value){
     novoVal++;
 }
 
-int main (void) {
+int main (int argc, char* argv[]) {
     #if YYDEBUG
         yydebug = 1;     
     #endif 
@@ -1290,6 +1290,17 @@ int main (void) {
 
     /* Inicialização da lista de quádruplas */
     intermediate_code = init_code();
+
+
+    /* Abrindo o programa de entrada, via argumentos */
+    if(argc == 2){
+         yyin = fopen(argv[1], "r");
+        if(!yyin){
+            fprintf(stderr, "can't read file %s\n", argv[1]);
+            free_intmdt_code(intermediate_code);
+            return 1;
+        }
+    }
 
     /* Parsing */
     printf("Parsing...\n");
