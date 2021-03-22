@@ -406,6 +406,18 @@ int evaluate(intmdt_code_t* intermediate_code){
                 atual = intermediate_code->code[PC];
                 continue;
             }
+        }else if (strcmp("eoln",opcode) == 0){
+            if (fgetc(stdin) == '\n'){
+                // Temos que ir para onde result manda
+                PC = result->value.instr_ptr->n;
+                atual = intermediate_code->code[PC];
+                continue;
+            }else{
+                // Vamos andar o PC em 1 e ir para onde o goto dali manda
+                PC++;
+                atual = intermediate_code->code[PC];
+                continue;
+            }
         }
         
         /* Operações de IO */
