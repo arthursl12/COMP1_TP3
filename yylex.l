@@ -39,7 +39,7 @@ id              {letter}({letter}|{digit})*
 {ureal}             { printToken("Real"); yylval.real = atof(yytext); return REAL_CONSTANT; }
 {int}               { printToken("SInteger"); yylval.integer = atoi(yytext); return INT_CONSTANT; }
 {real}              { printToken("SReal"); yylval.real = atof(yytext); return REAL_CONSTANT; }
-{char}              { printToken("Char"); yylval.character = *yytext; return CHAR_CONSTANT; }
+{char}              { printToken("Char"); yylval.character = *(yytext+1); return CHAR_CONSTANT; }
     /* Constantes Booleanas */
 "true"              { printToken("Bool"); yylval.boolean = 1; return TRUE_CST; }
 "false"             { printToken("Bool"); yylval.boolean = 0; return FALSE_CST; }

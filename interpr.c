@@ -494,10 +494,26 @@ int evaluate(intmdt_code_t* intermediate_code){
             }else{
                 // boolV funciona como um goto, 
                 // para avaliação de expressões booleanas
-                // Temos que ir para onde result manda
-                PC = result->value.instr_ptr->n;
-                atual = intermediate_code->code[PC];
-                continue;
+                // Temos que ir para onde result manda, se for verdadeiro
+                int tipo1, idx1;
+                tsQuery(&idx1, &tipo1, arg1);
+
+                if (TabelaS[idx1].value.boolean == 1){
+                    // Valor verdadeiro, só seguir o goto
+                    PC = result->value.instr_ptr->n;
+                    atual = intermediate_code->code[PC];
+                    // printf("boolV verdadeiro: goto=%i\n", PC);
+
+                    continue;
+                }else{
+                    // Valor falso, segue o goto da linha seguinte
+                    PC++;
+                    quadruple_t* seguinte = intermediate_code->code[PC];
+                    PC = seguinte->result->value.instr_ptr->n;
+                    atual = intermediate_code->code[PC];
+                    // printf("boolV falso: goto=%i\n", PC);
+                    continue;
+                }
             }
         }
         

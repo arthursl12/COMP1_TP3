@@ -7,18 +7,29 @@ f: char;
 b,t,h: boolean
 
 begin
+    read(x,y);
+    write(' ',sin(y),x+y,2*x,' ');
+    while (x < y) do
     begin
-        read(x,y);
-        write(sin(y),x+y,2*x);
-        while (x < y) do
-        begin
-            x := x + 1
-        end;
-        write(x,y);
-
-        if (x mod 2 = 0) then
-            write('P')
-        else
-            write('I')
+        x := x + 1
     end
+    end;
+    write(x,y,' ');
+
+    b := ((x mod 2) = 0);
+    write(b, x mod 2,' ');
+    if b then
+        write('P')
+    else if NOT b then
+        write('I')
+    ;
+
+    write(' ');
+    i := 0;
+    while (i < 10) do
+        begin
+        write(i, chr(i + 40));
+        i := i + 1
+        end
+    until (i > 5)
 end
