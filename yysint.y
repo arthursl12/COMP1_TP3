@@ -22,6 +22,7 @@
     void tempTipo(int* tipo1, int* tipo2, intmdt_addr_t* s1, intmdt_addr_t* s3);
     bool isNumber(int tipo);
     bool isNumToReal(char* funct);
+    void imprimirTS();
     
     /* Globals da Tabela de Símbolos */
     extern int escopo[10];
@@ -1306,15 +1307,21 @@ int main (int argc, char* argv[]) {
     printf("Parsing...\n");
     if (yyparse() == 0){
         printf("Parse sucessful\n\n");
-        /* printf("Tabela de Simbolos Final:"); */
-        /* imprimir();     // Imprime a tabela de símbolos ao final */
         print_intmdt_code(intermediate_code);
 
         printf("\nEvaluating...\n");
         if (evaluate(intermediate_code) == 0){
+            printf("Imprimir tabela de símbolos (S/N)? ");
+            char res = fgetc(stdin);
+            if (res == 's' || res == 'S'){
+                imprimirTS();
+            }
+        
             free_intmdt_code(intermediate_code);
             return 0;
         }else {
+            
+            
             free_intmdt_code(intermediate_code);
             return 1;
         }
@@ -1375,4 +1382,9 @@ void typeerror(){
 void typeerror_msg(char* msg){
     printf("Type-error: %s \n ", msg);
     yyerror("");
+}
+
+void imprimirTS(){
+    printf("Tabela de Simbolos Final:");
+    imprimir();     // Imprime a tabela de símbolos ao final
 }
