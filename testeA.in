@@ -1,23 +1,10 @@
 program TesteBasico;
 
 x: integer;
-y: boolean;
-b: boolean
 
 begin
-    b := (1 = 2);
-    b := b or (1 != 2);
-
-
     x := 1 + 1;
-
+    write(x);
     x := x + 2;
-    read(y,x);
-    write(y,x);
-    x := 3;
-    while (x <= 10) do
-        x := x + 1;
-        write(x)
-    end;
     write(x)
 end

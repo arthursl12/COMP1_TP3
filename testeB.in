@@ -1,23 +1,35 @@
-program LoopsWhile;
+program TesteGrande;
 
 x, k, i: integer;
 y, a: real;
 z: integer;
-f: char
+f: char;
+b,t,h: boolean
 
 begin
-    do  
-        y := sqrt(2*3.14);
-        write(y);
-        y := z - sin(a);
-        y := x -(+1E+1);
-        x := 3;
-        while (x <= 5) do
-            a := z + y;
-            if z = y then
-                z := z - 1
-            ;
-            x := x + 1
+    read(x,y);
+    write(' ',sin(y),x+y,2*x,' ');
+    while (x < y) do
+    begin
+        x := x + 1
+    end
+    end;
+    write(x,y,' ');
+
+    b := ((x mod 2) = 0);
+    write(b, x mod 2,' ');
+    if b then
+        write('P')
+    else if NOT b then
+        write('I')
+    ;
+
+    write(' ');
+    i := 0;
+    while (i < 10) do
+        begin
+        write(i, chr(i + 40));
+        i := i + 1
         end
-    until (x <= 0)
+    until (i > 5)
 end
