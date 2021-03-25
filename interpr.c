@@ -6,18 +6,6 @@
 #include "aux.h"
 
 /* 
-Se algum tipo for temporário (apontar para a tabela de símbolos) busca na 
-tabela de símbolos o tipo verdadeiro
-*/
-void tempTipoI(int* tipo1, intmdt_addr_t* s1){
-    if (*tipo1 == TS_ENTRY){
-        int idx = s1->value.TS_idx;
-        *tipo1 = TabelaS[idx].type;
-    }
-}
-
-
-/* 
 Para um intmdt_addr que seja do tipo TS_ENTRY (entrada da tabela de símbolos),
 retorna (nos parâmetros passados por referência) seu índice na tabela e seu 
 tipo verdadeiro
@@ -28,8 +16,12 @@ void tsQuery(int* idx, int* tipo, intmdt_addr_t* addr){
         *tipo = TabelaS[*idx].type;
     }
 }
-/* Operações de função padrão, exceto eof e eoln */
-void functOps(char* opcode, intmdt_addr_t* arg1, intmdt_addr_t* result){
+
+/* 
+Operações de função padrão, exceto eof e eoln 
+Retorna 0 se ocorreu tudo com sucesso, 1 do contrário.
+*/
+int functOps(char* opcode, intmdt_addr_t* arg1, intmdt_addr_t* result){
     int tipo1, idx1;
     int tipoR, idxR;
     tsQuery(&idx1, &tipo1, arg1);
@@ -38,9 +30,17 @@ void functOps(char* opcode, intmdt_addr_t* arg1, intmdt_addr_t* result){
     /* numToReal: inteiro ou real vira real*/
     if (strcmp(opcode, "sqrt") == 0){
         if (tipo1 == TYPE_INT){
+            if (TabelaS[idx1].value.integer == 0){
+                printf("Erro! Raiz quadrada de negativo.\n");
+                return 1;
+            }
             // op(int) = real
             TabelaS[idxR].value.real = sqrt(TabelaS[idx1].value.integer);
         }else{
+            if (TabelaS[idx1].value.real < 0){
+                printf("Erro! Raiz quadrada de negativo.\n");
+                return 1;
+            }
             // op(real) = real
             TabelaS[idxR].value.real = sqrt(TabelaS[idx1].value.real);
         }
@@ -62,19 +62,19 @@ void functOps(char* opcode, intmdt_addr_t* arg1, intmdt_addr_t* result){
         }
     }else if (strcmp(opcode, "log") == 0){
         if (tipo1 == TYPE_INT){
+            if (TabelaS[idx1].value.integer < 0){
+                printf("Erro! Log de negativo.\n");
+                return 1;
+            }
             // op(int) = real
             TabelaS[idxR].value.real = log(TabelaS[idx1].value.integer);
         }else{
+            if (TabelaS[idx1].value.real < 0){
+                printf("Erro! Log de negativo.\n");
+                return 1;
+            }
             // op(real) = real
             TabelaS[idxR].value.real = log(TabelaS[idx1].value.real);
-        }
-    }else if (strcmp(opcode, "exp") == 0){
-        if (tipo1 == TYPE_INT){
-            // op(int) = real
-            TabelaS[idxR].value.real = exp(TabelaS[idx1].value.integer);
-        }else{
-            // op(real) = real
-            TabelaS[idxR].value.real = exp(TabelaS[idx1].value.real);
         }
     }else if (strcmp(opcode, "exp") == 0){
         if (tipo1 == TYPE_INT){
@@ -116,11 +116,15 @@ void functOps(char* opcode, intmdt_addr_t* arg1, intmdt_addr_t* result){
         }
     }
     // EOF e EOLN retorna bool, devem ser tratados em outro lugar
+    return 0;
 }
 
 
-/* Avaliação de operações aritméticas */
-void arithmeticOps(char* opcode, 
+/* 
+Avaliação de operações aritméticas 
+Retorna 0 se ocorreu tudo com sucesso, 1 do contrário.
+*/
+int arithmeticOps(char* opcode, 
                    intmdt_addr_t* arg1, 
                    intmdt_addr_t* arg2, 
                    intmdt_addr_t* result)
@@ -152,15 +156,33 @@ void arithmeticOps(char* opcode,
         }
     }else if (strcmp("-",opcode) == 0){
         printf("TODO: -\n");
+        // int - int = int
+        // int - real = real
+        // real - int = real
+        // real - real = real
     }else if (strcmp("*",opcode) == 0){
         printf("TODO: *\n");
+        // int * int = int
+        // int * real = real
+        // real * int = real
+        // real * real = real
     }else if (strcmp("/",opcode) == 0){
         printf("TODO: /\n");
+        // Divisão por zero deve retornar 1 (sinalizar erro)
+        // int / int = real
+        // int / real = real
+        // real / int = real
+        // real / real = real
     }else if (strcmp("div",opcode) == 0){
         printf("TODO: div\n");
+        // Divisão por zero deve retornar 1 (sinalizar erro)
+        // int / int = int  (divisão inteira)
     }else if (strcmp("mod",opcode) == 0){
         printf("TODO: mod\n");
+        // Divisão por zero deve retornar 1 (sinalizar erro)
+        // int % int = int
     }
+    return 0;
 }
 
 /*
@@ -353,7 +375,10 @@ int evaluate(intmdt_code_t* intermediate_code){
             || strcmp("*",opcode) == 0 || strcmp("/",opcode) == 0
             || strcmp("div",opcode) == 0 || strcmp("mod",opcode) == 0)
         {
-            arithmeticOps(opcode, arg1, arg2, result);
+            if (arithmeticOps(opcode, arg1, arg2, result) != 0){
+                // Ocorreu algum erro na avaliação
+                return 1;
+            }
         }else if (strcmp(":=",opcode) == 0){
             int tipo1, idx1;
             int tipoR, idxR;
@@ -393,7 +418,10 @@ int evaluate(intmdt_code_t* intermediate_code){
         /* Operações de funções padrão */
         else if (resWord(opcode, functs, functsSize) != -1 
                  && strcmp("eof",opcode) != 0 && strcmp("eoln",opcode) != 0){
-            functOps(opcode, arg1, result);
+            if (functOps(opcode, arg1, result) != 0){
+                // Algum erro ocorreu na avaliação
+                return 1;
+            }
         }else if (strcmp("eof",opcode) == 0){
             if (feof(stdin)){
                 // Temos que ir para onde result manda
@@ -466,7 +494,11 @@ int evaluate(intmdt_code_t* intermediate_code){
         
         /* GOTO's */
         else if (isGoto(opcode) && strcmp("gotoB",opcode) != 0){
-            // Temos que ir para onde result manda
+            if (result == NULL){
+                printf("Erro! GOTO para nulo\n");
+                return 1;
+            }
+            // Temos que ir para onde result manda, se ele existir
             PC = result->value.instr_ptr->n;
             atual = intermediate_code->code[PC];
             continue;
