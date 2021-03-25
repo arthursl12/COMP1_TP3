@@ -16,7 +16,11 @@ begin
     end;
     write(x,y,' ');
 
-    b := ((x mod 2) = 0);
+    goto label1;
+
+    a := x / 0;
+
+    label1: b := ((x mod 2) = 0);
     write(b, x mod 2,' ');
     if b then
         write('P')
