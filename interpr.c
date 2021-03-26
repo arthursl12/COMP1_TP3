@@ -154,33 +154,136 @@ int arithmeticOps(char* opcode,
             TabelaS[idxR].value.real = \
                 TabelaS[idx1].value.real + TabelaS[idx2].value.real;
         }
+        return 0;
     }else if (strcmp("-",opcode) == 0){
-        printf("TODO: -\n");
-        // int - int = int
-        // int - real = real
-        // real - int = real
-        // real - real = real
+        int tipo1, idx1;
+        int tipo2, idx2;
+        int tipoR, idxR;
+        tsQuery(&idx1, &tipo1, arg1);
+        tsQuery(&idx2, &tipo2, arg2);
+        tsQuery(&idxR, &tipoR, result);
+
+        if (tipoR == TYPE_INT){
+            // int - int = int
+            TabelaS[idxR].value.integer = \
+                TabelaS[idx1].value.integer - TabelaS[idx2].value.integer;
+        }else if (tipo1 == TYPE_INT){
+            // int - real = real
+            TabelaS[idxR].value.real = \
+                TabelaS[idx1].value.integer - TabelaS[idx2].value.real;
+        }else if (tipo2 == TYPE_INT){
+            // real - int = real
+            TabelaS[idxR].value.real = \
+                TabelaS[idx1].value.real - TabelaS[idx2].value.integer;
+        }else{
+            // real - real = real
+            TabelaS[idxR].value.real = \
+                TabelaS[idx1].value.real - TabelaS[idx2].value.real;
+        }
+        return 0;
     }else if (strcmp("*",opcode) == 0){
-        printf("TODO: *\n");
-        // int * int = int
-        // int * real = real
-        // real * int = real
-        // real * real = real
+        int tipo1, idx1;
+        int tipo2, idx2;
+        int tipoR, idxR;
+        tsQuery(&idx1, &tipo1, arg1);
+        tsQuery(&idx2, &tipo2, arg2);
+        tsQuery(&idxR, &tipoR, result);
+
+        if (tipoR == TYPE_INT){
+            // int * int = int
+            TabelaS[idxR].value.integer = \
+                TabelaS[idx1].value.integer * TabelaS[idx2].value.integer;
+        }else if (tipo1 == TYPE_INT){
+            // int * real = real
+            TabelaS[idxR].value.real = \
+                TabelaS[idx1].value.integer * TabelaS[idx2].value.real;
+        }else if (tipo2 == TYPE_INT){
+            // real * int = real
+            TabelaS[idxR].value.real = \
+                TabelaS[idx1].value.real * TabelaS[idx2].value.integer;
+        }else{
+            // real * real = real
+            TabelaS[idxR].value.real = \
+                TabelaS[idx1].value.real * TabelaS[idx2].value.real;
+        }
+        return 0;
     }else if (strcmp("/",opcode) == 0){
-        printf("TODO: /\n");
-        // Divisão por zero deve retornar 1 (sinalizar erro)
-        // int / int = real
-        // int / real = real
-        // real / int = real
-        // real / real = real
+        int tipo1, idx1;
+        int tipo2, idx2;
+        int tipoR, idxR;
+        tsQuery(&idx1, &tipo1, arg1);
+        tsQuery(&idx2, &tipo2, arg2);
+        tsQuery(&idxR, &tipoR, result);
+
+        if (tipoR == TYPE_INT){
+            if(TabelaS[idx2].value.integer == 0){
+                printf("Division for 0 is not allowed\n");
+                return 1;
+            }
+            // int / int = real
+            TabelaS[idxR].value.integer = \
+                TabelaS[idx1].value.integer / TabelaS[idx2].value.integer;
+        }else if (tipo1 == TYPE_INT){
+            if(TabelaS[idx2].value.real == 0){
+                printf("Division for 0 is not allowed\n");
+                return 1;
+            }
+            // int / real = real
+            TabelaS[idxR].value.real = \
+                TabelaS[idx1].value.integer / TabelaS[idx2].value.real;
+        }else if (tipo2 == TYPE_INT){
+            if(TabelaS[idx2].value.integer == 0){
+                printf("Division for 0 is not allowed\n");
+                return 1;
+            }
+            // real / int = real
+            TabelaS[idxR].value.real = \
+                TabelaS[idx1].value.real / TabelaS[idx2].value.integer;
+        }else{
+            if(TabelaS[idx2].value.integer == 0){
+                printf("Division for 0 is not allowed\n");
+                return 1;
+            }
+            // real / real = real
+            TabelaS[idxR].value.real = \
+                TabelaS[idx1].value.real / TabelaS[idx2].value.real;
+        }
+        return 0;
     }else if (strcmp("div",opcode) == 0){
-        printf("TODO: div\n");
-        // Divisão por zero deve retornar 1 (sinalizar erro)
-        // int / int = int  (divisão inteira)
+        int tipo1, idx1;
+        int tipo2, idx2;
+        int tipoR, idxR;
+        tsQuery(&idx1, &tipo1, arg1);
+        tsQuery(&idx2, &tipo2, arg2);
+        tsQuery(&idxR, &tipoR, result);
+
+        if (tipoR == TYPE_INT){
+            if(TabelaS[idx2].value.integer == 0){
+                printf("Div for 0 is not allowed\n");
+                return 1;
+            }
+            // int / int = int
+            TabelaS[idxR].value.integer = \
+                TabelaS[idx1].value.integer / TabelaS[idx2].value.integer;
+        }
+        return 0;
     }else if (strcmp("mod",opcode) == 0){
-        printf("TODO: mod\n");
-        // Divisão por zero deve retornar 1 (sinalizar erro)
-        // int % int = int
+        int tipo1, idx1;
+        int tipo2, idx2;
+        int tipoR, idxR;
+        tsQuery(&idx1, &tipo1, arg1);
+        tsQuery(&idx2, &tipo2, arg2);
+        tsQuery(&idxR, &tipoR, result);
+
+        if (tipoR == TYPE_INT){
+            if(TabelaS[idx2].value.integer == 0){
+                printf("Mod for 0 is not allowed\n");
+                return 1;
+            }
+            // int % int = int
+            TabelaS[idxR].value.integer = \
+                TabelaS[idx1].value.integer % TabelaS[idx2].value.integer;
+        }
     }
     return 0;
 }
