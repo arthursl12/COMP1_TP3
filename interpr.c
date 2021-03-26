@@ -215,15 +215,15 @@ int arithmeticOps(char* opcode,
         tsQuery(&idx2, &tipo2, arg2);
         tsQuery(&idxR, &tipoR, result);
 
-        if (tipoR == TYPE_INT){
+        if (tipo1 == TYPE_INT && tipo2 == TYPE_INT){
             if(TabelaS[idx2].value.integer == 0){
                 printf("Division for 0 is not allowed\n");
                 return 1;
             }
             // int / int = real
-            TabelaS[idxR].value.integer = \
-                TabelaS[idx1].value.integer / TabelaS[idx2].value.integer;
-        }else if (tipo1 == TYPE_INT){
+            TabelaS[idxR].value.real = \
+                (float) TabelaS[idx1].value.integer / TabelaS[idx2].value.integer;
+        }else if (tipo1 == TYPE_INT && tipo2 == TYPE_REAL){
             if(TabelaS[idx2].value.real == 0){
                 printf("Division for 0 is not allowed\n");
                 return 1;
@@ -231,7 +231,7 @@ int arithmeticOps(char* opcode,
             // int / real = real
             TabelaS[idxR].value.real = \
                 TabelaS[idx1].value.integer / TabelaS[idx2].value.real;
-        }else if (tipo2 == TYPE_INT){
+        }else if (tipo1 == TYPE_REAL && tipo2 == TYPE_INT){
             if(TabelaS[idx2].value.integer == 0){
                 printf("Division for 0 is not allowed\n");
                 return 1;
@@ -240,7 +240,7 @@ int arithmeticOps(char* opcode,
             TabelaS[idxR].value.real = \
                 TabelaS[idx1].value.real / TabelaS[idx2].value.integer;
         }else{
-            if(TabelaS[idx2].value.integer == 0){
+            if(TabelaS[idx2].value.real == 0){
                 printf("Division for 0 is not allowed\n");
                 return 1;
             }
